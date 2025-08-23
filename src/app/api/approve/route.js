@@ -2,14 +2,22 @@ import { NextResponse } from 'next/server';
 import { approveVote, rejectVote, getPendingVotes } from '@/lib/db-upstash';
 
 // Simple admin auth (you might want to improve this for production)
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'YVL';
 
 function isAuthorized(request) {
   const authHeader = request.headers.get('authorization');
+  console.log('Auth header received:', authHeader ? 'Present' : 'Missing');
+  
   if (!authHeader) return false;
   
   const token = authHeader.replace('Bearer ', '');
-  return token === ADMIN_PASSWORD;
+  const expectedPassword = process.env.ADMIN_PASSWORD;
+  
+  console.log('Token provided:', token.substring(0, 3) + '...');
+  console.log('Expected password:', expectedPassword ? expectedPassword.substring(0, 3) + '...' : 'Not set');
+  console.log('Auth result:', token === expectedPassword);
+  
+  return token === expectedPassword;
 }
 
 export async function POST(request) {

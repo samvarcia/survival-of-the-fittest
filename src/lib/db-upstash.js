@@ -78,36 +78,42 @@ export async function getUserVote(username) {
   try {
     // Check approved votes
     const approvedVotes = await redis.hgetall(VOTES_KEY);
-    if (approvedVotes) {
+    if (approvedVotes && typeof approvedVotes === 'object') {
       for (const [key, voteStr] of Object.entries(approvedVotes)) {
-        if (!voteStr || voteStr.trim() === '') continue; // Skip empty values
+        // Skip if not a string or empty
+        if (typeof voteStr !== 'string' || !voteStr.trim()) continue;
         
         try {
           const vote = JSON.parse(voteStr);
-          if (vote.username === username) {
+          if (vote && vote.username === username) {
             return vote;
           }
         } catch (parseError) {
           console.warn(`Failed to parse approved vote ${key}:`, parseError);
-          continue; // Skip this corrupted entry
+          // Remove corrupted entry
+          await redis.hdel(VOTES_KEY, key);
+          continue;
         }
       }
     }
 
     // Check pending votes
     const pendingVotes = await redis.hgetall(PENDING_VOTES_KEY);
-    if (pendingVotes) {
+    if (pendingVotes && typeof pendingVotes === 'object') {
       for (const [key, voteStr] of Object.entries(pendingVotes)) {
-        if (!voteStr || voteStr.trim() === '') continue; // Skip empty values
+        // Skip if not a string or empty
+        if (typeof voteStr !== 'string' || !voteStr.trim()) continue;
         
         try {
           const vote = JSON.parse(voteStr);
-          if (vote.username === username) {
+          if (vote && vote.username === username) {
             return vote;
           }
         } catch (parseError) {
           console.warn(`Failed to parse pending vote ${key}:`, parseError);
-          continue; // Skip this corrupted entry
+          // Remove corrupted entry
+          await redis.hdel(PENDING_VOTES_KEY, key);
+          continue;
         }
       }
     }
