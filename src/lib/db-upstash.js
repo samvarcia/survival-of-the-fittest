@@ -1,10 +1,9 @@
-// Upstash Redis setup - COMPLETELY REWRITTEN to fix fragmentation
+// Complete rewrite - Final version to fix all Redis issues
 import { Redis } from '@upstash/redis';
 
-// Use fromEnv() which automatically reads environment variables
 const redis = Redis.fromEnv();
 
-// Use individual Redis keys instead of hashes to prevent fragmentation
+// Clean key prefixes to avoid conflicts
 const VOTES_PREFIX = 'approved_vote:';
 const PENDING_PREFIX = 'pending_vote:';
 const VOTE_STATS_KEY = 'voting_statistics';
@@ -20,14 +19,28 @@ export async function initializeVoteStats(outfitIds) {
         votes: 0
       }));
       
-      await redis.set(VOTE_STATS_KEY, JSON.stringify(initialStats));
+      await redis.set(VOTE_STATS_KEY, initialStats);
       return initialStats;
     }
     
-    return JSON.parse(existingStats);
+    // Handle both object and string responses from Upstash
+    if (typeof existingStats === 'object') {
+      return existingStats;
+    }
+    
+    try {
+      return JSON.parse(existingStats);
+    } catch (parseError) {
+      console.warn('Failed to parse stats, reinitializing:', parseError);
+      const fallbackStats = outfitIds.map(id => ({ outfitId: id, votes: 0 }));
+      await redis.set(VOTE_STATS_KEY, fallbackStats);
+      return fallbackStats;
+    }
   } catch (error) {
     console.error('Error initializing vote stats:', error);
-    throw error;
+    const fallbackStats = outfitIds.map(id => ({ outfitId: id, votes: 0 }));
+    await redis.set(VOTE_STATS_KEY, fallbackStats);
+    return fallbackStats;
   }
 }
 
@@ -56,19 +69,23 @@ export async function submitVote(outfitId, username, isVerifiedFollower) {
       // Add to approved votes
       console.log('Adding to approved votes');
       const key = `${VOTES_PREFIX}${voteId}`;
-      await redis.set(key, JSON.stringify(voteData));
+      await redis.set(key, voteData);
       await updateVoteStats(outfitId, 1);
       console.log('Approved vote added successfully: true');
     } else {
       // Add to pending votes
       console.log('Adding to pending votes');
       const key = `${PENDING_PREFIX}${voteId}`;
-      await redis.set(key, JSON.stringify(voteData));
+      await redis.set(key, voteData);
       
       // Verify it was saved
       const verification = await redis.get(key);
       const success = !!verification;
       console.log(`Pending vote added successfully: ${success}`);
+      
+      if (success) {
+        console.log('Vote data saved:', voteData);
+      }
     }
 
     return voteData;
@@ -81,14 +98,13 @@ export async function submitVote(outfitId, username, isVerifiedFollower) {
 // Get user's vote
 export async function getUserVote(username) {
   try {
-    // Check approved votes
+    // Check approved votes first
     const approvedKeys = await redis.keys(`${VOTES_PREFIX}${username}_*`);
     for (const key of approvedKeys) {
       try {
-        const voteStr = await redis.get(key);
-        if (voteStr) {
-          const vote = JSON.parse(voteStr);
-          return vote;
+        const vote = await redis.get(key);
+        if (vote) {
+          return typeof vote === 'object' ? vote : JSON.parse(vote);
         }
       } catch (parseError) {
         console.warn(`Failed to parse approved vote ${key}:`, parseError);
@@ -100,10 +116,9 @@ export async function getUserVote(username) {
     const pendingKeys = await redis.keys(`${PENDING_PREFIX}${username}_*`);
     for (const key of pendingKeys) {
       try {
-        const voteStr = await redis.get(key);
-        if (voteStr) {
-          const vote = JSON.parse(voteStr);
-          return vote;
+        const vote = await redis.get(key);
+        if (vote) {
+          return typeof vote === 'object' ? vote : JSON.parse(vote);
         }
       } catch (parseError) {
         console.warn(`Failed to parse pending vote ${key}:`, parseError);
@@ -121,8 +136,21 @@ export async function getUserVote(username) {
 // Update vote statistics
 export async function updateVoteStats(outfitId, increment = 1) {
   try {
-    const statsStr = await redis.get(VOTE_STATS_KEY);
-    const stats = statsStr ? JSON.parse(statsStr) : [];
+    const existingStats = await redis.get(VOTE_STATS_KEY);
+    let stats = [];
+    
+    if (existingStats) {
+      if (typeof existingStats === 'object') {
+        stats = existingStats;
+      } else {
+        try {
+          stats = JSON.parse(existingStats);
+        } catch (parseError) {
+          console.warn('Failed to parse stats, using empty array');
+          stats = [];
+        }
+      }
+    }
     
     const updatedStats = stats.map(stat => 
       stat.outfitId === outfitId 
@@ -130,7 +158,7 @@ export async function updateVoteStats(outfitId, increment = 1) {
         : stat
     );
 
-    await redis.set(VOTE_STATS_KEY, JSON.stringify(updatedStats));
+    await redis.set(VOTE_STATS_KEY, updatedStats);
     return updatedStats;
   } catch (error) {
     console.error('Error updating vote stats:', error);
@@ -141,8 +169,22 @@ export async function updateVoteStats(outfitId, increment = 1) {
 // Get current vote statistics
 export async function getVoteStats() {
   try {
-    const statsStr = await redis.get(VOTE_STATS_KEY);
-    return statsStr ? JSON.parse(statsStr) : [];
+    const stats = await redis.get(VOTE_STATS_KEY);
+    
+    if (!stats) {
+      return [];
+    }
+    
+    if (typeof stats === 'object') {
+      return stats;
+    }
+    
+    try {
+      return JSON.parse(stats);
+    } catch (parseError) {
+      console.warn('Failed to parse stats, returning empty array');
+      return [];
+    }
   } catch (error) {
     console.error('Error getting vote stats:', error);
     return [];
@@ -152,15 +194,20 @@ export async function getVoteStats() {
 // Get pending votes for admin approval
 export async function getPendingVotes() {
   try {
+    console.log('Getting pending votes...');
     const pendingKeys = await redis.keys(`${PENDING_PREFIX}*`);
+    console.log(`Found ${pendingKeys.length} pending keys:`, pendingKeys);
+    
     const votes = [];
     
     for (const key of pendingKeys) {
       try {
-        const voteStr = await redis.get(key);
-        if (voteStr) {
-          const vote = JSON.parse(voteStr);
-          votes.push(vote);
+        const vote = await redis.get(key);
+        console.log(`Retrieved vote from ${key}:`, vote);
+        
+        if (vote) {
+          const voteData = typeof vote === 'object' ? vote : JSON.parse(vote);
+          votes.push(voteData);
         }
       } catch (parseError) {
         console.warn(`Failed to parse pending vote ${key}:`, parseError);
@@ -168,6 +215,7 @@ export async function getPendingVotes() {
       }
     }
     
+    console.log(`Returning ${votes.length} pending votes`);
     return votes;
   } catch (error) {
     console.error('Error getting pending votes:', error);
@@ -179,23 +227,23 @@ export async function getPendingVotes() {
 export async function approveVote(voteId) {
   try {
     const pendingKey = `${PENDING_PREFIX}${voteId}`;
-    const voteStr = await redis.get(pendingKey);
+    const vote = await redis.get(pendingKey);
     
-    if (!voteStr) {
+    if (!vote) {
       throw new Error('Vote not found');
     }
 
-    const vote = JSON.parse(voteStr);
+    const voteData = typeof vote === 'object' ? vote : JSON.parse(vote);
     
     // Move from pending to approved
-    const approvedVote = { ...vote, approved: true };
+    const approvedVote = { ...voteData, approved: true };
     const approvedKey = `${VOTES_PREFIX}${voteId}`;
     
-    await redis.set(approvedKey, JSON.stringify(approvedVote));
+    await redis.set(approvedKey, approvedVote);
     await redis.del(pendingKey);
 
     // Update stats
-    await updateVoteStats(vote.outfitId, 1);
+    await updateVoteStats(voteData.outfitId, 1);
 
     return approvedVote;
   } catch (error) {
@@ -208,15 +256,15 @@ export async function approveVote(voteId) {
 export async function rejectVote(voteId) {
   try {
     const pendingKey = `${PENDING_PREFIX}${voteId}`;
-    const voteStr = await redis.get(pendingKey);
+    const vote = await redis.get(pendingKey);
     
-    if (!voteStr) {
+    if (!vote) {
       throw new Error('Vote not found');
     }
 
-    const vote = JSON.parse(voteStr);
+    const voteData = typeof vote === 'object' ? vote : JSON.parse(vote);
     await redis.del(pendingKey);
-    return vote;
+    return voteData;
   } catch (error) {
     console.error('Error rejecting vote:', error);
     throw error;
@@ -231,10 +279,10 @@ export async function getApprovedVotes() {
     
     for (const key of approvedKeys) {
       try {
-        const voteStr = await redis.get(key);
-        if (voteStr) {
-          const vote = JSON.parse(voteStr);
-          votes.push(vote);
+        const vote = await redis.get(key);
+        if (vote) {
+          const voteData = typeof vote === 'object' ? vote : JSON.parse(vote);
+          votes.push(voteData);
         }
       } catch (parseError) {
         console.warn(`Failed to parse approved vote ${key}:`, parseError);
