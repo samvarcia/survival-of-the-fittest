@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import { outfits } from '@/data/outfits';
 
 export default function AdminDashboard() {
@@ -11,17 +12,17 @@ export default function AdminDashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [processingVotes, setProcessingVotes] = useState(new Set());
 
+  const loadData = useCallback(async () => {
+    await Promise.all([loadStats(), loadPendingVotes()]);
+  }, [adminPassword]);
+
   useEffect(() => {
     if (isAuthenticated) {
       loadData();
       const interval = setInterval(loadData, 3000);
       return () => clearInterval(interval);
     }
-  }, [isAuthenticated]);
-
-  const loadData = async () => {
-    await Promise.all([loadStats(), loadPendingVotes()]);
-  };
+  }, [isAuthenticated, loadData]);
 
   const loadStats = async () => {
     try {
@@ -284,7 +285,7 @@ export default function AdminDashboard() {
 
       {/* Back to voting */}
       <div style={{ marginTop: '40px', textAlign: 'center' }}>
-        <a href="/" style={{
+        <Link href="/" style={{
           display: 'inline-block',
           padding: '12px 24px',
           background: 'var(--gray)',
@@ -295,7 +296,7 @@ export default function AdminDashboard() {
           fontWeight: '500'
         }}>
           ← Back to Voting
-        </a>
+        </Link>
       </div>
     </div>
   );
