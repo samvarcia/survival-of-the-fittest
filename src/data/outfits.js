@@ -2,51 +2,51 @@ export const outfits = [
     {
       id: 1,
       participantInstagram: "participant_one",
-      image: "/images/outfit-1.jpg"
+      image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlXgEXnxWkSAK7Ugo6JLqjzpQYfZcDilmx9VIn"
     },
     {
       id: 2,
       participantInstagram: "style_guru_two",
-      image: "/images/outfit-2.jpg"
+      image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlUqfjFV9df8M1rzQyJqYjBNPapmcXk7oRCFsG"
     },
     {
       id: 3,
       participantInstagram: "fashion_rebel_3",
-      image: "/images/outfit-3.jpg"
+      image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlmzflYbDLnOXd4BwTslftVWcp9DaC5SEuIb36"
     },
     {
       id: 4,
       participantInstagram: "trendsetter_four",
-      image: "/images/outfit-4.jpg"
+      image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlXgEXnxWkSAK7Ugo6JLqjzpQYfZcDilmx9VIn"
     },
     {
       id: 5,
       participantInstagram: "urban_explorer_5",
-      image: "/images/outfit-5.jpg"
+      image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlUqfjFV9df8M1rzQyJqYjBNPapmcXk7oRCFsG"
     },
     {
       id: 6,
       participantInstagram: "chic_wanderer_6",
-      image: "/images/outfit-6.jpg"
+      image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlmzflYbDLnOXd4BwTslftVWcp9DaC5SEuIb36"
     },
     {
       id: 7,
       participantInstagram: "style_maverick_7",
-      image: "/images/outfit-7.jpg"
+      image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlXgEXnxWkSAK7Ugo6JLqjzpQYfZcDilmx9VIn"
     },
     {
       id: 8,
       participantInstagram: "modern_muse_8",
-      image: "/images/outfit-8.jpg"
+      image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlUqfjFV9df8M1rzQyJqYjBNPapmcXk7oRCFsG"
     },
     {
       id: 9,
       participantInstagram: "fashion_forward_9",
-      image: "/images/outfit-9.jpg"
+      image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlmzflYbDLnOXd4BwTslftVWcp9DaC5SEuIb36"
     },
     {
       id: 10,
       participantInstagram: "style_icon_10",
-      image: "/images/outfit-10.jpg"
+      image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlXgEXnxWkSAK7Ugo6JLqjzpQYfZcDilmx9VIn"
     }
   ];
