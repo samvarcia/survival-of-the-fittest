@@ -42,6 +42,15 @@ body {
   color: var(--black);
 }
 
+.price-tag {
+  width: 90px;
+  height: auto;
+  position: relative;
+  top: -30px;
+  right: -100px; 
+  rotate: 10deg;
+}
+
 /* Intro Text */
 .intro {
   text-align: center;
@@ -207,7 +216,7 @@ body {
 .modal-content > .disclaimer {
   padding: 0 24px 24px 24px;
 }
-.modal-content-wrapper {
+.modal-content-wrapper, .success-message {
   background: var(--white);
 }
 
@@ -372,7 +381,7 @@ body {
 }
 
 .podium-rank.first {
-  color: var(--yellow);
+  /* color: var(--yellow); */
 }
 
 .podium-handle {

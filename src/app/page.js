@@ -89,14 +89,17 @@ export default function HomePage() {
       <img src="https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlcLdcXWQIFnWalKbj5yqv3GsEVpm91BixD6dk" alt="SOTF" className="logo-image" srcset="" />
       
       <div className="intro">
+        <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
         Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </p>
+        <img src="https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlO7hgJ0LZKfS9sadLroeTAbYCBIQyMj32150G" alt="SOTF" className="price-tag" srcset="" />
       </div>
 
       {/* Top 3 */}
       <TopThree stats={stats} outfits={outfits} />
       {/* Vote Section Title */}
-      
+
       <div className="vote-section-title">VOTE:</div>
         
       {/* Outfits Grid */}
