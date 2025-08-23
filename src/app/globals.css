@@ -245,7 +245,7 @@ body {
   aspect-ratio: 3/4;
   object-fit: cover;
   /* border-radius: 8px; */
-  margin-bottom: 8px;
+  margin-bottom: 38px;
   background: var(--gray);
 }
 
