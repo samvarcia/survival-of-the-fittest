@@ -49,13 +49,21 @@ export async function submitVote(outfitId, username, isVerifiedFollower) {
       verified: isVerifiedFollower
     };
 
+    console.log(`Submitting vote for ${username}, isVerified: ${isVerifiedFollower}`); // Debug
+
     if (isVerifiedFollower) {
       // Add to approved votes and update stats immediately
+      console.log('Adding to approved votes'); // Debug
       await redis.hset(VOTES_KEY, voteData.id, JSON.stringify(voteData));
       await updateVoteStats(outfitId, 1);
     } else {
       // Add to pending votes
+      console.log('Adding to pending votes'); // Debug
       await redis.hset(PENDING_VOTES_KEY, voteData.id, JSON.stringify(voteData));
+      
+      // Verify it was added
+      const check = await redis.hget(PENDING_VOTES_KEY, voteData.id);
+      console.log('Pending vote added successfully:', !!check); // Debug
     }
 
     return voteData;
@@ -72,9 +80,16 @@ export async function getUserVote(username) {
     const approvedVotes = await redis.hgetall(VOTES_KEY);
     if (approvedVotes) {
       for (const [key, voteStr] of Object.entries(approvedVotes)) {
-        const vote = JSON.parse(voteStr);
-        if (vote.username === username) {
-          return vote;
+        if (!voteStr || voteStr.trim() === '') continue; // Skip empty values
+        
+        try {
+          const vote = JSON.parse(voteStr);
+          if (vote.username === username) {
+            return vote;
+          }
+        } catch (parseError) {
+          console.warn(`Failed to parse approved vote ${key}:`, parseError);
+          continue; // Skip this corrupted entry
         }
       }
     }
@@ -83,9 +98,16 @@ export async function getUserVote(username) {
     const pendingVotes = await redis.hgetall(PENDING_VOTES_KEY);
     if (pendingVotes) {
       for (const [key, voteStr] of Object.entries(pendingVotes)) {
-        const vote = JSON.parse(voteStr);
-        if (vote.username === username) {
-          return vote;
+        if (!voteStr || voteStr.trim() === '') continue; // Skip empty values
+        
+        try {
+          const vote = JSON.parse(voteStr);
+          if (vote.username === username) {
+            return vote;
+          }
+        } catch (parseError) {
+          console.warn(`Failed to parse pending vote ${key}:`, parseError);
+          continue; // Skip this corrupted entry
         }
       }
     }
@@ -131,7 +153,23 @@ export async function getVoteStats() {
 export async function getPendingVotes() {
   try {
     const pendingVotes = await redis.hgetall(PENDING_VOTES_KEY);
-    return Object.values(pendingVotes || {}).map(voteStr => JSON.parse(voteStr));
+    const votes = [];
+    
+    if (pendingVotes) {
+      for (const [key, voteStr] of Object.entries(pendingVotes)) {
+        if (!voteStr || voteStr.trim() === '') continue; // Skip empty values
+        
+        try {
+          const vote = JSON.parse(voteStr);
+          votes.push(vote);
+        } catch (parseError) {
+          console.warn(`Failed to parse pending vote ${key}:`, parseError);
+          continue; // Skip this corrupted entry
+        }
+      }
+    }
+    
+    return votes;
   } catch (error) {
     console.error('Error getting pending votes:', error);
     return [];
@@ -184,7 +222,23 @@ export async function rejectVote(voteId) {
 export async function getApprovedVotes() {
   try {
     const approvedVotes = await redis.hgetall(VOTES_KEY);
-    return Object.values(approvedVotes || {}).map(voteStr => JSON.parse(voteStr));
+    const votes = [];
+    
+    if (approvedVotes) {
+      for (const [key, voteStr] of Object.entries(approvedVotes)) {
+        if (!voteStr || voteStr.trim() === '') continue; // Skip empty values
+        
+        try {
+          const vote = JSON.parse(voteStr);
+          votes.push(vote);
+        } catch (parseError) {
+          console.warn(`Failed to parse approved vote ${key}:`, parseError);
+          continue; // Skip this corrupted entry
+        }
+      }
+    }
+    
+    return votes;
   } catch (error) {
     console.error('Error getting approved votes:', error);
     return [];
