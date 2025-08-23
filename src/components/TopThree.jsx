@@ -81,9 +81,9 @@ export default function TopThree({ stats, outfits }) {
         ))}
       </div>
 
-      <Link href="/dashboard" className="view-full-chart">
+      {/* <Link href="/dashboard" className="view-full-chart">
         View Full Chart
-      </Link>
+      </Link> */}
     </div>
   );
 }

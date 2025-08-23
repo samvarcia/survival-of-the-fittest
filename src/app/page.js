@@ -86,12 +86,15 @@ export default function HomePage() {
   return (
     <div className="container">
       {/* Header */}
-      <div className="logo">Survival of the Fittest</div>
+      <img src="https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlcLdcXWQIFnWalKbj5yqv3GsEVpm91BixD6dk" alt="SOTF" className="logo-image" srcset="" />
       
       <div className="intro">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
         Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
       </div>
+        
+              {/* Top 3 */}
+              <TopThree stats={stats} outfits={outfits} />
 
       {/* Outfits Grid */}
       <div className="outfits-grid">
@@ -104,9 +107,6 @@ export default function HomePage() {
           />
         ))}
       </div>
-
-      {/* Top 3 */}
-      <TopThree stats={stats} outfits={outfits} />
 
       {/* Vote Modal */}
       {selectedOutfit && (
