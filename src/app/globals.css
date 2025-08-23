@@ -62,7 +62,7 @@ body {
 .outfit-card {
   position: relative;
   background: var(--white);
-  border-radius: 8px;
+  /* border-radius: 8px; */
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.2s ease;
@@ -244,7 +244,7 @@ body {
   width: 100%;
   aspect-ratio: 3/4;
   object-fit: cover;
-  border-radius: 8px;
+  /* border-radius: 8px; */
   margin-bottom: 8px;
   background: var(--gray);
 }
