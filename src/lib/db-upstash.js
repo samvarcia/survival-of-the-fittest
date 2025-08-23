@@ -1,13 +1,13 @@
-// Upstash Redis setup via Vercel Marketplace integration
+// Upstash Redis setup - COMPLETELY REWRITTEN to fix fragmentation
 import { Redis } from '@upstash/redis';
 
 // Use fromEnv() which automatically reads environment variables
 const redis = Redis.fromEnv();
 
-// Vote storage keys
-const VOTES_KEY = 'outfit_votes';
-const PENDING_VOTES_KEY = 'pending_votes';
-const VOTE_STATS_KEY = 'vote_stats';
+// Use individual Redis keys instead of hashes to prevent fragmentation
+const VOTES_PREFIX = 'approved_vote:';
+const PENDING_PREFIX = 'pending_vote:';
+const VOTE_STATS_KEY = 'voting_statistics';
 
 // Initialize vote stats for all outfits
 export async function initializeVoteStats(outfitIds) {
@@ -20,11 +20,11 @@ export async function initializeVoteStats(outfitIds) {
         votes: 0
       }));
       
-      await redis.set(VOTE_STATS_KEY, initialStats);
+      await redis.set(VOTE_STATS_KEY, JSON.stringify(initialStats));
       return initialStats;
     }
     
-    return existingStats;
+    return JSON.parse(existingStats);
   } catch (error) {
     console.error('Error initializing vote stats:', error);
     throw error;
@@ -40,8 +40,9 @@ export async function submitVote(outfitId, username, isVerifiedFollower) {
       throw new Error('User has already voted');
     }
 
+    const voteId = `${username}_${Date.now()}`;
     const voteData = {
-      id: `${username}_${Date.now()}`,
+      id: voteId,
       outfitId,
       username,
       timestamp: Date.now(),
@@ -49,21 +50,25 @@ export async function submitVote(outfitId, username, isVerifiedFollower) {
       verified: isVerifiedFollower
     };
 
-    console.log(`Submitting vote for ${username}, isVerified: ${isVerifiedFollower}`); // Debug
+    console.log(`Submitting vote for ${username}, isVerified: ${isVerifiedFollower}`);
 
     if (isVerifiedFollower) {
-      // Add to approved votes and update stats immediately
-      console.log('Adding to approved votes'); // Debug
-      await redis.hset(VOTES_KEY, voteData.id, JSON.stringify(voteData));
+      // Add to approved votes
+      console.log('Adding to approved votes');
+      const key = `${VOTES_PREFIX}${voteId}`;
+      await redis.set(key, JSON.stringify(voteData));
       await updateVoteStats(outfitId, 1);
+      console.log('Approved vote added successfully: true');
     } else {
       // Add to pending votes
-      console.log('Adding to pending votes'); // Debug
-      await redis.hset(PENDING_VOTES_KEY, voteData.id, JSON.stringify(voteData));
+      console.log('Adding to pending votes');
+      const key = `${PENDING_PREFIX}${voteId}`;
+      await redis.set(key, JSON.stringify(voteData));
       
-      // Verify it was added
-      const check = await redis.hget(PENDING_VOTES_KEY, voteData.id);
-      console.log('Pending vote added successfully:', !!check); // Debug
+      // Verify it was saved
+      const verification = await redis.get(key);
+      const success = !!verification;
+      console.log(`Pending vote added successfully: ${success}`);
     }
 
     return voteData;
@@ -77,44 +82,32 @@ export async function submitVote(outfitId, username, isVerifiedFollower) {
 export async function getUserVote(username) {
   try {
     // Check approved votes
-    const approvedVotes = await redis.hgetall(VOTES_KEY);
-    if (approvedVotes && typeof approvedVotes === 'object') {
-      for (const [key, voteStr] of Object.entries(approvedVotes)) {
-        // Skip if not a string or empty
-        if (typeof voteStr !== 'string' || !voteStr.trim()) continue;
-        
-        try {
+    const approvedKeys = await redis.keys(`${VOTES_PREFIX}${username}_*`);
+    for (const key of approvedKeys) {
+      try {
+        const voteStr = await redis.get(key);
+        if (voteStr) {
           const vote = JSON.parse(voteStr);
-          if (vote && vote.username === username) {
-            return vote;
-          }
-        } catch (parseError) {
-          console.warn(`Failed to parse approved vote ${key}:`, parseError);
-          // Remove corrupted entry
-          await redis.hdel(VOTES_KEY, key);
-          continue;
+          return vote;
         }
+      } catch (parseError) {
+        console.warn(`Failed to parse approved vote ${key}:`, parseError);
+        continue;
       }
     }
-
+    
     // Check pending votes
-    const pendingVotes = await redis.hgetall(PENDING_VOTES_KEY);
-    if (pendingVotes && typeof pendingVotes === 'object') {
-      for (const [key, voteStr] of Object.entries(pendingVotes)) {
-        // Skip if not a string or empty
-        if (typeof voteStr !== 'string' || !voteStr.trim()) continue;
-        
-        try {
+    const pendingKeys = await redis.keys(`${PENDING_PREFIX}${username}_*`);
+    for (const key of pendingKeys) {
+      try {
+        const voteStr = await redis.get(key);
+        if (voteStr) {
           const vote = JSON.parse(voteStr);
-          if (vote && vote.username === username) {
-            return vote;
-          }
-        } catch (parseError) {
-          console.warn(`Failed to parse pending vote ${key}:`, parseError);
-          // Remove corrupted entry
-          await redis.hdel(PENDING_VOTES_KEY, key);
-          continue;
+          return vote;
         }
+      } catch (parseError) {
+        console.warn(`Failed to parse pending vote ${key}:`, parseError);
+        continue;
       }
     }
 
@@ -128,7 +121,8 @@ export async function getUserVote(username) {
 // Update vote statistics
 export async function updateVoteStats(outfitId, increment = 1) {
   try {
-    const stats = await redis.get(VOTE_STATS_KEY) || [];
+    const statsStr = await redis.get(VOTE_STATS_KEY);
+    const stats = statsStr ? JSON.parse(statsStr) : [];
     
     const updatedStats = stats.map(stat => 
       stat.outfitId === outfitId 
@@ -136,7 +130,7 @@ export async function updateVoteStats(outfitId, increment = 1) {
         : stat
     );
 
-    await redis.set(VOTE_STATS_KEY, updatedStats);
+    await redis.set(VOTE_STATS_KEY, JSON.stringify(updatedStats));
     return updatedStats;
   } catch (error) {
     console.error('Error updating vote stats:', error);
@@ -147,8 +141,8 @@ export async function updateVoteStats(outfitId, increment = 1) {
 // Get current vote statistics
 export async function getVoteStats() {
   try {
-    const stats = await redis.get(VOTE_STATS_KEY);
-    return stats || [];
+    const statsStr = await redis.get(VOTE_STATS_KEY);
+    return statsStr ? JSON.parse(statsStr) : [];
   } catch (error) {
     console.error('Error getting vote stats:', error);
     return [];
@@ -158,20 +152,19 @@ export async function getVoteStats() {
 // Get pending votes for admin approval
 export async function getPendingVotes() {
   try {
-    const pendingVotes = await redis.hgetall(PENDING_VOTES_KEY);
+    const pendingKeys = await redis.keys(`${PENDING_PREFIX}*`);
     const votes = [];
     
-    if (pendingVotes) {
-      for (const [key, voteStr] of Object.entries(pendingVotes)) {
-        if (!voteStr || voteStr.trim() === '') continue; // Skip empty values
-        
-        try {
+    for (const key of pendingKeys) {
+      try {
+        const voteStr = await redis.get(key);
+        if (voteStr) {
           const vote = JSON.parse(voteStr);
           votes.push(vote);
-        } catch (parseError) {
-          console.warn(`Failed to parse pending vote ${key}:`, parseError);
-          continue; // Skip this corrupted entry
         }
+      } catch (parseError) {
+        console.warn(`Failed to parse pending vote ${key}:`, parseError);
+        continue;
       }
     }
     
@@ -185,7 +178,9 @@ export async function getPendingVotes() {
 // Approve a pending vote
 export async function approveVote(voteId) {
   try {
-    const voteStr = await redis.hget(PENDING_VOTES_KEY, voteId);
+    const pendingKey = `${PENDING_PREFIX}${voteId}`;
+    const voteStr = await redis.get(pendingKey);
+    
     if (!voteStr) {
       throw new Error('Vote not found');
     }
@@ -194,8 +189,10 @@ export async function approveVote(voteId) {
     
     // Move from pending to approved
     const approvedVote = { ...vote, approved: true };
-    await redis.hset(VOTES_KEY, { [voteId]: JSON.stringify(approvedVote) });
-    await redis.hdel(PENDING_VOTES_KEY, voteId);
+    const approvedKey = `${VOTES_PREFIX}${voteId}`;
+    
+    await redis.set(approvedKey, JSON.stringify(approvedVote));
+    await redis.del(pendingKey);
 
     // Update stats
     await updateVoteStats(vote.outfitId, 1);
@@ -210,13 +207,15 @@ export async function approveVote(voteId) {
 // Reject a pending vote
 export async function rejectVote(voteId) {
   try {
-    const voteStr = await redis.hget(PENDING_VOTES_KEY, voteId);
+    const pendingKey = `${PENDING_PREFIX}${voteId}`;
+    const voteStr = await redis.get(pendingKey);
+    
     if (!voteStr) {
       throw new Error('Vote not found');
     }
 
     const vote = JSON.parse(voteStr);
-    await redis.hdel(PENDING_VOTES_KEY, voteId);
+    await redis.del(pendingKey);
     return vote;
   } catch (error) {
     console.error('Error rejecting vote:', error);
@@ -227,20 +226,19 @@ export async function rejectVote(voteId) {
 // Get all approved votes
 export async function getApprovedVotes() {
   try {
-    const approvedVotes = await redis.hgetall(VOTES_KEY);
+    const approvedKeys = await redis.keys(`${VOTES_PREFIX}*`);
     const votes = [];
     
-    if (approvedVotes) {
-      for (const [key, voteStr] of Object.entries(approvedVotes)) {
-        if (!voteStr || voteStr.trim() === '') continue; // Skip empty values
-        
-        try {
+    for (const key of approvedKeys) {
+      try {
+        const voteStr = await redis.get(key);
+        if (voteStr) {
           const vote = JSON.parse(voteStr);
           votes.push(vote);
-        } catch (parseError) {
-          console.warn(`Failed to parse approved vote ${key}:`, parseError);
-          continue; // Skip this corrupted entry
         }
+      } catch (parseError) {
+        console.warn(`Failed to parse approved vote ${key}:`, parseError);
+        continue;
       }
     }
     
