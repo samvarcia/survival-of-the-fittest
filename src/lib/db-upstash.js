@@ -194,7 +194,7 @@ export async function approveVote(voteId) {
     
     // Move from pending to approved
     const approvedVote = { ...vote, approved: true };
-    await redis.hset(VOTES_KEY, voteId, JSON.stringify(approvedVote));
+    await redis.hset(VOTES_KEY, { [voteId]: JSON.stringify(approvedVote) });
     await redis.hdel(PENDING_VOTES_KEY, voteId);
 
     // Update stats
