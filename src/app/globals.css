@@ -149,7 +149,6 @@ body {
 }
 
 .modal-content {
-  background: var(--white);
   border-radius: 16px 16px 0 0;
   padding: 0;
   width: 100%;
@@ -162,15 +161,16 @@ body {
 .modal-image-container {
   position: relative;
   width: 100%;
-  margin-bottom: 20px;
+  margin-bottom: 60px;
+  display: flex;
+  justify-content: center;
 }
 
 .modal-outfit-image {
-  width: 100%;
+  width: 60%;
   aspect-ratio: 3/4;
   object-fit: cover;
   display: block;
-  background: var(--gray);
 }
 
 .modal-image-fallback {
@@ -197,8 +197,7 @@ body {
 
 /* Modal Content Padding */
 .modal-content > *:not(.modal-image-container) {
-  padding-left: 24px;
-  padding-right: 24px;
+  padding: 24px;
 }
 
 .modal-content > form {
@@ -207,6 +206,9 @@ body {
 
 .modal-content > .disclaimer {
   padding: 0 24px 24px 24px;
+}
+.modal-content-wrapper {
+  background: var(--white);
 }
 
 @keyframes slideUp {
@@ -239,7 +241,7 @@ body {
 
 .form-input:focus {
   outline: none;
-  border-color: var(--yellow);
+  border-color: var(--dark-gray);
 }
 
 .vote-button {

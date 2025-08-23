@@ -12,7 +12,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="theme-color" content="#FFD700" />
+        <meta name="theme-color" content="#ECECEC" />
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body>{children}</body>

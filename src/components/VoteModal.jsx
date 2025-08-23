@@ -71,37 +71,40 @@ export default function VoteModal({ outfit, onClose, onSubmit }) {
               @{outfit.participantInstagram}
             </div>
           )}
-          <div className="modal-outfit-id">#{outfit.id}</div>
+          {/* <div className="modal-outfit-id">#{outfit.id}</div> */}
         </div>
 
-        <div className="modal-title">
-          Vote for @{outfit.participantInstagram}
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <input
-              type="text"
-              className="form-input"
-              placeholder="Your IG Handle"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              disabled={isLoading}
-              autoFocus
-            />
+        {/* Content with background */}
+        <div className="modal-content-wrapper">
+          <div className="modal-title">
+            Vote for #{outfit.id} - @{outfit.participantInstagram}
           </div>
 
-          <button
-            type="submit"
-            className="vote-button"
-            disabled={isLoading || !username.trim()}
-          >
-            {isLoading ? 'Voting...' : 'Vote'}
-          </button>
-        </form>
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <input
+                type="text"
+                className="form-input"
+                placeholder="Your IG Handle"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                disabled={isLoading}
+                autoFocus
+              />
+            </div>
 
-        <div className="disclaimer">
-          Your vote doesn't count if you don't follow @whakandmo
+            <button
+              type="submit"
+              className="vote-button"
+              disabled={isLoading || !username.trim()}
+            >
+              {isLoading ? 'Voting...' : 'Vote'}
+            </button>
+          </form>
+
+          <div className="disclaimer">
+            Your vote doesn't count if you don't follow @whakandmo
+          </div>
         </div>
       </div>
     </div>
