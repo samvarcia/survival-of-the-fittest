@@ -51,6 +51,16 @@ body {
   line-height: 1.4;
 }
 
+/* Vote Section Title */
+.vote-section-title {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: var(--black);
+  letter-spacing: 0.5px;
+}
+
 /* Outfits Grid */
 .outfits-grid {
   display: grid;
@@ -88,6 +98,20 @@ body {
   font-weight: 500;
 }
 
+/* ID Badge */
+.outfit-id-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: var(--black);
+  color: var(--white);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  z-index: 2;
+}
+
 /* Yellow Vote Indicator */
 .vote-indicator {
   position: absolute;
@@ -99,6 +123,7 @@ body {
   border-radius: 50%;
   display: none;
   animation: popIn 0.3s ease-out;
+  z-index: 2;
 }
 
 .outfit-card.voted .vote-indicator {
@@ -126,10 +151,62 @@ body {
 .modal-content {
   background: var(--white);
   border-radius: 16px 16px 0 0;
-  padding: 24px;
+  padding: 0;
   width: 100%;
   max-width: 480px;
   animation: slideUp 0.3s ease-out;
+  overflow: hidden;
+}
+
+/* Modal Image */
+.modal-image-container {
+  position: relative;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.modal-outfit-image {
+  width: 100%;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  display: block;
+  background: var(--gray);
+}
+
+.modal-image-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--dark-gray);
+  background: var(--gray);
+}
+
+.modal-outfit-id {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: var(--black);
+  color: var(--white);
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  z-index: 2;
+}
+
+/* Modal Content Padding */
+.modal-content > *:not(.modal-image-container) {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.modal-content > form {
+  padding: 0 24px;
+}
+
+.modal-content > .disclaimer {
+  padding: 0 24px 24px 24px;
 }
 
 @keyframes slideUp {
@@ -142,6 +219,7 @@ body {
   font-weight: 600;
   text-align: center;
   margin-bottom: 20px;
+  padding-top: 20px;
   color: var(--black);
 }
 
@@ -215,14 +293,16 @@ body {
 /* Top 3 Section */
 .top-three-section {
   margin-top: auto;
-  padding-top: 32px;
+  padding: 32px 0;
+  background: #E8E8E8; /* Slightly darker background for hierarchy */
+  margin-bottom: 32px;
 }
 
 .section-title {
   text-align: center;
   font-size: 18px;
   font-weight: 600;
-  margin-bottom: 40px;
+  margin-bottom: 60px;
   color: var(--black);
 }
 
@@ -230,14 +310,15 @@ body {
   display: flex;
   justify-content: center;
   align-items: end;
-  gap: 8px;
+  gap: 16px; /* Increased gap to prevent overlapping */
   margin-bottom: 60px;
+  padding: 0 20px;
 }
 
 .podium-item {
   text-align: center;
   flex: 1;
-  max-width: 120px;
+  max-width: 100px; /* Reduced max-width to give more space */
 }
 
 .podium-image {
@@ -245,28 +326,41 @@ body {
   aspect-ratio: 3/4;
   object-fit: cover;
   /* border-radius: 8px; */
-  margin-bottom: 38px;
+  margin-bottom: 55px;
   background: var(--gray);
+  transition: transform 0.3s ease;
 }
 
+/* Podium ordering and scaling - fixed overlapping */
 .podium-item:nth-child(1) {
-  order: 2;
+  order: 2; /* First place in center */
 }
 
 .podium-item:nth-child(2) {
-  order: 1;
+  order: 1; /* Second place on left */
 }
 
 .podium-item:nth-child(3) {
-  order: 3;
+  order: 3; /* Third place on right */
 }
 
+/* Scaling with proper z-index and positioning */
 .podium-item:nth-child(1) .podium-image {
-  transform: scale(1.4);
-  /* z-index: ; */
+  transform: scale(1.4); /* Reduced from 1.4 to prevent overlap */
+  z-index: 3;
+  position: relative;
 }
+
 .podium-item:nth-child(2) .podium-image {
-  transform: scale(1.2);
+  transform: scale(1.1); /* Reduced from 1.2 to prevent overlap */
+  z-index: 2;
+  position: relative;
+}
+
+.podium-item:nth-child(3) .podium-image {
+  transform: scale(1.0);
+  z-index: 1;
+  position: relative;
 }
 
 .podium-rank {
@@ -316,11 +410,13 @@ body {
   padding: 20px;
   color: var(--dark-gray);
 }
+
 .logo-image{
   width: 150px;
   height: auto;
   align-self: center;
 }
+
 /* Responsive */
 @media (min-width: 768px) {
   .container {
@@ -342,5 +438,13 @@ body {
   
   .intro {
     font-size: 16px;
+  }
+  
+  .podium {
+    gap: 24px; /* Larger gap on desktop */
+  }
+  
+  .podium-item {
+    max-width: 120px; /* Slightly larger on desktop */
   }
 }

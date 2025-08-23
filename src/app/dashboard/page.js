@@ -11,6 +11,7 @@ export default function AdminDashboard() {
   const [adminPassword, setAdminPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [processingVotes, setProcessingVotes] = useState(new Set());
+  const [authError, setAuthError] = useState('');
 
   const loadData = useCallback(async () => {
     await Promise.all([loadStats(), loadPendingVotes()]);
@@ -61,8 +62,16 @@ export default function AdminDashboard() {
 
   const handleAuth = (e) => {
     e.preventDefault();
-    setIsAuthenticated(true);
-    loadData();
+    setAuthError('');
+    
+    // Check if password matches "YVL"
+    if (adminPassword === 'YVL') {
+      setIsAuthenticated(true);
+      loadData();
+    } else {
+      setAuthError('Invalid password');
+      setAdminPassword('');
+    }
   };
 
   const handleVoteAction = async (voteId, action) => {
@@ -116,6 +125,16 @@ export default function AdminDashboard() {
               onChange={(e) => setAdminPassword(e.target.value)}
               required
             />
+            {authError && (
+              <div style={{ 
+                color: 'red', 
+                fontSize: '12px', 
+                marginTop: '8px',
+                textAlign: 'center'
+              }}>
+                {authError}
+              </div>
+            )}
           </div>
           <button type="submit" className="vote-button">
             Login

@@ -4,7 +4,7 @@ export const metadata = {
   title: 'Survival of the Fittest',
   description: '',
   viewport: 'width=device-width, initial-scale=1',
-  themeColor: '#FFD700',
+  themeColor: '#ececec',
 };
 
 export default function RootLayout({ children }) {

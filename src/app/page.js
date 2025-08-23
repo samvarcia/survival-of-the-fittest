@@ -92,10 +92,13 @@ export default function HomePage() {
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
         Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
       </div>
-        
-              {/* Top 3 */}
-              <TopThree stats={stats} outfits={outfits} />
 
+      {/* Top 3 */}
+      <TopThree stats={stats} outfits={outfits} />
+      {/* Vote Section Title */}
+      
+      <div className="vote-section-title">VOTE:</div>
+        
       {/* Outfits Grid */}
       <div className="outfits-grid">
         {outfits.map((outfit) => (
@@ -107,6 +110,8 @@ export default function HomePage() {
           />
         ))}
       </div>
+
+
 
       {/* Vote Modal */}
       {selectedOutfit && (

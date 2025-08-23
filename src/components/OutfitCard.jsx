@@ -34,12 +34,12 @@ export default function OutfitCard({ outfit, onVote, hasVoted }) {
           fontSize: '12px',
           color: 'var(--dark-gray)'
         }}>
-          @{outfit.participantInstagram}
+          #{outfit.id} - @{outfit.participantInstagram}
         </div>
       )}
       
       <div className="outfit-handle">
-        @{outfit.participantInstagram}
+      #{outfit.id} - @{outfit.participantInstagram}
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ export default function VoteModal({ outfit, onClose, onSubmit }) {
   const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,6 +37,10 @@ export default function VoteModal({ outfit, onClose, onSubmit }) {
     }
   };
 
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
   if (showSuccess) {
     return (
       <div className="modal-overlay" onClick={handleOverlayClick}>
@@ -52,6 +57,23 @@ export default function VoteModal({ outfit, onClose, onSubmit }) {
   return (
     <div className="modal-overlay" onClick={handleOverlayClick}>
       <div className="modal-content">
+        {/* Outfit Image */}
+        <div className="modal-image-container">
+          {!imageError ? (
+            <img
+              src={outfit.image}
+              alt={`Outfit by @${outfit.participantInstagram}`}
+              className="modal-outfit-image"
+              onError={handleImageError}
+            />
+          ) : (
+            <div className="modal-outfit-image modal-image-fallback">
+              @{outfit.participantInstagram}
+            </div>
+          )}
+          <div className="modal-outfit-id">#{outfit.id}</div>
+        </div>
+
         <div className="modal-title">
           Vote for @{outfit.participantInstagram}
         </div>
