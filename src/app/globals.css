@@ -7,7 +7,7 @@
 :root {
   --yellow: #FFD700;
   --black: #000000;
-  --white: #FFFFFF;
+  --white: #ececec;
   --gray: #F5F5F5;
   --dark-gray: #666666;
   --light-gray: #E5E5E5;
@@ -262,7 +262,11 @@ body {
 }
 
 .podium-item:nth-child(1) .podium-image {
-  transform: scale(1.1);
+  transform: scale(1.4);
+  /* z-index: ; */
+}
+.podium-item:nth-child(2) .podium-image {
+  transform: scale(1.2);
 }
 
 .podium-rank {
