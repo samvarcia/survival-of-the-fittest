@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getVoteStats, initializeVoteStats } from '@/lib/db';
+import { getVoteStats, initializeVoteStats } from '@/lib/db-upstash';
 import { outfits } from '@/data/outfits';
 
 export async function GET() {

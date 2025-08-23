@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { submitVote, getUserVote } from '@/lib/db';
+import { submitVote, getUserVote } from '@/lib/db-upstash';
 import { isVerifiedFollower, isValidUsername, normalizeUsername } from '@/lib/utils';
 
 export async function POST(request) {

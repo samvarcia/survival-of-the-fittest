@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { approveVote, rejectVote, getPendingVotes } from '@/lib/db';
+import { approveVote, rejectVote, getPendingVotes } from '@/lib/db-upstash';
 
 // Simple admin auth (you might want to improve this for production)
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
