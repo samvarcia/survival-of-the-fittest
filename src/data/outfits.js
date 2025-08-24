@@ -21,7 +21,7 @@ export const outfits = [
   },
   {
     id: 5,
-    participantInstagram: "christinedang_",
+    participantInstagram: "christinedang_ & @mwamba.ngonyo",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Gl1F3OVvXTDEmPXk63LVKxJQqf52NZMjiSzUlO"
   },
   {
