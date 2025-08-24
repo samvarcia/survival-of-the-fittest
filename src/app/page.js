@@ -167,7 +167,8 @@ export default function HomePage() {
       {/* Vote Section Title */}
 
       <div className="vote-section-title">VOTE FOR THE BEST FIT:</div>
-        
+      <p className='must'>YOU MUST BE FOLLOWING @WHAKANDMO FOR YOUR VOTE TO COUNT</p>
+
       {/* Outfits Grid */}
       <div className="outfits-grid">
         {outfits.map((outfit) => (
