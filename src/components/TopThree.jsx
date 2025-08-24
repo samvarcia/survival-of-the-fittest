@@ -41,7 +41,7 @@ export default function TopThree({ stats, outfits }) {
 
   return (
     <div className="top-three-section">
-      <h2 className="section-title">Top 3</h2>
+      <h2 className="section-title">TOP 3</h2>
       
       <div className="podium">
         {topThree.map((item, index) => (
