@@ -348,7 +348,7 @@ body {
 
 .podium-image {
   width: 100%;
-  aspect-ratio: 3/4;
+  /* aspect-ratio: 3/4; */
   object-fit: cover;
   /* border-radius: 8px; */
   margin-bottom: 55px;
