@@ -103,7 +103,7 @@ export default function VoteModal({ outfit, onClose, onSubmit }) {
           </form>
 
           <div className="disclaimer">
-            Your vote doesn't count if you don't follow @whakandmo
+            YOUR VOTE DOESN'T COUNT IF YOU DON'T FOLLOW @WHAKANDMO
           </div>
         </div>
       </div>
