@@ -324,36 +324,37 @@ body {
   text-align: center;
   font-size: 18px;
   font-weight: 600;
-  margin-bottom: 60px;
+  margin-bottom: 80px;
   color: var(--black);
 }
 
 .podium {
   display: flex;
   justify-content: center;
-  align-items: end;
-  gap: 16px; /* Increased gap to prevent overlapping */
+  align-items: center;
+  gap: 11px;
   margin-bottom: 60px;
-  padding: 0 20px;
+  padding: 0 10px;
   max-width: 480px;
   margin-left: auto;
   margin-right: auto;
+  position: relative;
 }
 
 .podium-item {
   text-align: center;
   flex: 1;
-  max-width: 100px; /* Reduced max-width to give more space */
+  max-width: 80px;
+  position: relative;
 }
 
 .podium-image {
   width: 100%;
-  /* aspect-ratio: 3/4; */
   object-fit: cover;
-  /* border-radius: 8px; */
   margin-bottom: 55px;
   background: var(--gray);
   transition: transform 0.3s ease;
+  transform-origin: center center;
 }
 
 /* Podium ordering and scaling - fixed overlapping */
@@ -371,13 +372,13 @@ body {
 
 /* Scaling with proper z-index and positioning */
 .podium-item:nth-child(1) .podium-image {
-  transform: scale(1.4); /* Reduced from 1.4 to prevent overlap */
+  transform: scale(1.4);
   z-index: 3;
   position: relative;
 }
 
 .podium-item:nth-child(2) .podium-image {
-  transform: scale(1.1); /* Reduced from 1.2 to prevent overlap */
+  transform: scale(1.1);
   z-index: 2;
   position: relative;
 }
@@ -484,12 +485,12 @@ body {
   }
   
   .podium {
-    gap: 24px; /* Larger gap on desktop */
-    max-width: 600px; /* Match desktop container width */
+    gap: 12px;
+    max-width: 600px;
   }
   
   .podium-item {
-    max-width: 120px; /* Slightly larger on desktop */
+    max-width: 100px;
   }
   
   .top-three-section {
