@@ -457,7 +457,8 @@ body {
 }
 .must a {
   color: inherit;
-  text-decoration-color: #B80F0A;
+  text-decoration: none;
+  font-weight: bold;
 }
 /* Responsive */
 @media (min-width: 768px) {
