@@ -452,6 +452,8 @@ body {
 }
 .must{
   margin-bottom: 30px;
+  font-size: 13px;
+  text-align: center;
 }
 /* Responsive */
 @media (min-width: 768px) {
