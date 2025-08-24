@@ -13,6 +13,7 @@ export default function HomePage() {
   const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState('');
+  const [isExpired, setIsExpired] = useState(false);
 
   // Timer logic
   useEffect(() => {
@@ -30,6 +31,7 @@ export default function HomePage() {
         setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
       } else {
         setTimeLeft('00:00:00');
+        setIsExpired(true);
       }
     };
 
@@ -106,6 +108,28 @@ export default function HomePage() {
     return (
       <div className="container">
         <div className="loading">Loading...</div>
+      </div>
+    );
+  }
+
+  // Show expired state when timer hits zero
+  if (isExpired) {
+    return (
+      <div className="container">
+        <Image 
+          src="https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlcLdcXWQIFnWalKbj5yqv3GsEVpm91BixD6dk" 
+          alt="SOTF" 
+          className="logo-image"
+          width={150}
+          height={100}
+          priority
+        />
+        
+        <div className="timer">00:00:00</div>
+        
+        <div className="expired-message">
+          <h2>See you in the next</h2>
+        </div>
       </div>
     );
   }
