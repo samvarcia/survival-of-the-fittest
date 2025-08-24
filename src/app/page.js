@@ -12,6 +12,32 @@ export default function HomePage() {
   const [votedFor, setVotedFor] = useState(null);
   const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [timeLeft, setTimeLeft] = useState('');
+
+  // Timer logic
+  useEffect(() => {
+    const updateTimer = () => {
+      // End time: August 26, 2025 at noon NY time
+      const endTime = new Date('2025-08-26T12:00:00-04:00'); // EDT timezone
+      const now = new Date();
+      const difference = endTime.getTime() - now.getTime();
+
+      if (difference > 0) {
+        const hours = Math.floor(difference / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+        setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+      } else {
+        setTimeLeft('00:00:00');
+      }
+    };
+
+    updateTimer();
+    const timer = setInterval(updateTimer, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   // Load initial stats
   useEffect(() => {
@@ -95,7 +121,10 @@ export default function HomePage() {
         height={100}
         priority
       />
-      
+       {/* Timer */}
+       <div className="timer">
+        {timeLeft}
+      </div>
       <div className="intro">
         <p>
         Survival of the Fittest exceeded all expectations — 150+ contestants, incredible fashion, unforgettable energy. Now, 24 finalists remain standing. You decide who takes home $1000. Only 48 hours. You must follow @whakandmo for your vote to count. Vote now. Who will survive?

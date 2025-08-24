@@ -433,7 +433,15 @@ body {
   height: auto;
   align-self: center;
 }
-
+.timer {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--black);
+  margin: 16px 0;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 2px;
+}
 /* Responsive */
 @media (min-width: 768px) {
   .container {
