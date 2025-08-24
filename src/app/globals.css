@@ -439,7 +439,7 @@ body {
   font-weight: bold;
   color: var(--black);
   margin: 16px 0;
-  font-family: 'Courier New', monospace;
+  /* font-family: 'Courier New', monospace; */
   letter-spacing: 2px;
 }
 /* Responsive */
