@@ -186,7 +186,7 @@ body {
 
 .modal-outfit-image {
   width: 60%;
-  aspect-ratio: 3/4;
+  /* aspect-ratio: 3/4; */
   object-fit: cover;
   display: block;
 }

@@ -51,67 +51,67 @@ export const outfits = [
   },
   {
     id: 11,
-    participantInstagram: "vintage_vibes_11",
+    participantInstagram: "ekighai",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlxAvD0ijPCcUhmiMk4V3zGWaA0qupfroR1ILJ"
   },
   {
     id: 12,
-    participantInstagram: "street_style_12",
+    participantInstagram: "?",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlXBA34QWkSAK7Ugo6JLqjzpQYfZcDilmx9VIn"
   },
   {
     id: 13,
-    participantInstagram: "minimalist_mode_13",
+    participantInstagram: "z3ke_sama",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlmRI4wNDLnOXd4BwTslftVWcp9DaC5SEuIb36"
   },
   {
     id: 14,
-    participantInstagram: "bold_fashion_14",
+    participantInstagram: "lottamercii",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Gl2E7NQiMcpDihBKe1UMFJs0budo3RlqgSfHI5"
   },
   {
     id: 15,
-    participantInstagram: "classic_elegance_15",
+    participantInstagram: "okaymark0",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Glz9Ip6SrhqtUPfDR13b9dwc2T0r6l4euyZaCY"
   },
   {
     id: 16,
-    participantInstagram: "edgy_aesthetic_16",
+    participantInstagram: "?",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlNe1Q6al86sFjL7pBq1fMhwOxDtKYuZWlASIG"
   },
   {
     id: 17,
-    participantInstagram: "boho_chic_17",
+    participantInstagram: "sup3rprettyblonde",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlcSeojdQIFnWalKbj5yqv3GsEVpm91BixD6dk"
   },
   {
     id: 18,
-    participantInstagram: "luxury_looks_18",
+    participantInstagram: "rasqas",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlXt6OFG2WkSAK7Ugo6JLqjzpQYfZcDilmx9VI"
   },
   {
     id: 19,
-    participantInstagram: "casual_cool_19",
+    participantInstagram: "keysstatus",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlxGxIl3jPCcUhmiMk4V3zGWaA0qupfroR1ILJ"
   },
   {
     id: 20,
-    participantInstagram: "haute_couture_20",
+    participantInstagram: "valectron",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GllAVeo4kGR0eAmZtr5cnyHCXYQ9hua2bKVz6U"
   },
   {
     id: 21,
-    participantInstagram: "artsy_attire_21",
+    participantInstagram: "timilehinnn_",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlOVFknULZKfS9sadLroeTAbYCBIQyMj32150G"
   },
   {
     id: 22,
-    participantInstagram: "sporty_chic_22",
+    participantInstagram: "_chantellea",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlDrBuNMlU48PSwRtzvbGndWMEThYI5FCofp31"
   },
   {
     id: 23,
-    participantInstagram: "retro_revival_23",
+    participantInstagram: "hirakish_",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Glrzf4y0ltiQwnKO2l03A8mpTGL1efPC6jMzs5"
   },
   {

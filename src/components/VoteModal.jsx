@@ -31,6 +31,10 @@ export default function VoteModal({ outfit, onClose, onSubmit }) {
     }
   };
 
+  const handleImageClick = () => {
+    onClose();
+  };
+
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
       onClose();
@@ -58,7 +62,7 @@ export default function VoteModal({ outfit, onClose, onSubmit }) {
     <div className="modal-overlay" onClick={handleOverlayClick}>
       <div className="modal-content">
         {/* Outfit Image */}
-        <div className="modal-image-container">
+        <div className="modal-image-container" onClick={handleImageClick}>
           {!imageError ? (
             <img
               src={outfit.image}
@@ -77,7 +81,7 @@ export default function VoteModal({ outfit, onClose, onSubmit }) {
         {/* Content with background */}
         <div className="modal-content-wrapper">
           <div className="modal-title">
-            Vote for #{outfit.id} - @{outfit.participantInstagram}
+            Vote for @{outfit.participantInstagram}
           </div>
 
           <form onSubmit={handleSubmit}>
@@ -103,7 +107,7 @@ export default function VoteModal({ outfit, onClose, onSubmit }) {
           </form>
 
           <div className="disclaimer">
-            YOUR VOTE DOESN'T COUNT IF YOU DON'T FOLLOW @WHAKANDMO
+            Your vote doesn't count if you don't follow @whakandmo
           </div>
         </div>
       </div>
