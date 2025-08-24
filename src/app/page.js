@@ -18,8 +18,8 @@ export default function HomePage() {
   // Timer logic
   useEffect(() => {
     const updateTimer = () => {
-      // End time: August 26, 2025 at noon NY time
-      const endTime = new Date('2025-08-26T12:00:00-04:00'); // EDT timezone
+      // End time: August 26, 2025 at noon NY time (more robust timezone handling)
+      const endTime = new Date('2025-08-26T16:00:00.000Z'); // 12:00 PM EDT = 4:00 PM UTC
       const now = new Date();
       const difference = endTime.getTime() - now.getTime();
 
