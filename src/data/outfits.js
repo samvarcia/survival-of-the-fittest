@@ -119,9 +119,5 @@ export const outfits = [
     participantInstagram: "glam_goddess_24",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlmzflYbDLnOXd4BwTslftVWcp9DaC5SEuIb36"
   },
-  {
-    id: 25,
-    participantInstagram: "fashion_finale_25",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlXgEXnxWkSAK7Ugo6JLqjzpQYfZcDilmx9VIn"
-  }
+
 ];
