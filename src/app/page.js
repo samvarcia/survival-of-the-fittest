@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import OutfitCard from '@/components/OutfitCard';
 import VoteModal from '@/components/VoteModal';
 import TopThree from '@/components/TopThree';
@@ -86,14 +87,27 @@ export default function HomePage() {
   return (
     <div className="container">
       {/* Header */}
-      <img src="https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlcLdcXWQIFnWalKbj5yqv3GsEVpm91BixD6dk" alt="SOTF" className="logo-image" srcset="" />
+      <Image 
+        src="https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlcLdcXWQIFnWalKbj5yqv3GsEVpm91BixD6dk" 
+        alt="SOTF" 
+        className="logo-image"
+        width={150}
+        height={100}
+        priority
+      />
       
       <div className="intro">
         <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
         Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
         </p>
-        <img src="https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlO7hgJ0LZKfS9sadLroeTAbYCBIQyMj32150G" alt="SOTF" className="price-tag" srcset="" />
+        <Image 
+          src="https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlO7hgJ0LZKfS9sadLroeTAbYCBIQyMj32150G" 
+          alt="Price Tag" 
+          className="price-tag"
+          width={90}
+          height={90}
+        />
       </div>
 
       {/* Top 3 */}

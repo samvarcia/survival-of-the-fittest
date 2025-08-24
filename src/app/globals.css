@@ -305,7 +305,7 @@ body {
 .top-three-section {
   margin-top: auto;
   padding: 32px 0;
-  background: #E8E8E8; /* Slightly darker background for hierarchy */
+  background: var(--light-gray); /* Slightly darker background for hierarchy */
   margin-bottom: 32px;
 }
 
