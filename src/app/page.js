@@ -167,7 +167,17 @@ export default function HomePage() {
       {/* Vote Section Title */}
 
       <div className="vote-section-title">VOTE FOR THE BEST FIT:</div>
-      <p className='must'>YOU MUST BE FOLLOWING @WHAKANDMO FOR YOUR VOTE TO COUNT</p>
+      <p className='must'>
+        YOU MUST BE FOLLOWING{' '}
+        <a 
+          href="https://www.instagram.com/whakandmo/" 
+          target="_blank" 
+          rel="noopener noreferrer"
+        >
+          @WHAKANDMO
+        </a>{' '}
+        FOR YOUR VOTE TO COUNT
+      </p>
 
       {/* Outfits Grid */}
       <div className="outfits-grid">

@@ -455,6 +455,10 @@ body {
   font-size: 13px;
   text-align: center;
 }
+.must a {
+  color: inherit;
+  text-decoration-color: #B80F0A;
+}
 /* Responsive */
 @media (min-width: 768px) {
   .container {
