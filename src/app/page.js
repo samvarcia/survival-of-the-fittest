@@ -114,7 +114,7 @@ export default function HomePage() {
       <TopThree stats={stats} outfits={outfits} />
       {/* Vote Section Title */}
 
-      <div className="vote-section-title">VOTE:</div>
+      <div className="vote-section-title">VOTE FOR THE BEST FIT:</div>
         
       {/* Outfits Grid */}
       <div className="outfits-grid">
