@@ -61,7 +61,7 @@ export const outfits = [
   },
   {
     id: 13,
-    participantInstagram: "?",
+    participantInstagram: "ij30ma",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlXBA34QWkSAK7Ugo6JLqjzpQYfZcDilmx9VIn"
   },
   {
