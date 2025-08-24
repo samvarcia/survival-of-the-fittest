@@ -1,52 +1,52 @@
 export const outfits = [
   {
     id: 1,
-    participantInstagram: "participant_one",
+    participantInstagram: "an777avx",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlUlRI0zFV9df8M1rzQyJqYjBNPapmcXk7oRCF"
   },
   {
     id: 2,
-    participantInstagram: "style_guru_two",
+    participantInstagram: "isabelokoro",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlUkYQ98V9df8M1rzQyJqYjBNPapmcXk7oRCFs"
   },
   {
     id: 3,
-    participantInstagram: "fashion_rebel_3",
+    participantInstagram: "diva_gaga",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlQDuEI3MaZtXl6xUencEL3vmh9qyH7KTAkDOS"
   },
   {
     id: 4,
-    participantInstagram: "trendsetter_four",
+    participantInstagram: "?",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlAfcWBGePTxW7cio4GYsEX5OSBkwl9uCgZQb0"
   },
   {
     id: 5,
-    participantInstagram: "urban_explorer_5",
+    participantInstagram: "christinedang_",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Gl1F3OVvXTDEmPXk63LVKxJQqf52NZMjiSzUlO"
   },
   {
     id: 6,
-    participantInstagram: "chic_wanderer_6",
+    participantInstagram: "yugo.dreams",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlmHiiVJDLnOXd4BwTslftVWcp9DaC5SEuIb36"
   },
   {
     id: 7,
-    participantInstagram: "style_maverick_7",
+    participantInstagram: "?",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Glmq3iOTDLnOXd4BwTslftVWcp9DaC5SEuIb36"
   },
   {
     id: 8,
-    participantInstagram: "modern_muse_8",
+    participantInstagram: "tt.ii.tt.oo",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlhxFkFuoX0rnsBHE1WVa5vwulA2KqgdJytRoM"
   },
   {
     id: 9,
-    participantInstagram: "fashion_forward_9",
+    participantInstagram: "slesean.tv",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlDalGgQU48PSwRtzvbGndWMEThYI5FCofp31N"
   },
   {
     id: 10,
-    participantInstagram: "style_icon_10",
+    participantInstagram: "nedyse",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlaWB6PUmF32BujQ51hfqMWZPdE7cekAgVGbs9"
   },
   {
@@ -116,7 +116,7 @@ export const outfits = [
   },
   {
     id: 24,
-    participantInstagram: "glam_goddess_24",
+    participantInstagram: "k_sznn",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlY8mcBypThHMi36wVBSdPICxAvgotbQFfjsDn"
   },
 
