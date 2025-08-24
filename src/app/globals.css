@@ -43,7 +43,7 @@ body {
 }
 
 .price-tag {
-  width: 90px;
+  width: 110px;
   height: auto;
   position: relative;
   top: 0px;
@@ -56,7 +56,7 @@ body {
 .intro {
   text-align: center;
   font-size: 14px;
-  color: var(--dark-gray);
+  color: var(--black);
   margin-bottom: 32px;
   line-height: 1.4;
 }
