@@ -146,9 +146,9 @@ export default function HomePage() {
         priority
       />
        {/* Timer */}
-       <div className="timer">
+       {/* <div className="timer">
         {timeLeft}
-      </div>
+      </div> */}
       <div className="intro">
         <p>
         Survival of the Fittest exceeded all expectations — 150+ contestants, incredible fashion, unforgettable energy. Now, 26 finalists remain standing. You decide who takes home $1000. Only 48 hours. You must follow @whakandmo for your vote to count. Vote now. Who will survive?
@@ -191,7 +191,7 @@ export default function HomePage() {
         ))}
       </div> */}
 
-      <div className="vote-section-title">THANK YOU FOR PARTICIPATING</div>
+      <div className="vote-section-title">VOTING IS CLOSED</div>
 
 
       {/* Vote Modal */}
