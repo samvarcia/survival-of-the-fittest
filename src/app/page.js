@@ -128,7 +128,7 @@ export default function HomePage() {
         <div className="timer">00:00:00</div>
         
         <div className="expired-message">
-          <h2>See you in the next</h2>
+          <h2>See you soon</h2>
         </div>
       </div>
     );
