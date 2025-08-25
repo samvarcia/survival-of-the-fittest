@@ -75,7 +75,7 @@ export default function TopThree({ stats, outfits }) {
             </div>
             
             <div className="podium-votes">
-              {item.votes} votes
+              {/* {item.votes} votes */}
             </div>
           </div>
         ))}
