@@ -138,6 +138,14 @@ export default function HomePage() {
     <div className="container">
       {/* Header */}
       <Image 
+        src="https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GldECVi87IHW7YEOkeysDVqvxpcUjiwC1ol93a" 
+        alt="SOTF" 
+        className="vic-image"
+        width={400}
+        height={100}
+        priority
+      />
+      <Image 
         src="https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlcLdcXWQIFnWalKbj5yqv3GsEVpm91BixD6dk" 
         alt="SOTF" 
         className="logo-image"
@@ -146,9 +154,10 @@ export default function HomePage() {
         priority
       />
        {/* Timer */}
-       {/* <div className="timer">
-        {timeLeft}
-      </div> */}
+       <div className="timer">
+        {/* {timeLeft} */}
+        05:30:00
+      </div>
       <div className="intro">
         <p>
         Survival of the Fittest exceeded all expectations — 150+ contestants, incredible fashion, unforgettable energy. Now, 26 finalists remain standing. You decide who takes home $1000. Only 48 hours. You must follow @whakandmo for your vote to count. Vote now. Who will survive?

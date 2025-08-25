@@ -356,7 +356,15 @@ body {
   transition: transform 0.3s ease;
   transform-origin: center center;
 }
-
+.vic-image{
+  position: absolute;
+  width: 100%;
+  height: auto;
+  rotate: 312deg;
+  top: 300px;
+  left: -10px;
+  z-index: 40;
+}
 /* Podium ordering and scaling - fixed overlapping */
 .podium-item:nth-child(1) {
   order: 2; /* First place in center */
