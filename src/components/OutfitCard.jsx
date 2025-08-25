@@ -4,7 +4,7 @@ export default function OutfitCard({ outfit, onVote, hasVoted }) {
   const [imageError, setImageError] = useState(false);
 
   const handleClick = () => {
-    onVote(outfit);
+    // onVote(outfit);
   };
 
   const handleImageError = () => {

@@ -358,11 +358,11 @@ body {
 }
 .vic-image{
   position: absolute;
-  width: 100%;
+  width: 130%;
   height: auto;
-  rotate: 312deg;
+  rotate: 300deg;
   top: 300px;
-  left: -10px;
+  left: -50px;
   z-index: 40;
 }
 /* Podium ordering and scaling - fixed overlapping */

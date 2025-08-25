@@ -189,7 +189,7 @@ export default function HomePage() {
       </p>
 
       {/* Outfits Grid */}
-      {/* <div className="outfits-grid">
+      <div className="outfits-grid">
         {outfits.map((outfit) => (
           <OutfitCard
             key={outfit.id}
@@ -198,7 +198,7 @@ export default function HomePage() {
             hasVoted={votedFor === outfit.id}
           />
         ))}
-      </div> */}
+      </div>
 
       <div className="vote-section-title">VOTING IS CLOSED</div>
 
