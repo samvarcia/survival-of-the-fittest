@@ -13,13 +13,12 @@ export default function HomePage() {
   const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState('');
-  const [isExpired, setIsExpired] = useState(false);
 
-  // Timer logic
+  // Timer logic — countdown only; voting stays open
   useEffect(() => {
     const updateTimer = () => {
-      // End time: August 26, 2025 at noon NY time (more robust timezone handling)
-      const endTime = new Date('2025-08-25T16:00:00.000Z'); // 12:00 PM EDT = 4:00 PM UTC
+      // End time: August 14, 2026 at noon NY time
+      const endTime = new Date('2026-08-14T16:00:00.000Z'); // 12:00 PM EDT = 4:00 PM UTC
       const now = new Date();
       const difference = endTime.getTime() - now.getTime();
 
@@ -31,7 +30,6 @@ export default function HomePage() {
         setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
       } else {
         setTimeLeft('00:00:00');
-        setIsExpired(true);
       }
     };
 
@@ -52,7 +50,9 @@ export default function HomePage() {
 
   const loadStats = async () => {
     try {
-      const response = await fetch('/api/stats');
+      const response = await fetch('/api/stats', {
+        signal: AbortSignal.timeout(4000),
+      });
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
@@ -112,39 +112,17 @@ export default function HomePage() {
     );
   }
 
-  // Show expired state when timer hits zero
-  if (isExpired) {
-    return (
-      <div className="container">
-        <Image 
-          src="https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlcLdcXWQIFnWalKbj5yqv3GsEVpm91BixD6dk" 
-          alt="SOTF" 
-          className="logo-image"
-          width={150}
-          height={100}
-          priority
-        />
-        
-        <div className="timer">00:00:00</div>
-        
-        <div className="expired-message">
-          <h2>See you soon</h2>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="container">
       {/* Header */}
-      <Image 
+      {/* <Image 
         src="https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GldECVi87IHW7YEOkeysDVqvxpcUjiwC1ol93a" 
         alt="SOTF" 
         className="vic-image"
         width={400}
         height={100}
         priority
-      />
+      />*/}
       <Image 
         src="https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlcLdcXWQIFnWalKbj5yqv3GsEVpm91BixD6dk" 
         alt="SOTF" 
@@ -155,8 +133,7 @@ export default function HomePage() {
       />
        {/* Timer */}
        <div className="timer">
-        {/* {timeLeft} */}
-        05:30:00
+        {timeLeft}
       </div>
       <div className="intro">
         <p>
@@ -199,9 +176,6 @@ export default function HomePage() {
           />
         ))}
       </div>
-
-      <div className="vote-section-title">VOTING IS CLOSED</div>
-
 
       {/* Vote Modal */}
       {selectedOutfit && (

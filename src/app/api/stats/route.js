@@ -2,8 +2,26 @@ import { NextResponse } from 'next/server';
 import { getVoteStats, initializeVoteStats } from '@/lib/db-upstash';
 import { outfits } from '@/data/outfits';
 
+function emptyStats() {
+  return outfits.map((outfit) => ({
+    outfitId: outfit.id,
+    votes: 0,
+    percentage: 0,
+  }));
+}
+
 export async function GET() {
   try {
+    if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+      return NextResponse.json({
+        success: true,
+        stats: emptyStats(),
+        totalVotes: 0,
+        lastUpdated: Date.now(),
+        warning: 'Redis not configured',
+      });
+    }
+
     // Initialize stats if they don't exist
     const outfitIds = outfits.map(outfit => outfit.id);
     let stats = await getVoteStats();
@@ -41,9 +59,12 @@ export async function GET() {
   } catch (error) {
     console.error('Stats API error:', error);
     
-    return NextResponse.json(
-      { success: false, error: 'Failed to get statistics' },
-      { status: 500 }
-    );
+    return NextResponse.json({
+      success: true,
+      stats: emptyStats(),
+      totalVotes: 0,
+      lastUpdated: Date.now(),
+      warning: 'Failed to get statistics',
+    });
   }
 }
