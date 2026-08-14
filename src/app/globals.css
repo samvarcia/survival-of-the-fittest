@@ -547,6 +547,17 @@ html.theme-main-page,
 body.theme-main-page {
   background-color: #FFEDC5;
   -webkit-tap-highlight-color: transparent;
+  min-height: 100%;
+}
+
+html.theme-main-page {
+  height: 100%;
+  overflow-x: clip;
+}
+
+body.theme-main-page {
+  min-height: 100dvh;
+  overflow-x: clip;
 }
 
 .theme-main {

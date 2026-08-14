@@ -109,9 +109,13 @@ export default function HomePage() {
   useEffect(() => {
     document.documentElement.classList.add('theme-main-page');
     document.body.classList.add('theme-main-page');
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+    const previousTheme = themeMeta?.getAttribute('content');
+    themeMeta?.setAttribute('content', '#FFEDC5');
     return () => {
       document.documentElement.classList.remove('theme-main-page');
       document.body.classList.remove('theme-main-page');
+      if (previousTheme) themeMeta?.setAttribute('content', previousTheme);
     };
   }, []);
 
