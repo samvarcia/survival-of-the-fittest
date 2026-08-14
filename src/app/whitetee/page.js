@@ -2,13 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import OutfitCard from '@/components/OutfitCard';
 import VoteModal from '@/components/VoteModal';
 import TopThree from '@/components/TopThree';
-import Header from '@/components/Header';
-import VoteWheel from '@/components/VoteWheel';
 import { outfits } from '@/data/outfits';
 
-export default function HomePage() {
+export default function WhiteTeePage() {
   const [selectedOutfit, setSelectedOutfit] = useState(null);
   const [votedFor, setVotedFor] = useState(null);
   const [stats, setStats] = useState([]);
@@ -105,18 +104,9 @@ export default function HomePage() {
     setSelectedOutfit(null);
   };
 
-  useEffect(() => {
-    document.documentElement.classList.add('theme-main-page');
-    document.body.classList.add('theme-main-page');
-    return () => {
-      document.documentElement.classList.remove('theme-main-page');
-      document.body.classList.remove('theme-main-page');
-    };
-  }, []);
-
   if (loading) {
     return (
-      <div className="theme-main">
+      <div className="whitetee-page">
         <div className="container">
           <div className="loading">Loading...</div>
         </div>
@@ -125,41 +115,70 @@ export default function HomePage() {
   }
 
   return (
-    <div className="theme-main">
-      <Header />
+    <div className="whitetee-page">
     <div className="container">
-      {/* Timer */}
+      {/* Header */}
+      {/* <Image 
+        src="https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GldECVi87IHW7YEOkeysDVqvxpcUjiwC1ol93a" 
+        alt="SOTF" 
+        className="vic-image"
+        width={400}
+        height={100}
+        priority
+      />*/}
+      <Image 
+        src="https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlcLdcXWQIFnWalKbj5yqv3GsEVpm91BixD6dk" 
+        alt="SOTF" 
+        className="logo-image"
+        width={150}
+        height={100}
+        priority
+      />
+       {/* Timer */}
        <div className="timer">
         {timeLeft}
       </div>
+      <div className="intro">
+        <p>
+        Survival of the Fittest exceeded all expectations — 150+ contestants, incredible fashion, unforgettable energy. Now, 26 finalists remain standing. You decide who takes home $1000. Only 48 hours. You must follow @whakandmo for your vote to count. Vote now. Who will survive?
+        </p>
+        <Image 
+          src="https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlO7hgJ0LZKfS9sadLroeTAbYCBIQyMj32150G" 
+          alt="Price Tag" 
+          className="price-tag"
+          width={90}
+          height={90}
+        />
+      </div>
+
+      {/* Top 3 */}
+      <TopThree stats={stats} outfits={outfits} />
+      {/* Vote Section Title */}
 
       <div className="vote-section-title">VOTE FOR THE BEST FIT:</div>
       <p className='must'>
         YOU MUST BE FOLLOWING{' '}
         <a 
-          href="https://www.instagram.com/survivalofthefittttest/" 
+          href="https://www.instagram.com/whakandmo/" 
           target="_blank" 
           rel="noopener noreferrer"
         >
-          @SURVIVALOFTHEFITTTEST
+          @WHAKANDMO
         </a>{' '}
         FOR YOUR VOTE TO COUNT
       </p>
 
-      <VoteWheel
-        outfits={outfits}
-        onVote={handleVote}
-        votedFor={votedFor}
-      />
-
-      <div className="intro">
-        <p>
-        Survival of the Fittest exceeded all expectations — 150+ contestants, incredible fashion, unforgettable energy. Now, 26 finalists remain standing. You decide who takes home $1000. Only 48 hours. You must follow @survivalofthefittttest for your vote to count. Vote now. Who will survive?
-        </p>
+      {/* Outfits Grid */}
+      <div className="outfits-grid">
+        {outfits.map((outfit) => (
+          <OutfitCard
+            key={outfit.id}
+            outfit={outfit}
+            onVote={handleVote}
+            hasVoted={votedFor === outfit.id}
+          />
+        ))}
       </div>
-
-      {/* Top 3 */}
-      <TopThree stats={stats} outfits={outfits} />
 
       {/* Vote Modal */}
       {selectedOutfit && (
@@ -167,6 +186,7 @@ export default function HomePage() {
           outfit={selectedOutfit}
           onClose={closeModal}
           onSubmit={handleVoteSubmit}
+          followHandle="@whakandmo"
         />
       )}
     </div>

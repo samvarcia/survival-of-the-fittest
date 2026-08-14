@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function VoteModal({ outfit, onClose, onSubmit }) {
+export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@survivalofthefittttest' }) {
   const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -107,7 +107,7 @@ export default function VoteModal({ outfit, onClose, onSubmit }) {
           </form>
 
           <div className="disclaimer">
-            YOUR VOTE DOESN'T COUNT IF YOU DON'T FOLLOW @WHAKANDMO
+            YOUR VOTE DOESN'T COUNT IF YOU DON'T FOLLOW {followHandle.toUpperCase()}
           </div>
         </div>
       </div>

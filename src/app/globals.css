@@ -25,10 +25,17 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  font-family: inherit;
   background-color: var(--white);
   color: var(--black);
   line-height: 1.6;
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
 }
 
 /* Main Layout */
@@ -506,5 +513,231 @@ body {
   
   .top-three-section {
     padding: 32px 40px; /* Match desktop container padding */
+  }
+}
+
+/* Main homepage theme — does not apply to /whitetee */
+html.theme-main-page,
+body.theme-main-page {
+  background-color: #FFEDC5;
+}
+
+.theme-main {
+  min-height: 100vh;
+  background-color: #FFEDC5;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255, 215, 100, 0.35), transparent 60%);
+}
+
+.theme-main .container {
+  max-width: 480px;
+  padding-top: 0;
+}
+
+.theme-main .sotf-header {
+  width: 100vw;
+  max-width: 100vw;
+  overflow: hidden;
+}
+
+.theme-main .sotf-header img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.theme-main .logo-image {
+  filter: drop-shadow(0 6px 16px rgba(120, 70, 0, 0.18));
+}
+
+.theme-main .timer {
+  display: inline-flex;
+  align-self: center;
+  gap: 4px;
+  margin-top: 0;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  box-shadow: 0 4px 18px rgba(140, 80, 0, 0.08);
+  color: #9B1C16;
+}
+
+.theme-main .intro {
+  color: #2a2118;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.theme-main .price-tag {
+  filter: drop-shadow(0 8px 14px rgba(140, 80, 0, 0.2));
+}
+
+.theme-main .top-three-section {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.03));
+  border-block: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.theme-main .section-title,
+.theme-main .vote-section-title {
+  letter-spacing: 1.5px;
+  font-weight: 700;
+}
+
+.theme-main .must {
+  color: #4a3c2a;
+}
+
+.theme-main .must a {
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 1px;
+}
+
+.theme-main .vote-stories-shell {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-bottom: 36px;
+}
+
+.theme-main .vote-stories {
+  overflow: visible;
+  padding: 8px 0 16px;
+}
+
+.theme-main .vote-stories .swiper-slide {
+  width: 72vw;
+  max-width: 340px;
+  height: auto;
+}
+
+.theme-main .vote-story-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0;
+  border: none;
+  border-radius: 22px;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  color: #1c1610;
+  transform: scale(0.92);
+  opacity: 0.72;
+  transition: transform 0.35s ease, opacity 0.35s ease;
+  box-shadow: 0 12px 28px rgba(90, 50, 0, 0.14);
+}
+
+.theme-main .swiper-slide-active .vote-story-card {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.theme-main .vote-story-card.voted {
+  outline: 2px solid #1c1610;
+  outline-offset: -2px;
+}
+
+.theme-main .vote-story-image {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  background: rgba(28, 22, 16, 0.08);
+}
+
+.theme-main .vote-story-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px 16px;
+}
+
+.theme-main .vote-story-handle {
+  min-width: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.theme-main .vote-story-cta {
+  flex-shrink: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+}
+
+@media (min-width: 768px) {
+  .theme-main .vote-stories .swiper-slide {
+    width: 320px;
+  }
+
+  .theme-main .vote-story-handle,
+  .theme-main .vote-story-cta {
+    font-size: 18px;
+  }
+}
+
+.theme-main .outfit-card {
+  background: #fff8e8;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 22px rgba(90, 50, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.theme-main .outfit-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 28px rgba(90, 50, 0, 0.16);
+}
+
+.theme-main .outfit-card:active {
+  transform: scale(0.98);
+}
+
+.theme-main .outfit-handle {
+  color: #3d3226;
+  background: #fff3d4;
+}
+
+.theme-main .outfit-image {
+  background: #f3e0b0;
+}
+
+.theme-main .modal-overlay {
+  background: rgba(40, 24, 8, 0.45);
+  backdrop-filter: blur(4px);
+}
+
+.theme-main .modal-content-wrapper,
+.theme-main .success-message {
+  background: #FFEDC5;
+}
+
+.theme-main .form-input {
+  background: #fffaf0;
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+.theme-main .form-input:focus {
+  border-color: #9B1C16;
+}
+
+.theme-main .vote-button {
+  background: #1a120c;
+  border-radius: 10px;
+}
+
+.theme-main .disclaimer {
+  color: #5c4a36;
+}
+
+@media (min-width: 768px) {
+  .theme-main .container {
+    max-width: 600px;
+    padding-top: 0;
   }
 }
