@@ -1,16 +1,21 @@
 import { useState } from 'react';
+import SmoothImage from '@/components/SmoothImage';
 
 export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@survivalofthefittttest' }) {
   const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleName = followHandle.replace(/^@/, '');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!username.trim()) return;
 
     setIsLoading(true);
+    setError('');
 
     try {
       const result = await onSubmit(outfit.id, username.trim());
@@ -21,18 +26,13 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
           onClose();
         }, 2000);
       } else {
-        // Handle error (you might want to show an error message)
-        console.error('Vote failed:', result.error);
+        setError(result.error || 'Vote failed');
         setIsLoading(false);
       }
-    } catch (error) {
-      console.error('Vote error:', error);
+    } catch (err) {
+      setError('Network error');
       setIsLoading(false);
     }
-  };
-
-  const handleImageClick = () => {
-    onClose();
   };
 
   const handleOverlayClick = (e) => {
@@ -41,16 +41,12 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
     }
   };
 
-  const handleImageError = () => {
-    setImageError(true);
-  };
-
   if (showSuccess) {
     return (
       <div className="modal-overlay" onClick={handleOverlayClick}>
-        <div className="modal-content">
+        <div className="modal-content vote-modal-content">
           <div className="success-message">
-            <div className="success-title">Thanks for voting!</div>
+            <div className="success-title">Thanks for voting</div>
             <div className="success-subtitle">Your vote has been recorded</div>
           </div>
         </div>
@@ -60,28 +56,32 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
 
   return (
     <div className="modal-overlay" onClick={handleOverlayClick}>
-      <div className="modal-content">
-        {/* Outfit Image */}
-        <div className="modal-image-container" onClick={handleImageClick}>
+      <div className="modal-content vote-modal-content">
+        <div className="vote-modal-grabber" />
+        <button type="button" className="vote-modal-close" onClick={onClose} aria-label="Close">
+          ×
+        </button>
+
+        <div className="modal-image-container">
           {!imageError ? (
-            <img
+            <SmoothImage
               src={outfit.image}
               alt={`Outfit by @${outfit.participantInstagram}`}
               className="modal-outfit-image"
-              onError={handleImageError}
+              priority
+              onError={() => setImageError(true)}
             />
           ) : (
             <div className="modal-outfit-image modal-image-fallback">
               @{outfit.participantInstagram}
             </div>
           )}
-          {/* <div className="modal-outfit-id">#{outfit.id}</div> */}
         </div>
 
-        {/* Content with background */}
         <div className="modal-content-wrapper">
+          <p className="vote-modal-kicker">Vote for</p>
           <div className="modal-title">
-            Vote for @{outfit.participantInstagram}
+            @{outfit.participantInstagram}
           </div>
 
           <form onSubmit={handleSubmit}>
@@ -89,25 +89,37 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
               <input
                 type="text"
                 className="form-input"
-                placeholder="Your IG Handle"
+                placeholder="Your IG handle"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 disabled={isLoading}
                 autoFocus
+                autoCapitalize="none"
+                autoCorrect="off"
               />
             </div>
+
+            {error && <div className="vote-modal-error">{error}</div>}
 
             <button
               type="submit"
               className="vote-button"
               disabled={isLoading || !username.trim()}
             >
-              {isLoading ? 'Voting...' : 'Vote'}
+              {isLoading ? 'Voting…' : 'Vote'}
             </button>
           </form>
 
           <div className="disclaimer">
-            YOUR VOTE DOESN'T COUNT IF YOU DON'T FOLLOW {followHandle.toUpperCase()}
+            Follow{' '}
+            <a
+              href={`https://www.instagram.com/${handleName}/`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              @{handleName}
+            </a>{' '}
+            for your vote to count
           </div>
         </div>
       </div>

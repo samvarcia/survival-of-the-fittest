@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import VoteModal from '@/components/VoteModal';
-import TopThree from '@/components/TopThree';
 import Header from '@/components/Header';
 import VoteWheel from '@/components/VoteWheel';
+import RankingModal from '@/components/RankingModal';
 import { outfits } from '@/data/outfits';
 
 export default function HomePage() {
@@ -14,12 +14,13 @@ export default function HomePage() {
   const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState('');
+  const [showRanking, setShowRanking] = useState(false);
 
   // Timer logic — countdown only; voting stays open
   useEffect(() => {
     const updateTimer = () => {
-      // End time: August 14, 2026 at noon NY time
-      const endTime = new Date('2026-08-14T16:00:00.000Z'); // 12:00 PM EDT = 4:00 PM UTC
+      // End time: August 22, 2026 at 00:00 NY time
+      const endTime = new Date('2026-08-22T04:00:00.000Z'); // 12:00 AM EDT = 4:00 AM UTC
       const now = new Date();
       const difference = endTime.getTime() - now.getTime();
 
@@ -28,9 +29,9 @@ export default function HomePage() {
         const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
-        setTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+        setTimeLeft(`${hours.toString().padStart(3, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
       } else {
-        setTimeLeft('00:00:00');
+        setTimeLeft('000:00:00');
       }
     };
 
@@ -129,9 +130,7 @@ export default function HomePage() {
       <Header />
     <div className="container">
       {/* Timer */}
-       <div className="timer">
-        {timeLeft}
-      </div>
+
 
       <div className="vote-section-title">VOTE FOR THE BEST FIT:</div>
       <p className='must'>
@@ -146,6 +145,10 @@ export default function HomePage() {
         FOR YOUR VOTE TO COUNT
       </p>
 
+      <div className="timer">
+        {timeLeft}
+      </div>
+
       <VoteWheel
         outfits={outfits}
         onVote={handleVote}
@@ -158,8 +161,17 @@ export default function HomePage() {
         </p>
       </div>
 
-      {/* Top 3 */}
-      <TopThree stats={stats} outfits={outfits} />
+      <button type="button" className="ranking-button" onClick={() => setShowRanking(true)}>
+        🏆 RANKING
+      </button>
+
+      {showRanking && (
+        <RankingModal
+          stats={stats}
+          outfits={outfits}
+          onClose={() => setShowRanking(false)}
+        />
+      )}
 
       {/* Vote Modal */}
       {selectedOutfit && (
