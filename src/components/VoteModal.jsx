@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import SmoothImage from '@/components/SmoothImage';
 import useAnimatedClose from '@/hooks/useAnimatedClose';
+import { VOTE_PACKS } from '@/data/votePacks';
 
 export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@survivalofthefittttest' }) {
   const [username, setUsername] = useState('');
@@ -8,16 +9,35 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
   const [showSuccess, setShowSuccess] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [error, setError] = useState('');
+  const [selectedPack, setSelectedPack] = useState(null);
   const { closing, requestClose } = useAnimatedClose(onClose);
 
   const handleName = followHandle.replace(/^@/, '');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!username.trim()) return;
+    if (!username.trim()) {
+      if (selectedPack) setError('Enter your IG handle');
+      return;
+    }
 
     setIsLoading(true);
     setError('');
+
+    if (selectedPack) {
+      if (!selectedPack.stripeUrl) {
+        setError('Payment link coming soon');
+        setIsLoading(false);
+        return;
+      }
+
+      const url = new URL(selectedPack.stripeUrl);
+      url.searchParams.set('outfitId', String(outfit.id));
+      url.searchParams.set('username', username.trim());
+      url.searchParams.set('votes', String(selectedPack.votes));
+      window.location.href = url.toString();
+      return;
+    }
 
     try {
       const result = await onSubmit(outfit.id, username.trim());
@@ -101,14 +121,32 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
               />
             </div>
 
+            <div className="vote-packs">
+              {VOTE_PACKS.map((pack) => {
+                const active = selectedPack?.votes === pack.votes;
+                return (
+                  <button
+                    key={pack.votes}
+                    type="button"
+                    className={`vote-pack ${active ? 'is-active' : ''}`}
+                    onClick={() => setSelectedPack(active ? null : pack)}
+                    disabled={isLoading}
+                  >
+                    <span className="vote-pack-count">{pack.votes}</span>
+                    <span className="vote-pack-label">votes</span>
+                  </button>
+                );
+              })}
+            </div>
+
             {error && <div className="vote-modal-error">{error}</div>}
 
             <button
               type="submit"
               className="vote-button"
-              disabled={isLoading || !username.trim()}
+              disabled={isLoading || (!username.trim() && !selectedPack)}
             >
-              {isLoading ? 'Voting…' : 'Vote'}
+              {isLoading ? (selectedPack ? 'Redirecting…' : 'Voting…') : selectedPack ? 'Pay' : 'Vote'}
             </button>
           </form>
 
