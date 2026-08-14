@@ -1,6 +1,7 @@
 'use client';
 
 import SmoothImage from '@/components/SmoothImage';
+import useAnimatedClose from '@/hooks/useAnimatedClose';
 
 export default function RankingModal({ stats, outfits, onClose }) {
   const ranked = outfits
@@ -15,9 +16,10 @@ export default function RankingModal({ stats, outfits, onClose }) {
     .sort((a, b) => b.votes - a.votes);
 
   const topThree = ranked.slice(0, 3);
+  const { closing, requestClose } = useAnimatedClose(onClose);
 
   const handleOverlayClick = (e) => {
-    if (e.target === e.currentTarget) onClose();
+    if (e.target === e.currentTarget) requestClose();
   };
 
   const rankLabel = (index) => {
@@ -28,11 +30,11 @@ export default function RankingModal({ stats, outfits, onClose }) {
   };
 
   return (
-    <div className="modal-overlay ranking-overlay" onClick={handleOverlayClick}>
+    <div className={`modal-overlay ranking-overlay${closing ? ' is-closing' : ''}`} onClick={handleOverlayClick}>
       <div className="ranking-modal">
         <div className="ranking-modal-header">
           <h2>🏆 RANKING</h2>
-          <button type="button" className="ranking-close" onClick={onClose} aria-label="Close">
+          <button type="button" className="ranking-close" onClick={requestClose} aria-label="Close">
             ×
           </button>
         </div>

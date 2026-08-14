@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import SmoothImage from '@/components/SmoothImage';
+import useAnimatedClose from '@/hooks/useAnimatedClose';
 
 export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@survivalofthefittttest' }) {
   const [username, setUsername] = useState('');
@@ -7,6 +8,7 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
   const [showSuccess, setShowSuccess] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [error, setError] = useState('');
+  const { closing, requestClose } = useAnimatedClose(onClose);
 
   const handleName = followHandle.replace(/^@/, '');
 
@@ -23,8 +25,8 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
       if (result.success) {
         setShowSuccess(true);
         setTimeout(() => {
-          onClose();
-        }, 2000);
+          requestClose();
+        }, 1600);
       } else {
         setError(result.error || 'Vote failed');
         setIsLoading(false);
@@ -37,13 +39,13 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
 
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
-      onClose();
+      requestClose();
     }
   };
 
   if (showSuccess) {
     return (
-      <div className="modal-overlay" onClick={handleOverlayClick}>
+      <div className={`modal-overlay${closing ? ' is-closing' : ''}`} onClick={handleOverlayClick}>
         <div className="modal-content vote-modal-content">
           <div className="success-message">
             <div className="success-title">Thanks for voting</div>
@@ -55,10 +57,10 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
   }
 
   return (
-    <div className="modal-overlay" onClick={handleOverlayClick}>
+    <div className={`modal-overlay${closing ? ' is-closing' : ''}`} onClick={handleOverlayClick}>
       <div className="modal-content vote-modal-content">
         <div className="vote-modal-grabber" />
-        <button type="button" className="vote-modal-close" onClick={onClose} aria-label="Close">
+        <button type="button" className="vote-modal-close" onClick={requestClose} aria-label="Close">
           ×
         </button>
 

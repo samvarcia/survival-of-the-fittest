@@ -29,8 +29,12 @@ export default function VoteWheel({ outfits, onVote, votedFor }) {
         centeredSlides
         slidesPerView="auto"
         spaceBetween={14}
-        speed={420}
-        resistanceRatio={0.65}
+        speed={560}
+        cssEasing="cubic-bezier(0.22, 1, 0.36, 1)"
+        resistanceRatio={0.85}
+        threshold={6}
+        longSwipesRatio={0.25}
+        followFinger
         slideToClickedSlide
         watchSlidesProgress
         onSlideChange={(swiper) => {
