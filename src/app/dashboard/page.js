@@ -14,6 +14,31 @@ function formatVoteTime(timestamp) {
   });
 }
 
+function CollapsibleSection({ id, title, meta, badge, defaultOpen = false, open, onToggle, children }) {
+  const isOpen = open ?? defaultOpen;
+
+  return (
+    <section className="dash-section">
+      <button
+        type="button"
+        className="dash-section-header"
+        onClick={() => onToggle(id)}
+        aria-expanded={isOpen}
+      >
+        <div>
+          <div className="dash-section-title">
+            {title}
+            {badge != null && ` (${badge})`}
+          </div>
+          {meta && <div className="dash-section-meta">{meta}</div>}
+        </div>
+        <span className={`dash-section-chevron${isOpen ? ' is-open' : ''}`}>▼</span>
+      </button>
+      {isOpen && <div className="dash-section-body">{children}</div>}
+    </section>
+  );
+}
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState([]);
   const [pendingVotes, setPendingVotes] = useState([]);
@@ -24,15 +49,33 @@ export default function AdminDashboard() {
   const [processingVotes, setProcessingVotes] = useState(new Set());
   const [authError, setAuthError] = useState('');
   const [voteFilter, setVoteFilter] = useState('all');
+  const [openSections, setOpenSections] = useState(() => new Set(['pending', 'results']));
+  const [expandedOutfits, setExpandedOutfits] = useState(() => new Set());
+
+  const toggleSection = (id) => {
+    setOpenSections((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleOutfit = (outfitId) => {
+    setExpandedOutfits((prev) => {
+      const next = new Set(prev);
+      if (next.has(outfitId)) next.delete(outfitId);
+      else next.add(outfitId);
+      return next;
+    });
+  };
 
   const loadStats = useCallback(async () => {
     try {
       const response = await fetch('/api/stats');
       if (response.ok) {
         const data = await response.json();
-        if (data.success) {
-          setStats(data.stats);
-        }
+        if (data.success) setStats(data.stats);
       }
     } catch (error) {
       console.error('Failed to load stats:', error);
@@ -42,9 +85,7 @@ export default function AdminDashboard() {
   const loadVotes = useCallback(async () => {
     try {
       const response = await fetch('/api/approve', {
-        headers: {
-          Authorization: `Bearer ${adminPassword}`,
-        },
+        headers: { Authorization: `Bearer ${adminPassword}` },
       });
 
       if (response.ok) {
@@ -71,6 +112,12 @@ export default function AdminDashboard() {
       return () => clearInterval(interval);
     }
   }, [isAuthenticated, loadData]);
+
+  useEffect(() => {
+    if (pendingVotes.length > 0) {
+      setOpenSections((prev) => new Set([...prev, 'pending']));
+    }
+  }, [pendingVotes.length]);
 
   const handleAuth = (e) => {
     e.preventDefault();
@@ -100,16 +147,14 @@ export default function AdminDashboard() {
         body: JSON.stringify({ action, voteId }),
       });
 
-      if (response.ok) {
-        await loadData();
-      }
+      if (response.ok) await loadData();
     } catch (error) {
       console.error('Failed to process vote:', error);
     } finally {
       setProcessingVotes((prev) => {
-        const newSet = new Set(prev);
-        newSet.delete(voteId);
-        return newSet;
+        const next = new Set(prev);
+        next.delete(voteId);
+        return next;
       });
     }
   };
@@ -145,7 +190,6 @@ export default function AdminDashboard() {
     return (
       <div className="container">
         <div className="logo">Admin Dashboard</div>
-
         <form onSubmit={handleAuth} style={{ maxWidth: '300px', margin: '40px auto' }}>
           <div className="form-group">
             <input
@@ -157,14 +201,7 @@ export default function AdminDashboard() {
               required
             />
             {authError && (
-              <div
-                style={{
-                  color: 'red',
-                  fontSize: '12px',
-                  marginTop: '8px',
-                  textAlign: 'center',
-                }}
-              >
+              <div style={{ color: 'red', fontSize: '12px', marginTop: '8px', textAlign: 'center' }}>
                 {authError}
               </div>
             )}
@@ -189,256 +226,176 @@ export default function AdminDashboard() {
     <div className="container">
       <div className="logo">Admin Dashboard</div>
 
-      <div
-        style={{
-          background: 'var(--gray)',
-          padding: '20px',
-          borderRadius: '8px',
-          marginBottom: '32px',
-          textAlign: 'center',
-        }}
-      >
-        <div style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '8px' }}>
-          {totalVotes}
+      <div className="dash-summary">
+        <div className="dash-summary-stat">
+          <div className="dash-summary-value">{totalVotes}</div>
+          <div className="dash-summary-label">Approved</div>
         </div>
-        <div style={{ color: 'var(--dark-gray)' }}>
-          Approved Votes • {pendingVotes.length} Pending • {approvedVotes.length} in log
+        <div className="dash-summary-stat">
+          <div className="dash-summary-value">{pendingVotes.length}</div>
+          <div className="dash-summary-label">Pending</div>
+        </div>
+        <div className="dash-summary-stat">
+          <div className="dash-summary-value">{allVotes.length}</div>
+          <div className="dash-summary-label">Total</div>
         </div>
       </div>
 
-      {/* Vote log */}
-      <div style={{ marginBottom: '40px' }}>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: '16px',
-            flexWrap: 'wrap',
-            gap: '12px',
-          }}
+      {pendingVotes.length > 0 && (
+        <CollapsibleSection
+          id="pending"
+          title="Pending approval"
+          badge={pendingVotes.length}
+          meta="Tap to approve or reject"
+          open={openSections.has('pending')}
+          onToggle={toggleSection}
         >
-          <h2 style={{ fontSize: '18px', fontWeight: '600', margin: 0 }}>
-            Vote Log ({filteredVotes.length})
-          </h2>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            {['all', 'pending', 'approved'].map((filter) => (
-              <button
-                key={filter}
-                type="button"
-                onClick={() => setVoteFilter(filter)}
-                style={{
-                  padding: '6px 12px',
-                  border: '1px solid var(--light-gray)',
-                  borderRadius: '999px',
-                  background: voteFilter === filter ? 'var(--yellow)' : 'var(--white)',
-                  fontSize: '12px',
-                  fontWeight: voteFilter === filter ? '600' : '400',
-                  cursor: 'pointer',
-                  textTransform: 'capitalize',
-                }}
-              >
-                {filter}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {filteredVotes.length === 0 ? (
-          <div
-            style={{
-              background: 'var(--white)',
-              border: '1px solid var(--light-gray)',
-              borderRadius: '8px',
-              padding: '24px',
-              textAlign: 'center',
-              color: 'var(--dark-gray)',
-              fontSize: '14px',
-            }}
-          >
-            No votes yet
-          </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {filteredVotes.map((vote) => {
-              const isProcessing = processingVotes.has(vote.id);
-              const participant = getParticipant(vote.outfitId);
-
-              return (
-                <div
-                  key={vote.id}
-                  style={{
-                    background: 'var(--white)',
-                    border: '1px solid var(--light-gray)',
-                    borderRadius: '8px',
-                    padding: '14px 16px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    gap: '12px',
-                    flexWrap: 'wrap',
-                  }}
-                >
-                  <div style={{ flex: 1, minWidth: '200px' }}>
-                    <div style={{ fontWeight: '500', marginBottom: '4px' }}>
-                      @{vote.username}
-                      <span style={{ color: 'var(--dark-gray)', fontWeight: '400' }}> → </span>
-                      @{participant}
-                    </div>
-                    <div style={{ fontSize: '12px', color: 'var(--dark-gray)' }}>
-                      {formatVoteTime(vote.timestamp)}
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span
-                      style={{
-                        fontSize: '11px',
-                        fontWeight: '600',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.04em',
-                        padding: '4px 8px',
-                        borderRadius: '999px',
-                        background:
-                          vote.status === 'pending' ? 'rgba(255, 193, 7, 0.2)' : 'rgba(76, 175, 80, 0.15)',
-                        color: vote.status === 'pending' ? '#856404' : '#2e7d32',
-                      }}
-                    >
-                      {vote.status}
-                    </span>
-
-                    {vote.status === 'pending' && (
-                      <>
-                        <button
-                          onClick={() => handleVoteAction(vote.id, 'approve')}
-                          disabled={isProcessing}
-                          style={{
-                            padding: '6px 12px',
-                            background: 'var(--yellow)',
-                            color: 'var(--black)',
-                            border: 'none',
-                            borderRadius: '4px',
-                            fontSize: '12px',
-                            cursor: isProcessing ? 'not-allowed' : 'pointer',
-                            opacity: isProcessing ? 0.5 : 1,
-                          }}
-                        >
-                          {isProcessing ? '...' : 'Approve'}
-                        </button>
-
-                        <button
-                          onClick={() => handleVoteAction(vote.id, 'reject')}
-                          disabled={isProcessing}
-                          style={{
-                            padding: '6px 12px',
-                            background: 'var(--light-gray)',
-                            color: 'var(--dark-gray)',
-                            border: 'none',
-                            borderRadius: '4px',
-                            fontSize: '12px',
-                            cursor: isProcessing ? 'not-allowed' : 'pointer',
-                            opacity: isProcessing ? 0.5 : 1,
-                          }}
-                        >
-                          {isProcessing ? '...' : 'Reject'}
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* Live Results */}
-      <div>
-        <h2 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px' }}>
-          Live Results
-        </h2>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {sortedStats.map((stat, index) => {
-            const outfit = outfits.find((o) => o.id === stat.outfitId);
-            const percentage = totalVotes > 0 ? Math.round((stat.votes / totalVotes) * 100) : 0;
-            const votersForOutfit = sortedApproved
-              .filter((v) => v.outfitId === stat.outfitId)
-              .map((v) => `@${v.username}`);
+          {sortedPending.map((vote) => {
+            const isProcessing = processingVotes.has(vote.id);
+            const participant = getParticipant(vote.outfitId);
 
             return (
-              <div
-                key={stat.outfitId}
-                style={{
-                  background: 'var(--white)',
-                  border: '1px solid var(--light-gray)',
-                  borderRadius: '8px',
-                  padding: '16px',
-                  position: 'relative',
-                  overflow: 'hidden',
-                }}
-              >
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    height: '100%',
-                    width: `${percentage}%`,
-                    background: index === 0 ? 'var(--yellow)' : 'var(--gray)',
-                    opacity: 0.2,
-                    transition: 'width 0.3s ease',
-                  }}
-                />
-
-                <div
-                  style={{
-                    position: 'relative',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                    gap: '16px',
-                  }}
-                >
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: '600', marginBottom: '4px' }}>
-                      #{index + 1} @{outfit?.participantInstagram}
-                    </div>
-                    <div style={{ fontSize: '12px', color: 'var(--dark-gray)', marginBottom: '8px' }}>
-                      {outfit?.title}
-                    </div>
-                    {votersForOutfit.length > 0 && (
-                      <div style={{ fontSize: '12px', color: 'var(--dark-gray)', lineHeight: 1.5 }}>
-                        {votersForOutfit.join(', ')}
-                      </div>
-                    )}
+              <div key={vote.id} className="dash-row">
+                <div className="dash-row-main">
+                  <div className="dash-row-title">
+                    @{vote.username} → @{participant}
                   </div>
-
-                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <div style={{ fontSize: '18px', fontWeight: 'bold' }}>{stat.votes}</div>
-                    <div style={{ fontSize: '12px', color: 'var(--dark-gray)' }}>{percentage}%</div>
-                  </div>
+                  <div className="dash-row-sub">{formatVoteTime(vote.timestamp)}</div>
+                </div>
+                <div className="dash-actions">
+                  <button
+                    type="button"
+                    className="dash-btn dash-btn-approve"
+                    onClick={() => handleVoteAction(vote.id, 'approve')}
+                    disabled={isProcessing}
+                  >
+                    {isProcessing ? '…' : 'Approve'}
+                  </button>
+                  <button
+                    type="button"
+                    className="dash-btn dash-btn-reject"
+                    onClick={() => handleVoteAction(vote.id, 'reject')}
+                    disabled={isProcessing}
+                  >
+                    Reject
+                  </button>
                 </div>
               </div>
             );
           })}
-        </div>
-      </div>
+        </CollapsibleSection>
+      )}
 
-      <div style={{ marginTop: '40px', textAlign: 'center' }}>
-        <Link
-          href="/"
-          style={{
-            display: 'inline-block',
-            padding: '12px 24px',
-            background: 'var(--gray)',
-            color: 'var(--black)',
-            textDecoration: 'none',
-            borderRadius: '8px',
-            fontSize: '14px',
-            fontWeight: '500',
-          }}
-        >
+      <CollapsibleSection
+        id="results"
+        title="Live results"
+        badge={outfits.length}
+        meta="Tap a contestant to see voters"
+        open={openSections.has('results')}
+        onToggle={toggleSection}
+      >
+        {sortedStats.map((stat, index) => {
+          const outfit = outfits.find((o) => o.id === stat.outfitId);
+          const percentage = totalVotes > 0 ? Math.round((stat.votes / totalVotes) * 100) : 0;
+          const votersForOutfit = sortedApproved
+            .filter((v) => v.outfitId === stat.outfitId)
+            .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+          const isExpanded = expandedOutfits.has(stat.outfitId);
+
+          return (
+            <div key={stat.outfitId}>
+              <button
+                type="button"
+                className={`dash-result-header${index === 0 && stat.votes > 0 ? ' is-leader' : ''}`}
+                onClick={() => toggleOutfit(stat.outfitId)}
+                aria-expanded={isExpanded}
+              >
+                <span className="dash-result-rank">#{index + 1}</span>
+                <div className="dash-result-info">
+                  <div className="dash-result-name">@{outfit?.participantInstagram}</div>
+                  <div className="dash-result-sub">
+                    {stat.votes === 0
+                      ? 'No votes yet'
+                      : `${stat.votes} vote${stat.votes === 1 ? '' : 's'} · tap to ${isExpanded ? 'hide' : 'show'}`}
+                  </div>
+                </div>
+                <div className="dash-result-count">
+                  <div className="dash-result-votes">{stat.votes}</div>
+                  <div className="dash-result-pct">{percentage}%</div>
+                </div>
+                <span className={`dash-section-chevron${isExpanded ? ' is-open' : ''}`}>▼</span>
+              </button>
+
+              {isExpanded && votersForOutfit.length > 0 && (
+                <div className="dash-voter-list">
+                  {votersForOutfit.map((vote) => (
+                    <div key={vote.id} className="dash-voter-item">
+                      <strong>@{vote.username}</strong>
+                      <span>{formatVoteTime(vote.timestamp)}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {isExpanded && votersForOutfit.length === 0 && (
+                <div className="dash-empty" style={{ padding: '8px 14px 12px 42px' }}>
+                  No approved voters yet
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </CollapsibleSection>
+
+      <CollapsibleSection
+        id="log"
+        title="Full vote log"
+        badge={filteredVotes.length}
+        meta="All votes, newest first"
+        open={openSections.has('log')}
+        onToggle={toggleSection}
+      >
+        <div className="dash-filters">
+          {['all', 'pending', 'approved'].map((filter) => (
+            <button
+              key={filter}
+              type="button"
+              className={`dash-filter-btn${voteFilter === filter ? ' is-active' : ''}`}
+              onClick={() => setVoteFilter(filter)}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
+
+        {filteredVotes.length === 0 ? (
+          <div className="dash-empty">No votes yet</div>
+        ) : (
+          filteredVotes.map((vote) => {
+            const participant = getParticipant(vote.outfitId);
+            return (
+              <div key={vote.id} className="dash-row">
+                <div className="dash-row-main">
+                  <div className="dash-row-title">
+                    @{vote.username} → @{participant}
+                  </div>
+                  <div className="dash-row-sub">{formatVoteTime(vote.timestamp)}</div>
+                </div>
+                <span
+                  className={`dash-badge ${
+                    vote.status === 'pending' ? 'dash-badge-pending' : 'dash-badge-approved'
+                  }`}
+                >
+                  {vote.status}
+                </span>
+              </div>
+            );
+          })
+        )}
+      </CollapsibleSection>
+
+      <div className="dash-back-wrap">
+        <Link href="/" className="dash-back-link">
           ← Back to Voting
         </Link>
       </div>
