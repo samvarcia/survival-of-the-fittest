@@ -1245,15 +1245,17 @@ body.theme-main-page {
   margin-top: 2px;
 }
 
-.dash-section-chevron {
+.dash-chevron {
   flex-shrink: 0;
-  font-size: 12px;
-  color: var(--dark-gray);
-  transition: transform 0.2s ease;
+  width: 18px;
+  height: 18px;
+  color: #9a9a9a;
+  transition: transform 0.2s ease, color 0.2s ease;
 }
 
-.dash-section-chevron.is-open {
+.dash-chevron.is-open {
   transform: rotate(180deg);
+  color: #555;
 }
 
 .dash-section-body {

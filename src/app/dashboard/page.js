@@ -14,6 +14,27 @@ function formatVoteTime(timestamp) {
   });
 }
 
+function ChevronIcon({ open = false }) {
+  return (
+    <svg
+      className={`dash-chevron${open ? ' is-open' : ''}`}
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M6.5 9.5 12 15l5.5-5.5"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function CollapsibleSection({ id, title, meta, badge, defaultOpen = false, open, onToggle, children }) {
   const isOpen = open ?? defaultOpen;
 
@@ -32,7 +53,7 @@ function CollapsibleSection({ id, title, meta, badge, defaultOpen = false, open,
           </div>
           {meta && <div className="dash-section-meta">{meta}</div>}
         </div>
-        <span className={`dash-section-chevron${isOpen ? ' is-open' : ''}`}>▼</span>
+        <ChevronIcon open={isOpen} />
       </button>
       {isOpen && <div className="dash-section-body">{children}</div>}
     </section>
@@ -49,7 +70,7 @@ export default function AdminDashboard() {
   const [processingVotes, setProcessingVotes] = useState(new Set());
   const [authError, setAuthError] = useState('');
   const [voteFilter, setVoteFilter] = useState('all');
-  const [openSections, setOpenSections] = useState(() => new Set(['pending', 'results']));
+  const [openSections, setOpenSections] = useState(() => new Set(['pending', 'log', 'results']));
   const [expandedOutfits, setExpandedOutfits] = useState(() => new Set());
 
   const toggleSection = (id) => {
@@ -241,12 +262,57 @@ export default function AdminDashboard() {
         </div>
       </div>
 
+      <CollapsibleSection
+        id="log"
+        title="Vote log"
+        badge={filteredVotes.length}
+        open={openSections.has('log')}
+        onToggle={toggleSection}
+      >
+        <div className="dash-filters">
+          {['all', 'pending', 'approved'].map((filter) => (
+            <button
+              key={filter}
+              type="button"
+              className={`dash-filter-btn${voteFilter === filter ? ' is-active' : ''}`}
+              onClick={() => setVoteFilter(filter)}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
+
+        {filteredVotes.length === 0 ? (
+          <div className="dash-empty">No votes yet</div>
+        ) : (
+          filteredVotes.map((vote) => {
+            const participant = getParticipant(vote.outfitId);
+            return (
+              <div key={vote.id} className="dash-row">
+                <div className="dash-row-main">
+                  <div className="dash-row-title">
+                    @{vote.username} → @{participant}
+                  </div>
+                  <div className="dash-row-sub">{formatVoteTime(vote.timestamp)}</div>
+                </div>
+                <span
+                  className={`dash-badge ${
+                    vote.status === 'pending' ? 'dash-badge-pending' : 'dash-badge-approved'
+                  }`}
+                >
+                  {vote.status}
+                </span>
+              </div>
+            );
+          })
+        )}
+      </CollapsibleSection>
+
       {pendingVotes.length > 0 && (
         <CollapsibleSection
           id="pending"
           title="Pending approval"
           badge={pendingVotes.length}
-          meta="Tap to approve or reject"
           open={openSections.has('pending')}
           onToggle={toggleSection}
         >
@@ -290,7 +356,6 @@ export default function AdminDashboard() {
         id="results"
         title="Live results"
         badge={outfits.length}
-        meta="Tap a contestant to see voters"
         open={openSections.has('results')}
         onToggle={toggleSection}
       >
@@ -313,17 +378,12 @@ export default function AdminDashboard() {
                 <span className="dash-result-rank">#{index + 1}</span>
                 <div className="dash-result-info">
                   <div className="dash-result-name">@{outfit?.participantInstagram}</div>
-                  <div className="dash-result-sub">
-                    {stat.votes === 0
-                      ? 'No votes yet'
-                      : `${stat.votes} vote${stat.votes === 1 ? '' : 's'} · tap to ${isExpanded ? 'hide' : 'show'}`}
-                  </div>
                 </div>
                 <div className="dash-result-count">
                   <div className="dash-result-votes">{stat.votes}</div>
                   <div className="dash-result-pct">{percentage}%</div>
                 </div>
-                <span className={`dash-section-chevron${isExpanded ? ' is-open' : ''}`}>▼</span>
+                <ChevronIcon open={isExpanded} />
               </button>
 
               {isExpanded && votersForOutfit.length > 0 && (
@@ -336,62 +396,9 @@ export default function AdminDashboard() {
                   ))}
                 </div>
               )}
-
-              {isExpanded && votersForOutfit.length === 0 && (
-                <div className="dash-empty" style={{ padding: '8px 14px 12px 42px' }}>
-                  No approved voters yet
-                </div>
-              )}
             </div>
           );
         })}
-      </CollapsibleSection>
-
-      <CollapsibleSection
-        id="log"
-        title="Full vote log"
-        badge={filteredVotes.length}
-        meta="All votes, newest first"
-        open={openSections.has('log')}
-        onToggle={toggleSection}
-      >
-        <div className="dash-filters">
-          {['all', 'pending', 'approved'].map((filter) => (
-            <button
-              key={filter}
-              type="button"
-              className={`dash-filter-btn${voteFilter === filter ? ' is-active' : ''}`}
-              onClick={() => setVoteFilter(filter)}
-            >
-              {filter}
-            </button>
-          ))}
-        </div>
-
-        {filteredVotes.length === 0 ? (
-          <div className="dash-empty">No votes yet</div>
-        ) : (
-          filteredVotes.map((vote) => {
-            const participant = getParticipant(vote.outfitId);
-            return (
-              <div key={vote.id} className="dash-row">
-                <div className="dash-row-main">
-                  <div className="dash-row-title">
-                    @{vote.username} → @{participant}
-                  </div>
-                  <div className="dash-row-sub">{formatVoteTime(vote.timestamp)}</div>
-                </div>
-                <span
-                  className={`dash-badge ${
-                    vote.status === 'pending' ? 'dash-badge-pending' : 'dash-badge-approved'
-                  }`}
-                >
-                  {vote.status}
-                </span>
-              </div>
-            );
-          })
-        )}
       </CollapsibleSection>
 
       <div className="dash-back-wrap">
