@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@marsidev/react-turnstile": "^1.6.0",
     "@upstash/redis": "^1.35.3",
     "next": "15.5.9",
     "papaparse": "^5.5.3",

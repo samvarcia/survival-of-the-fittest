@@ -71,7 +71,7 @@ export default function WhiteTeePage() {
     setSelectedOutfit(outfit);
   };
 
-  const handleVoteSubmit = async (outfitId, username) => {
+  const handleVoteSubmit = async (outfitId, username, captchaToken) => {
     try {
       const response = await fetch('/api/vote', {
         method: 'POST',
@@ -81,6 +81,7 @@ export default function WhiteTeePage() {
         body: JSON.stringify({
           outfitId,
           username,
+          captchaToken,
         }),
       });
 

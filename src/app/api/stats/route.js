@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getVoteStats, initializeVoteStats } from '@/lib/db-upstash';
+import { isRedisConfigured } from '@/lib/redis-config';
 import { outfits } from '@/data/outfits';
 
 function emptyStats() {
@@ -12,7 +13,7 @@ function emptyStats() {
 
 export async function GET() {
   try {
-    if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+    if (!isRedisConfigured()) {
       return NextResponse.json({
         success: true,
         stats: emptyStats(),

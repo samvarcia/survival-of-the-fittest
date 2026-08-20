@@ -973,6 +973,13 @@ body.theme-main-page {
   color: #9B1C16;
 }
 
+.theme-main .turnstile-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 4px 0 16px;
+  min-height: 65px;
+}
+
 .theme-main .success-message {
   background: #FFEDC5;
   padding: 56px 28px;

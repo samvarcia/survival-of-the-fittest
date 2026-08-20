@@ -1,7 +1,7 @@
-// Complete rewrite - Final version to fix all Redis issues
 import { Redis } from '@upstash/redis';
+import { createRedisClient } from '@/lib/redis-config';
 
-const redis = Redis.fromEnv();
+const redis = createRedisClient(Redis);
 
 // Clean key prefixes to avoid conflicts
 const VOTES_PREFIX = 'approved_vote:';
@@ -44,10 +44,9 @@ export async function initializeVoteStats(outfitIds) {
   }
 }
 
-// Submit a vote
-export async function submitVote(outfitId, username, isVerifiedFollower) {
+// Submit a vote — always pending until admin approval
+export async function submitVote(outfitId, username) {
   try {
-    // Check if user already voted
     const existingVote = await getUserVote(username);
     if (existingVote) {
       throw new Error('User has already voted');
@@ -59,34 +58,12 @@ export async function submitVote(outfitId, username, isVerifiedFollower) {
       outfitId,
       username,
       timestamp: Date.now(),
-      approved: isVerifiedFollower,
-      verified: isVerifiedFollower
+      approved: false,
+      verified: false,
     };
 
-    console.log(`Submitting vote for ${username}, isVerified: ${isVerifiedFollower}`);
-
-    if (isVerifiedFollower) {
-      // Add to approved votes
-      console.log('Adding to approved votes');
-      const key = `${VOTES_PREFIX}${voteId}`;
-      await redis.set(key, voteData);
-      await updateVoteStats(outfitId, 1);
-      console.log('Approved vote added successfully: true');
-    } else {
-      // Add to pending votes
-      console.log('Adding to pending votes');
-      const key = `${PENDING_PREFIX}${voteId}`;
-      await redis.set(key, voteData);
-      
-      // Verify it was saved
-      const verification = await redis.get(key);
-      const success = !!verification;
-      console.log(`Pending vote added successfully: ${success}`);
-      
-      if (success) {
-        console.log('Vote data saved:', voteData);
-      }
-    }
+    const key = `${PENDING_PREFIX}${voteId}`;
+    await redis.set(key, voteData);
 
     return voteData;
   } catch (error) {

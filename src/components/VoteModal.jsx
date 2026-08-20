@@ -1,7 +1,11 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { Turnstile } from '@marsidev/react-turnstile';
 import SmoothImage from '@/components/SmoothImage';
 import useAnimatedClose from '@/hooks/useAnimatedClose';
 import { VOTE_PACKS } from '@/data/votePacks';
+
+const TURNSTILE_SITE_KEY =
+  process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
 
 export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@survivalofthefittttest' }) {
   const [username, setUsername] = useState('');
@@ -10,14 +14,26 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
   const [imageError, setImageError] = useState(false);
   const [error, setError] = useState('');
   const [selectedPack, setSelectedPack] = useState(null);
+  const [captchaToken, setCaptchaToken] = useState('');
+  const turnstileRef = useRef(null);
   const { closing, requestClose } = useAnimatedClose(onClose);
 
   const handleName = followHandle.replace(/^@/, '');
+
+  const resetCaptcha = () => {
+    setCaptchaToken('');
+    turnstileRef.current?.reset();
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!username.trim()) {
       if (selectedPack) setError('Enter your IG handle');
+      return;
+    }
+
+    if (!captchaToken) {
+      setError('Complete the captcha');
       return;
     }
 
@@ -40,19 +56,21 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
     }
 
     try {
-      const result = await onSubmit(outfit.id, username.trim());
-      
+      const result = await onSubmit(outfit.id, username.trim(), captchaToken);
+
       if (result.success) {
         setShowSuccess(true);
         setTimeout(() => {
           requestClose();
-        }, 1600);
+        }, 2200);
       } else {
         setError(result.error || 'Vote failed');
+        resetCaptcha();
         setIsLoading(false);
       }
-    } catch (err) {
+    } catch {
       setError('Network error');
+      resetCaptcha();
       setIsLoading(false);
     }
   };
@@ -68,8 +86,10 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
       <div className={`modal-overlay${closing ? ' is-closing' : ''}`} onClick={handleOverlayClick}>
         <div className="modal-content vote-modal-content">
           <div className="success-message">
-            <div className="success-title">Thanks for voting</div>
-            <div className="success-subtitle">Your vote has been recorded</div>
+            <div className="success-title">Vote submitted</div>
+            <div className="success-subtitle">
+              Pending review — we&apos;ll approve once you follow @{handleName}
+            </div>
           </div>
         </div>
       </div>
@@ -139,12 +159,23 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
               })}
             </div>
 
+            <div className="turnstile-wrap">
+              <Turnstile
+                ref={turnstileRef}
+                siteKey={TURNSTILE_SITE_KEY}
+                onSuccess={setCaptchaToken}
+                onExpire={() => setCaptchaToken('')}
+                onError={() => setCaptchaToken('')}
+                options={{ theme: 'light', size: 'normal' }}
+              />
+            </div>
+
             {error && <div className="vote-modal-error">{error}</div>}
 
             <button
               type="submit"
               className="vote-button"
-              disabled={isLoading || (!username.trim() && !selectedPack)}
+              disabled={isLoading || (!username.trim() && !selectedPack) || !captchaToken}
             >
               {isLoading ? (selectedPack ? 'Redirecting…' : 'Voting…') : selectedPack ? 'Pay' : 'Vote'}
             </button>
@@ -159,7 +190,7 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
             >
               @{handleName}
             </a>{' '}
-            for your vote to count
+            — all votes are manually approved
           </div>
         </div>
       </div>

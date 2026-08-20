@@ -1,15 +1,34 @@
 import { NextResponse } from 'next/server';
 import { submitVote, getUserVote } from '@/lib/db-upstash';
-import { isVerifiedFollower, isValidUsername, normalizeUsername } from '@/lib/utils';
+import { isValidUsername, normalizeUsername } from '@/lib/utils';
+import { verifyTurnstile } from '@/lib/turnstile';
 
 export async function POST(request) {
   try {
-    const { outfitId, username } = await request.json();
+    const { outfitId, username, captchaToken } = await request.json();
 
-    // Validation
     if (!outfitId || !username) {
       return NextResponse.json(
         { success: false, error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
+    if (!captchaToken) {
+      return NextResponse.json(
+        { success: false, error: 'Captcha verification required' },
+        { status: 400 }
+      );
+    }
+
+    const remoteIp =
+      request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+      request.headers.get('x-real-ip');
+
+    const captchaValid = await verifyTurnstile(captchaToken, remoteIp);
+    if (!captchaValid) {
+      return NextResponse.json(
+        { success: false, error: 'Captcha verification failed' },
         { status: 400 }
       );
     }
@@ -23,7 +42,6 @@ export async function POST(request) {
 
     const normalizedUsername = normalizeUsername(username);
 
-    // Check if user has already voted
     const existingVote = await getUserVote(normalizedUsername);
     if (existingVote) {
       return NextResponse.json(
@@ -32,21 +50,16 @@ export async function POST(request) {
       );
     }
 
-    // Check if user is a verified follower
-    const isFollower = isVerifiedFollower(normalizedUsername);
-
-    // Submit vote
-    const voteData = await submitVote(outfitId, normalizedUsername, isFollower);
+    const voteData = await submitVote(outfitId, normalizedUsername);
 
     return NextResponse.json({
       success: true,
       vote: voteData,
-      message: isFollower ? 'Vote recorded!' : 'Vote pending approval'
+      message: 'Vote submitted for approval',
     });
-
   } catch (error) {
     console.error('Vote API error:', error);
-    
+
     return NextResponse.json(
       { success: false, error: error.message || 'Failed to submit vote' },
       { status: 500 }
@@ -72,12 +85,11 @@ export async function GET(request) {
     return NextResponse.json({
       success: true,
       hasVoted: !!userVote,
-      vote: userVote
+      vote: userVote,
     });
-
   } catch (error) {
     console.error('Get vote API error:', error);
-    
+
     return NextResponse.json(
       { success: false, error: 'Failed to get vote status' },
       { status: 500 }
