@@ -593,6 +593,11 @@ body.theme-main-page {
     display: contents;
   }
 
+  .theme-main .main-page-lead .timer {
+    display: flex;
+    margin-inline: auto;
+  }
+
   .main-page-carousel {
     order: 3;
   }
