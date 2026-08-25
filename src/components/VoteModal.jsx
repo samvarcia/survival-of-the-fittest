@@ -4,8 +4,11 @@ import SmoothImage from '@/components/SmoothImage';
 import useAnimatedClose from '@/hooks/useAnimatedClose';
 import { VOTE_PACKS } from '@/data/votePacks';
 
-const TURNSTILE_SITE_KEY =
-  process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+
+const SUCCESS_DISPLAY_MS = 5500;
+
+const FREE_PACK = VOTE_PACKS.find((pack) => pack.price === 0) || VOTE_PACKS[0];
 
 export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@survivalofthefittttest' }) {
   const [username, setUsername] = useState('');
@@ -13,12 +16,13 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
   const [showSuccess, setShowSuccess] = useState(false);
   const [imageError, setImageError] = useState(false);
   const [error, setError] = useState('');
-  const [selectedPack, setSelectedPack] = useState(null);
+  const [selectedPack, setSelectedPack] = useState(FREE_PACK);
   const [captchaToken, setCaptchaToken] = useState('');
   const turnstileRef = useRef(null);
   const { closing, requestClose } = useAnimatedClose(onClose);
 
   const handleName = followHandle.replace(/^@/, '');
+  const isPaid = selectedPack?.price > 0;
 
   const resetCaptcha = () => {
     setCaptchaToken('');
@@ -28,7 +32,7 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!username.trim()) {
-      if (selectedPack) setError('Enter your IG handle');
+      setError('Enter your IG handle');
       return;
     }
 
@@ -40,7 +44,7 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
     setIsLoading(true);
     setError('');
 
-    if (selectedPack) {
+    if (isPaid) {
       if (!selectedPack.stripeUrl) {
         setError('Payment link coming soon');
         setIsLoading(false);
@@ -62,7 +66,7 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
         setShowSuccess(true);
         setTimeout(() => {
           requestClose();
-        }, 2200);
+        }, SUCCESS_DISPLAY_MS);
       } else {
         setError(result.error || 'Vote failed');
         resetCaptcha();
@@ -86,10 +90,20 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
       <div className={`modal-overlay${closing ? ' is-closing' : ''}`} onClick={handleOverlayClick}>
         <div className="modal-content vote-modal-content">
           <div className="success-message">
-            <div className="success-title">Vote submitted</div>
-            <div className="success-subtitle">
-              Pending review — we&apos;ll approve once you follow @{handleName}
-            </div>
+            <div className="success-badge">Pending approval</div>
+            <div className="success-title">Your vote was received</div>
+            <p className="success-body">
+              Every vote is reviewed by hand. Yours will only be approved if you follow{' '}
+              <a
+                href={`https://www.instagram.com/${handleName}/`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                @{handleName}
+              </a>
+              .
+            </p>
+            <p className="success-note">Follow now so your vote counts.</p>
           </div>
         </div>
       </div>
@@ -141,6 +155,7 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
               />
             </div>
 
+            <p className="vote-packs-heading">Choose your votes</p>
             <div className="vote-packs">
               {VOTE_PACKS.map((pack) => {
                 const active = selectedPack?.votes === pack.votes;
@@ -149,25 +164,32 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
                     key={pack.votes}
                     type="button"
                     className={`vote-pack ${active ? 'is-active' : ''}`}
-                    onClick={() => setSelectedPack(active ? null : pack)}
+                    onClick={() => setSelectedPack(pack)}
                     disabled={isLoading}
                   >
                     <span className="vote-pack-count">{pack.votes}</span>
-                    <span className="vote-pack-label">votes</span>
+                    <span className="vote-pack-label">
+                      {pack.votes === 1 ? 'vote' : 'votes'}
+                    </span>
+                    <span className="vote-pack-price">{pack.label}</span>
                   </button>
                 );
               })}
             </div>
 
             <div className="turnstile-wrap">
-              <Turnstile
-                ref={turnstileRef}
-                siteKey={TURNSTILE_SITE_KEY}
-                onSuccess={setCaptchaToken}
-                onExpire={() => setCaptchaToken('')}
-                onError={() => setCaptchaToken('')}
-                options={{ theme: 'light', size: 'normal' }}
-              />
+              {TURNSTILE_SITE_KEY ? (
+                <Turnstile
+                  ref={turnstileRef}
+                  siteKey={TURNSTILE_SITE_KEY}
+                  onSuccess={setCaptchaToken}
+                  onExpire={() => setCaptchaToken('')}
+                  onError={() => setCaptchaToken('')}
+                  options={{ theme: 'light', size: 'normal', action: 'vote' }}
+                />
+              ) : (
+                <div className="vote-modal-error">Captcha not configured</div>
+              )}
             </div>
 
             {error && <div className="vote-modal-error">{error}</div>}
@@ -175,14 +197,20 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
             <button
               type="submit"
               className="vote-button"
-              disabled={isLoading || (!username.trim() && !selectedPack) || !captchaToken}
+              disabled={isLoading || !username.trim() || !captchaToken}
             >
-              {isLoading ? (selectedPack ? 'Redirecting…' : 'Voting…') : selectedPack ? 'Pay' : 'Vote'}
+              {isLoading
+                ? isPaid
+                  ? 'Redirecting…'
+                  : 'Voting…'
+                : isPaid
+                  ? `Pay ${selectedPack.label} · ${selectedPack.votes} votes`
+                  : 'Cast 1 free vote'}
             </button>
           </form>
 
           <div className="disclaimer">
-            Follow{' '}
+            You must follow{' '}
             <a
               href={`https://www.instagram.com/${handleName}/`}
               target="_blank"
@@ -190,7 +218,7 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
             >
               @{handleName}
             </a>{' '}
-            — all votes are manually approved
+            for your vote to count
           </div>
         </div>
       </div>

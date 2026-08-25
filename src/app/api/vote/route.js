@@ -2,9 +2,17 @@ import { NextResponse } from 'next/server';
 import { submitVote, getUserVote } from '@/lib/db-upstash';
 import { isValidUsername, normalizeUsername } from '@/lib/utils';
 import { verifyTurnstile } from '@/lib/turnstile';
+import { isRedisConfigured } from '@/lib/redis-config';
 
 export async function POST(request) {
   try {
+    if (!isRedisConfigured()) {
+      return NextResponse.json(
+        { success: false, error: 'Voting database not configured' },
+        { status: 503 }
+      );
+    }
+
     const { outfitId, username, captchaToken } = await request.json();
 
     if (!outfitId || !username) {
@@ -14,22 +22,16 @@ export async function POST(request) {
       );
     }
 
-    if (!captchaToken) {
-      return NextResponse.json(
-        { success: false, error: 'Captcha verification required' },
-        { status: 400 }
-      );
-    }
-
     const remoteIp =
       request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-      request.headers.get('x-real-ip');
+      request.headers.get('x-real-ip') ||
+      undefined;
 
     const captchaValid = await verifyTurnstile(captchaToken, remoteIp);
     if (!captchaValid) {
       return NextResponse.json(
         { success: false, error: 'Captcha verification failed' },
-        { status: 400 }
+        { status: 403 }
       );
     }
 
