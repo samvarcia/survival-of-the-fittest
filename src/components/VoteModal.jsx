@@ -21,19 +21,8 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
   const [turnstileSiteKey, setTurnstileSiteKey] = useState(BUILD_TIME_SITE_KEY);
   const [turnstileConfigLoading, setTurnstileConfigLoading] = useState(!BUILD_TIME_SITE_KEY);
   const [turnstileLoadError, setTurnstileLoadError] = useState(false);
-  const [turnstileCompact, setTurnstileCompact] = useState(false);
   const turnstileRef = useRef(null);
   const { closing, requestClose } = useAnimatedClose(onClose);
-
-  useEffect(() => {
-    const updateSize = () => {
-      setTurnstileCompact(window.innerWidth < 480);
-    };
-
-    updateSize();
-    window.addEventListener('resize', updateSize);
-    return () => window.removeEventListener('resize', updateSize);
-  }, []);
 
   useEffect(() => {
     if (BUILD_TIME_SITE_KEY) {
@@ -234,7 +223,6 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
                 <div className="turnstile-loading">Loading captcha…</div>
               ) : turnstileSiteKey ? (
                 <Turnstile
-                  key={`${turnstileSiteKey}-${turnstileCompact ? 'compact' : 'normal'}`}
                   ref={turnstileRef}
                   siteKey={turnstileSiteKey}
                   onSuccess={setCaptchaToken}
@@ -248,7 +236,7 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
                   }}
                   options={{
                     theme: 'light',
-                    size: turnstileCompact ? 'compact' : 'normal',
+                    size: 'flexible',
                     action: 'vote',
                   }}
                 />

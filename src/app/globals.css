@@ -1037,18 +1037,27 @@ body.theme-main-page {
 
 .theme-main .turnstile-wrap {
   display: flex;
-  justify-content: center;
+  justify-content: stretch;
   align-items: center;
   margin: 4px 0 16px;
-  min-height: 65px;
   width: 100%;
-  overflow: visible;
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
+  min-height: 65px;
+  max-height: 65px;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.theme-main .turnstile-wrap > div {
+  width: 100%;
 }
 
 .theme-main .turnstile-wrap iframe {
-  max-width: 100%;
+  display: block;
+  width: 100% !important;
+  min-width: 100%;
+  height: 65px !important;
+  min-height: 65px;
+  max-height: 65px;
 }
 
 .theme-main .turnstile-loading {
