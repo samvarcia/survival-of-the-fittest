@@ -572,6 +572,42 @@ body.theme-main-page {
   padding-top: 0;
 }
 
+.main-page-layout {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 20px 96px;
+  box-sizing: border-box;
+}
+
+.theme-main .main-page-layout .sotf-header {
+  width: 100vw;
+  max-width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+
+@media (max-width: 767px) {
+  .main-page-sidebar {
+    display: contents;
+  }
+
+  .main-page-carousel {
+    order: 3;
+  }
+
+  .main-page-foot {
+    order: 4;
+  }
+}
+
+.main-page-lead,
+.main-page-foot,
+.main-page-sidebar {
+  width: 100%;
+}
+
 .theme-main .sotf-header {
   width: 100vw;
   max-width: 100vw;
@@ -752,16 +788,6 @@ body.theme-main-page {
   letter-spacing: -0.02em;
   line-height: 1.2;
   text-align: center;
-}
-
-@media (min-width: 768px) {
-  .theme-main .vote-stories .swiper-slide {
-    width: 320px;
-  }
-
-  .theme-main .vote-story-handle {
-    font-size: 18px;
-  }
 }
 
 .theme-main .outfit-card {
@@ -1236,13 +1262,269 @@ body.theme-main-page {
 }
 
 @media (min-width: 768px) {
-  .theme-main .container {
-    max-width: 600px;
-    padding-top: 0;
+  html.theme-main-page,
+  body.theme-main-page {
+    overflow: hidden;
+    height: 100%;
+  }
+
+  .theme-main {
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+  }
+
+  .main-page-layout {
+    display: grid;
+    grid-template-columns: minmax(300px, 380px) minmax(0, 1fr);
+    grid-template-areas: "sidebar carousel";
+    gap: 0 32px;
+    align-items: stretch;
+    width: 100%;
+    max-width: 1180px;
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0 auto;
+    padding: 14px 40px 18px;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .main-page-sidebar {
+    grid-area: sidebar;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .theme-main .main-page-layout .sotf-header {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    flex-shrink: 0;
+  }
+
+  .theme-main .sotf-header img {
+    width: 100%;
+    max-height: clamp(64px, 12vh, 108px);
+    height: auto;
+    object-fit: contain;
+    object-position: left top;
+  }
+
+  .main-page-lead {
+    flex: 0 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 0;
+  }
+
+  .main-page-carousel {
+    grid-area: carousel;
+    min-height: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .main-page-foot {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 0;
+  }
+
+  .theme-main .vote-section-title {
+    font-size: 17px;
+    margin-bottom: 0;
+    letter-spacing: 0.06em;
+    text-align: left;
+  }
+
+  .theme-main .must {
+    max-width: none;
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.45;
+    text-align: left;
+  }
+
+  .theme-main .timer {
+    align-self: flex-start;
+    min-width: 190px;
+    width: 190px;
+    font-size: 22px;
+    padding: 8px 20px;
+  }
+
+  .theme-main .vote-stories-shell {
+    width: 100%;
+    margin: 0;
+    height: 100%;
+    max-height: 100%;
+  }
+
+  .theme-main .vote-stories {
+    height: 100%;
+    padding: 0;
+  }
+
+  .theme-main .vote-stories .swiper,
+  .theme-main .vote-stories .swiper-wrapper {
+    height: 100%;
+  }
+
+  .theme-main .vote-stories .swiper-slide {
+    width: min(34vh, 280px);
+    height: auto;
+    display: flex;
+    align-items: center;
+  }
+
+  .theme-main .vote-story-card {
+    max-height: 100%;
+  }
+
+  .theme-main .vote-story-image {
+    max-height: min(calc(100dvh - 220px), 62vh);
+    width: auto;
+    max-width: 100%;
+    margin: 0 auto;
+    aspect-ratio: 3 / 4;
+  }
+
+  .theme-main .vote-story-handle {
+    font-size: 15px;
+  }
+
+  .theme-main .intro {
+    max-width: none;
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.45;
+    text-align: left;
+  }
+
+  .theme-main .intro p {
+    margin: 0;
+  }
+
+  .theme-main .ranking-button {
+    position: static;
+    transform: none;
+    margin: 0;
+    width: fit-content;
+    padding: 10px 22px;
+    font-size: 12px;
+  }
+
+  .theme-main .ranking-button:active {
+    transform: scale(0.97);
+  }
+
+  .theme-main .modal-overlay,
+  .theme-main .ranking-overlay {
+    align-items: center;
+    padding: 24px;
+  }
+
+  .theme-main .vote-modal-content {
+    border-radius: 16px;
+    max-width: 420px;
+    animation: modalInDesktop 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .theme-main .modal-overlay.is-closing .vote-modal-content {
+    animation: modalOutDesktop 0.3s cubic-bezier(0.4, 0, 1, 1) both;
+  }
+
+  .theme-main .vote-modal-content .modal-outfit-image {
+    max-width: 200px;
   }
 
   .theme-main .ranking-modal {
-    max-width: 600px;
+    max-width: 640px;
+    border-radius: 16px;
+    animation: modalInDesktop 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .theme-main .ranking-overlay.is-closing .ranking-modal {
+    animation: modalOutDesktop 0.3s cubic-bezier(0.4, 0, 1, 1) both;
+  }
+}
+
+@media (min-width: 768px) and (hover: hover) {
+  .theme-main .ranking-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 32px rgba(26, 18, 12, 0.32);
+  }
+
+  .theme-main .vote-story-card:hover {
+    opacity: 0.88;
+  }
+
+  .theme-main .swiper-slide-active .vote-story-card:hover {
+    opacity: 1;
+  }
+}
+
+@media (min-width: 1024px) {
+  .main-page-layout {
+    max-width: 1280px;
+    grid-template-columns: minmax(340px, 420px) minmax(0, 1fr);
+    gap: 12px 40px;
+    padding: 16px 48px 20px;
+  }
+
+  .theme-main .sotf-header img {
+    max-height: clamp(72px, 13vh, 116px);
+  }
+
+  .theme-main .vote-stories .swiper-slide {
+    width: min(36vh, 320px);
+  }
+
+  .theme-main .vote-section-title {
+    font-size: 18px;
+  }
+
+  .theme-main .intro {
+    font-size: 13px;
+  }
+
+  .theme-main .ranking-modal {
+    max-width: 720px;
+  }
+}
+
+@keyframes modalInDesktop {
+  from {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes modalOutDesktop {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  to {
+    transform: scale(0.96);
+    opacity: 0;
   }
 }
 

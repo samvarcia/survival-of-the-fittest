@@ -123,52 +123,59 @@ export default function HomePage() {
   if (loading) {
     return (
       <div className="theme-main">
-        <div className="container">
+        <main className="main-page-layout">
           <div className="loading">Loading...</div>
-        </div>
+        </main>
       </div>
     );
   }
 
   return (
     <div className="theme-main">
-      <Header />
-    <div className="container">
-      {/* Timer */}
+      <main className="main-page-layout">
+        <div className="main-page-sidebar">
+          <Header />
 
+          <div className="main-page-lead">
+            <div className="vote-section-title">VOTE FOR THE BEST FIT:</div>
+            <p className="must">
+              YOU MUST BE FOLLOWING{' '}
+              <a
+                href="https://www.instagram.com/survivalofthefittttest/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                @SURVIVALOFTHEFITTTEST
+              </a>{' '}
+              FOR YOUR VOTE TO COUNT
+            </p>
 
-      <div className="vote-section-title">VOTE FOR THE BEST FIT:</div>
-      <p className='must'>
-        YOU MUST BE FOLLOWING{' '}
-        <a 
-          href="https://www.instagram.com/survivalofthefittttest/" 
-          target="_blank" 
-          rel="noopener noreferrer"
-        >
-          @SURVIVALOFTHEFITTTEST
-        </a>{' '}
-        FOR YOUR VOTE TO COUNT
-      </p>
+            <div className="timer">
+              {timeLeft}
+            </div>
+          </div>
 
-      <div className="timer">
-        {timeLeft}
-      </div>
+          <div className="main-page-foot">
+            <div className="intro">
+              <p>
+                Survival of the Fittest exceeded all expectations — 150+ contestants, incredible fashion, unforgettable energy. Now, 26 finalists remain standing. You decide who takes home $1000. Only 48 hours. You must follow @survivalofthefittttest for your vote to count. Vote now. Who will survive?
+              </p>
+            </div>
 
-      <VoteWheel
-        outfits={outfits}
-        onVote={handleVote}
-        votedFor={votedFor}
-      />
+            <button type="button" className="ranking-button" onClick={() => setShowRanking(true)}>
+              🏆 RANKING
+            </button>
+          </div>
+        </div>
 
-      <div className="intro">
-        <p>
-        Survival of the Fittest exceeded all expectations — 150+ contestants, incredible fashion, unforgettable energy. Now, 26 finalists remain standing. You decide who takes home $1000. Only 48 hours. You must follow @survivalofthefittttest for your vote to count. Vote now. Who will survive?
-        </p>
-      </div>
-
-      <button type="button" className="ranking-button" onClick={() => setShowRanking(true)}>
-        🏆 RANKING
-      </button>
+        <div className="main-page-carousel">
+          <VoteWheel
+            outfits={outfits}
+            onVote={handleVote}
+            votedFor={votedFor}
+          />
+        </div>
+      </main>
 
       {showRanking && (
         <RankingModal
@@ -178,7 +185,6 @@ export default function HomePage() {
         />
       )}
 
-      {/* Vote Modal */}
       {selectedOutfit && (
         <VoteModal
           outfit={selectedOutfit}
@@ -186,7 +192,6 @@ export default function HomePage() {
           onSubmit={handleVoteSubmit}
         />
       )}
-    </div>
     </div>
   );
 }
