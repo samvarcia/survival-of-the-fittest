@@ -1,10 +1,10 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Turnstile } from '@marsidev/react-turnstile';
 import SmoothImage from '@/components/SmoothImage';
 import useAnimatedClose from '@/hooks/useAnimatedClose';
 import { VOTE_PACKS } from '@/data/votePacks';
 
-const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+const BUILD_TIME_SITE_KEY = (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '').trim();
 
 const SUCCESS_DISPLAY_MS = 5500;
 
@@ -18,8 +18,60 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
   const [error, setError] = useState('');
   const [selectedPack, setSelectedPack] = useState(FREE_PACK);
   const [captchaToken, setCaptchaToken] = useState('');
+  const [turnstileSiteKey, setTurnstileSiteKey] = useState(BUILD_TIME_SITE_KEY);
+  const [turnstileConfigLoading, setTurnstileConfigLoading] = useState(!BUILD_TIME_SITE_KEY);
+  const [turnstileLoadError, setTurnstileLoadError] = useState(false);
+  const [turnstileCompact, setTurnstileCompact] = useState(false);
   const turnstileRef = useRef(null);
   const { closing, requestClose } = useAnimatedClose(onClose);
+
+  useEffect(() => {
+    const updateSize = () => {
+      setTurnstileCompact(window.innerWidth < 480);
+    };
+
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
+
+  useEffect(() => {
+    if (BUILD_TIME_SITE_KEY) {
+      return;
+    }
+
+    let cancelled = false;
+
+    fetch('/api/turnstile/config', { signal: AbortSignal.timeout(8000) })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error('Turnstile config unavailable');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (cancelled) {
+          return;
+        }
+        if (data?.siteKey) {
+          setTurnstileSiteKey(String(data.siteKey).trim());
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setTurnstileLoadError(true);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setTurnstileConfigLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleName = followHandle.replace(/^@/, '');
   const isPaid = selectedPack?.price > 0;
@@ -178,19 +230,42 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
             </div>
 
             <div className="turnstile-wrap">
-              {TURNSTILE_SITE_KEY ? (
+              {turnstileConfigLoading ? (
+                <div className="turnstile-loading">Loading captcha…</div>
+              ) : turnstileSiteKey ? (
                 <Turnstile
+                  key={`${turnstileSiteKey}-${turnstileCompact ? 'compact' : 'normal'}`}
                   ref={turnstileRef}
-                  siteKey={TURNSTILE_SITE_KEY}
+                  siteKey={turnstileSiteKey}
                   onSuccess={setCaptchaToken}
-                  onExpire={() => setCaptchaToken('')}
-                  onError={() => setCaptchaToken('')}
-                  options={{ theme: 'light', size: 'normal', action: 'vote' }}
+                  onExpire={() => {
+                    setCaptchaToken('');
+                    setTurnstileLoadError(false);
+                  }}
+                  onError={() => {
+                    setCaptchaToken('');
+                    setTurnstileLoadError(true);
+                  }}
+                  options={{
+                    theme: 'light',
+                    size: turnstileCompact ? 'compact' : 'normal',
+                    action: 'vote',
+                  }}
                 />
+              ) : turnstileLoadError ? (
+                <div className="vote-modal-error">
+                  Captcha failed to load. Disable content blockers and refresh.
+                </div>
               ) : (
                 <div className="vote-modal-error">Captcha not configured</div>
               )}
             </div>
+
+            {turnstileLoadError && turnstileSiteKey && (
+              <div className="vote-modal-error">
+                Captcha failed to load. Disable content blockers and refresh.
+              </div>
+            )}
 
             {error && <div className="vote-modal-error">{error}</div>}
 

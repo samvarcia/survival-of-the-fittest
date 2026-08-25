@@ -1033,8 +1033,23 @@ body.theme-main-page {
 .theme-main .turnstile-wrap {
   display: flex;
   justify-content: center;
+  align-items: center;
   margin: 4px 0 16px;
   min-height: 65px;
+  width: 100%;
+  overflow: visible;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+.theme-main .turnstile-wrap iframe {
+  max-width: 100%;
+}
+
+.theme-main .turnstile-loading {
+  font-size: 12px;
+  color: #8a7358;
+  text-align: center;
 }
 
 .theme-main .success-message {
