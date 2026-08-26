@@ -593,9 +593,17 @@ body.theme-main-page {
     display: contents;
   }
 
+  .theme-main .main-page-lead .timer-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: fit-content;
+    margin-inline: auto;
+  }
+
   .theme-main .main-page-lead .timer {
     display: flex;
-    margin-inline: auto;
+    margin-inline: 0;
   }
 
   .main-page-carousel {
@@ -627,6 +635,24 @@ body.theme-main-page {
 
 .theme-main .logo-image {
   filter: drop-shadow(0 6px 16px rgba(120, 70, 0, 0.18));
+}
+
+.theme-main .timer-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+}
+
+.theme-main .timer-label {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #4a3c2a;
+  text-align: center;
 }
 
 .theme-main .timer {
@@ -766,6 +792,14 @@ body.theme-main-page {
 .theme-main .vote-story-card.voted {
   outline: 2px solid #1c1610;
   outline-offset: -2px;
+}
+
+.theme-main .vote-stories-shell.is-closed .vote-story-card {
+  cursor: default;
+}
+
+.theme-main .vote-story-card.is-closed {
+  opacity: 0.78;
 }
 
 .theme-main .vote-story-image {
@@ -1386,6 +1420,15 @@ body.theme-main-page {
     font-size: 12px;
     line-height: 1.45;
     text-align: left;
+  }
+
+  .theme-main .timer-block {
+    align-items: flex-start;
+  }
+
+  .theme-main .timer-label {
+    text-align: left;
+    font-size: 10px;
   }
 
   .theme-main .timer {

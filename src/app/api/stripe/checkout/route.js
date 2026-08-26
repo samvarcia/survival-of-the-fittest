@@ -2,14 +2,21 @@ import { NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 import { verifyTurnstile } from '@/lib/turnstile';
 import { isRedisConfigured } from '@/lib/redis-config';
-import { getUserVote } from '@/lib/db-upstash';
 import { isValidUsername, normalizeUsername } from '@/lib/utils';
 import { isValidOutfitId, normalizeOutfitId } from '@/lib/outfits';
 import { getPaidPackByVotes } from '@/lib/vote-packs';
 import { savePendingCheckout } from '@/lib/stripe-pending';
+import { isVotingOpen } from '@/lib/voting-window';
 
 export async function POST(request) {
   try {
+    if (!isVotingOpen()) {
+      return NextResponse.json(
+        { success: false, error: 'Voting has ended' },
+        { status: 403 },
+      );
+    }
+
     if (!isRedisConfigured()) {
       return NextResponse.json(
         { success: false, error: 'Voting database not configured' },
@@ -62,13 +69,8 @@ export async function POST(request) {
     }
 
     const normalizedUsername = normalizeUsername(username);
-    const existingVote = await getUserVote(normalizedUsername);
-    if (existingVote) {
-      return NextResponse.json(
-        { success: false, error: 'You have already voted' },
-        { status: 409 },
-      );
-    }
+
+    // Paid packs can be purchased repeatedly — no "already voted" block here.
 
     const referenceId = randomUUID();
     await savePendingCheckout(referenceId, {

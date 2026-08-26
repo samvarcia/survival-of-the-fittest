@@ -29,7 +29,7 @@ function applyCardMotion(swiper, durationMs) {
   });
 }
 
-export default function VoteWheel({ outfits, onVote, votedFor }) {
+export default function VoteWheel({ outfits, onVote, votedFor, votingClosed = false }) {
   const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export default function VoteWheel({ outfits, onVote, votedFor }) {
   }, [outfits]);
 
   return (
-    <div className="vote-stories-shell">
+    <div className={`vote-stories-shell${votingClosed ? ' is-closed' : ''}`}>
       <Swiper
         key={isDesktop ? 'desktop' : 'mobile'}
         className="vote-stories"
@@ -119,9 +119,10 @@ export default function VoteWheel({ outfits, onVote, votedFor }) {
             {({ isActive }) => (
               <button
                 type="button"
-                className={`vote-story-card ${votedFor === outfit.id ? 'voted' : ''}`}
+                className={`vote-story-card ${votedFor === outfit.id ? 'voted' : ''}${votingClosed ? ' is-closed' : ''}`}
                 style={{ background: CARD_TONES[index % CARD_TONES.length] }}
                 onClick={() => {
+                  if (votingClosed) return;
                   if (isActive) onVote(outfit);
                 }}
               >

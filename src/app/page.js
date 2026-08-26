@@ -7,6 +7,7 @@ import Header from '@/components/Header';
 import VoteWheel from '@/components/VoteWheel';
 import RankingModal from '@/components/RankingModal';
 import { outfits } from '@/data/outfits';
+import { getVotingTimeLeft } from '@/lib/voting-window';
 
 export default function HomePage() {
   const [selectedOutfit, setSelectedOutfit] = useState(null);
@@ -14,24 +15,16 @@ export default function HomePage() {
   const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState('');
+  const [votingClosed, setVotingClosed] = useState(false);
   const [showRanking, setShowRanking] = useState(false);
 
-  // Timer logic — countdown only; voting stays open
   useEffect(() => {
     const updateTimer = () => {
-      // End time: August 22, 2026 at 00:00 NY time
-      const endTime = new Date('2026-08-22T04:00:00.000Z'); // 12:00 AM EDT = 4:00 AM UTC
-      const now = new Date();
-      const difference = endTime.getTime() - now.getTime();
-
-      if (difference > 0) {
-        const hours = Math.floor(difference / (1000 * 60 * 60));
-        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-        setTimeLeft(`${hours.toString().padStart(3, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
-      } else {
-        setTimeLeft('000:00:00');
+      const { closed, label } = getVotingTimeLeft();
+      setTimeLeft(label);
+      setVotingClosed(closed);
+      if (closed) {
+        setSelectedOutfit(null);
       }
     };
 
@@ -69,7 +62,7 @@ export default function HomePage() {
   };
 
   const handleVote = (outfit) => {
-    if (votedFor) return; // Already voted
+    if (votingClosed) return;
     setSelectedOutfit(outfit);
   };
 
@@ -150,8 +143,13 @@ export default function HomePage() {
               FOR YOUR VOTE TO COUNT
             </p>
 
-            <div className="timer">
-              {timeLeft}
+            <div className={`timer-block${votingClosed ? ' is-closed' : ''}`}>
+              <p className="timer-label">
+                {votingClosed ? 'Voting ended' : 'Voting ends in'}
+              </p>
+              <div className="timer">
+                {timeLeft}
+              </div>
             </div>
           </div>
 
@@ -173,6 +171,7 @@ export default function HomePage() {
             outfits={outfits}
             onVote={handleVote}
             votedFor={votedFor}
+            votingClosed={votingClosed}
           />
         </div>
       </main>

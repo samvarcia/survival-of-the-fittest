@@ -45,21 +45,25 @@ export async function initializeVoteStats(outfitIds) {
   }
 }
 
-// Submit a vote — always pending until admin approval
+// Submit a vote — always pending until admin approval.
+// Free votes are one per username; paid packs can be submitted multiple times.
 export async function submitVote(outfitId, username, options = {}) {
   try {
-    const existingVote = await getUserVote(username);
-    if (existingVote) {
-      throw new Error('User has already voted');
+    const voteType = options.voteType === 'paid' ? 'paid' : 'free';
+
+    if (voteType === 'free') {
+      const existingVote = await getUserVote(username);
+      if (existingVote) {
+        throw new Error('User has already voted');
+      }
     }
 
-    const voteType = options.voteType === 'paid' ? 'paid' : 'free';
     const voteCount = Math.max(1, Number(options.voteCount) || 1);
     const amount = Math.max(0, Number(options.amount) || 0);
     const currency = options.currency || 'CAD';
     const stripeSessionId = options.stripeSessionId || null;
 
-    const voteId = `${username}_${Date.now()}`;
+    const voteId = `${username}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
     const voteData = {
       id: voteId,
       outfitId,

@@ -3,9 +3,17 @@ import { submitVote, getUserVote } from '@/lib/db-upstash';
 import { isValidUsername, normalizeUsername } from '@/lib/utils';
 import { verifyTurnstile } from '@/lib/turnstile';
 import { isRedisConfigured } from '@/lib/redis-config';
+import { isVotingOpen } from '@/lib/voting-window';
 
 export async function POST(request) {
   try {
+    if (!isVotingOpen()) {
+      return NextResponse.json(
+        { success: false, error: 'Voting has ended' },
+        { status: 403 }
+      );
+    }
+
     if (!isRedisConfigured()) {
       return NextResponse.json(
         { success: false, error: 'Voting database not configured' },
