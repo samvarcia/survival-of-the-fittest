@@ -2,7 +2,9 @@
 
 import { useEffect } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { FreeMode, Mousewheel } from 'swiper/modules';
 import 'swiper/css';
+import 'swiper/css/free-mode';
 import SmoothImage, { preloadImages } from '@/components/SmoothImage';
 
 const CARD_TONES = ['#E8D5A4', '#F3E6C4', '#DCC9A0', '#EFE0B5', '#E4D0A8'];
@@ -24,19 +26,36 @@ export default function VoteWheel({ outfits, onVote, votedFor }) {
     <div className="vote-stories-shell">
       <Swiper
         className="vote-stories"
+        modules={[FreeMode, Mousewheel]}
         grabCursor
         loop
         centeredSlides
         slidesPerView="auto"
-        spaceBetween={14}
-        speed={560}
+        spaceBetween={16}
+        speed={720}
         cssEasing="cubic-bezier(0.22, 1, 0.36, 1)"
-        resistanceRatio={0.85}
-        threshold={6}
-        longSwipesRatio={0.25}
+        freeMode={{
+          enabled: true,
+          sticky: true,
+          momentumRatio: 0.55,
+          momentumVelocityRatio: 0.7,
+          momentumBounce: false,
+          minimumVelocity: 0.08,
+        }}
+        mousewheel={{
+          forceToAxis: true,
+          sensitivity: 0.7,
+          releaseOnEdges: true,
+        }}
+        resistanceRatio={0.55}
+        threshold={4}
+        longSwipesRatio={0.2}
+        longSwipesMs={240}
         followFinger
         slideToClickedSlide
         watchSlidesProgress
+        touchRatio={1.15}
+        touchAngle={35}
         onSlideChange={(swiper) => {
           const indexes = [
             swiper.realIndex,
