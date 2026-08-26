@@ -1,5 +1,11 @@
 import { NextResponse } from 'next/server';
-import { approveVote, rejectVote, getPendingVotes, getApprovedVotes } from '@/lib/db-upstash';
+import {
+  approveVote,
+  rejectVote,
+  removeVote,
+  getPendingVotes,
+  getApprovedVotes,
+} from '@/lib/db-upstash';
 
 // Simple admin auth (you might want to improve this for production)
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'YVL';
@@ -44,6 +50,8 @@ export async function POST(request) {
       result = await approveVote(voteId);
     } else if (action === 'reject') {
       result = await rejectVote(voteId);
+    } else if (action === 'remove') {
+      result = await removeVote(voteId);
     } else {
       return NextResponse.json(
         { success: false, error: 'Invalid action' },

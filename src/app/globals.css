@@ -1784,6 +1784,23 @@ body.theme-main-page {
   color: var(--dark-gray);
 }
 
+.dash-btn-remove {
+  background: rgba(155, 28, 22, 0.12);
+  color: #9B1C16;
+}
+
+.dash-btn-remove:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.dash-voter-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
 .dash-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;

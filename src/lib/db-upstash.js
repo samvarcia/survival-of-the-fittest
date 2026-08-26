@@ -260,6 +260,37 @@ export async function rejectVote(voteId) {
   }
 }
 
+/**
+ * Remove a vote entirely — pending or approved.
+ * Approved removals also subtract the pack weight from live stats.
+ */
+export async function removeVote(voteId) {
+  try {
+    const approvedKey = `${VOTES_PREFIX}${voteId}`;
+    const pendingKey = `${PENDING_PREFIX}${voteId}`;
+
+    const approved = await redis.get(approvedKey);
+    if (approved) {
+      const voteData = typeof approved === 'object' ? approved : JSON.parse(approved);
+      await redis.del(approvedKey);
+      await updateVoteStats(voteData.outfitId, -getVoteCount(voteData));
+      return { ...voteData, removedFrom: 'approved' };
+    }
+
+    const pending = await redis.get(pendingKey);
+    if (pending) {
+      const voteData = typeof pending === 'object' ? pending : JSON.parse(pending);
+      await redis.del(pendingKey);
+      return { ...voteData, removedFrom: 'pending' };
+    }
+
+    throw new Error('Vote not found');
+  } catch (error) {
+    console.error('Error removing vote:', error);
+    throw error;
+  }
+}
+
 // Get all approved votes
 export async function getApprovedVotes() {
   try {

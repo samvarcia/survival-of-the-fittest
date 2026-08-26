@@ -184,6 +184,13 @@ export default function AdminDashboard() {
   const handleVoteAction = async (voteId, action) => {
     if (processingVotes.has(voteId)) return;
 
+    if (action === 'remove') {
+      const confirmed = window.confirm(
+        'Remove this vote permanently? If it was approved, it will be subtracted from the live count.',
+      );
+      if (!confirmed) return;
+    }
+
     setProcessingVotes((prev) => new Set([...prev, voteId]));
 
     try {
@@ -341,6 +348,7 @@ export default function AdminDashboard() {
           filteredByType.map((vote) => {
             const participant = getParticipant(vote.outfitId);
             const voteWeight = getVoteCount(vote);
+            const isProcessing = processingVotes.has(vote.id);
             return (
               <div
                 key={vote.id}
@@ -355,7 +363,17 @@ export default function AdminDashboard() {
                   </div>
                   <div className="dash-row-sub">{formatVoteTime(vote.timestamp)}</div>
                 </div>
-                <VoteRowBadges vote={vote} status={vote.status} />
+                <div className="dash-actions-wrap">
+                  <VoteRowBadges vote={vote} status={vote.status} />
+                  <button
+                    type="button"
+                    className="dash-btn dash-btn-remove"
+                    onClick={() => handleVoteAction(vote.id, 'remove')}
+                    disabled={isProcessing}
+                  >
+                    {isProcessing ? '…' : 'Remove'}
+                  </button>
+                </div>
               </div>
             );
           })
@@ -452,15 +470,28 @@ export default function AdminDashboard() {
 
               {isExpanded && votersForOutfit.length > 0 && (
                 <div className="dash-voter-list">
-                  {votersForOutfit.map((vote) => (
-                    <div key={vote.id} className="dash-voter-item">
-                      <div className="dash-voter-main">
-                        <strong>@{vote.username}</strong>
-                        <VoteTypeBadge vote={vote} />
+                  {votersForOutfit.map((vote) => {
+                    const isProcessing = processingVotes.has(vote.id);
+                    return (
+                      <div key={vote.id} className="dash-voter-item">
+                        <div className="dash-voter-main">
+                          <strong>@{vote.username}</strong>
+                          <VoteTypeBadge vote={vote} />
+                        </div>
+                        <div className="dash-voter-meta">
+                          <span>{formatVoteTime(vote.timestamp)}</span>
+                          <button
+                            type="button"
+                            className="dash-btn dash-btn-remove"
+                            onClick={() => handleVoteAction(vote.id, 'remove')}
+                            disabled={isProcessing}
+                          >
+                            {isProcessing ? '…' : 'Remove'}
+                          </button>
+                        </div>
                       </div>
-                      <span>{formatVoteTime(vote.timestamp)}</span>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
