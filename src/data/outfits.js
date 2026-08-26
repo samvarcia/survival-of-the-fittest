@@ -12,7 +12,7 @@ export const outfits = [
   {
     id: 3,
     participantInstagram: "03",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlxrD1OUjPCcUhmiMk4V3zGWaA0qupfroR1ILJ"
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlpxHvvIn0R28WqHbo3mxOEiGNJl5BVuwZerKQ"
   },
   {
     id: 4,
@@ -87,61 +87,46 @@ export const outfits = [
   {
     id: 18,
     participantInstagram: "18",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlU0ybAFV9df8M1rzQyJqYjBNPapmcXk7oRCFs"
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlXKhvTTWkSAK7Ugo6JLqjzpQYfZcDilmx9VIn"
   },
   {
     id: 19,
     participantInstagram: "19",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlXKhvTTWkSAK7Ugo6JLqjzpQYfZcDilmx9VIn"
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlIisRQ7JSFP5Gl7bHVfXtN1SYJTw6qQgpzm3K"
   },
   {
     id: 20,
     participantInstagram: "20",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlIisRQ7JSFP5Gl7bHVfXtN1SYJTw6qQgpzm3K"
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlmAIgLHDLnOXd4BwTslftVWcp9DaC5SEuIb36"
   },
   {
     id: 21,
     participantInstagram: "21",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlmAIgLHDLnOXd4BwTslftVWcp9DaC5SEuIb36"
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Gl8WqDPsA3BTYZt1nV5mpqQrFdWHAvb9Excg6G"
   },
   {
     id: 22,
     participantInstagram: "22",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Gl8WqDPsA3BTYZt1nV5mpqQrFdWHAvb9Excg6G"
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlvMKsDTxErK3RUHaPhbAkWJXzBdZYVsDIQule"
   },
   {
     id: 23,
     participantInstagram: "23",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlvMKsDTxErK3RUHaPhbAkWJXzBdZYVsDIQule"
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlNS9LoT86sFjL7pBq1fMhwOxDtKYuZWlASIG2"
   },
   {
     id: 24,
     participantInstagram: "24",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlNS9LoT86sFjL7pBq1fMhwOxDtKYuZWlASIG2"
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Glm4Qp7JDLnOXd4BwTslftVWcp9DaC5SEuIb36"
   },
   {
     id: 25,
     participantInstagram: "25",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Glm4Qp7JDLnOXd4BwTslftVWcp9DaC5SEuIb36"
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GllzpayEkGR0eAmZtr5cnyHCXYQ9hua2bKVz6U"
   },
   {
     id: 26,
     participantInstagram: "26",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GllNWgtONkGR0eAmZtr5cnyHCXYQ9hua2bKVz6"
-  },
-  {
-    id: 27,
-    participantInstagram: "27",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GllzpayEkGR0eAmZtr5cnyHCXYQ9hua2bKVz6U"
-  },
-  {
-    id: 28,
-    participantInstagram: "28",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlT9RWMO4xZKJ3qmipGdCjuwIl9D7caevgyTkP"
-  },
-  {
-    id: 29,
-    participantInstagram: "29",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Gl9kImW1HspafkqRYnE0SJolMwmud926IZiVWC"
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlTWIxRx4xZKJ3qmipGdCjuwIl9D7caevgyTkP"
   }
 ];
