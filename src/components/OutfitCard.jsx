@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { getOutfitLabel } from '@/lib/outfit-label';
 
 export default function OutfitCard({ outfit, onVote, hasVoted }) {
   const [imageError, setImageError] = useState(false);
+  const label = getOutfitLabel(outfit);
 
   const handleClick = () => {
     onVote(outfit);
@@ -21,7 +23,7 @@ export default function OutfitCard({ outfit, onVote, hasVoted }) {
       {!imageError ? (
         <img
           src={outfit.image}
-          alt={`Outfit by @${outfit.participantInstagram}`}
+          alt={`Outfit ${label}`}
           className="outfit-image"
           onError={handleImageError}
           loading="lazy"
@@ -34,12 +36,12 @@ export default function OutfitCard({ outfit, onVote, hasVoted }) {
           fontSize: '12px',
           color: 'var(--dark-gray)'
         }}>
-          #{outfit.id} - @{outfit.participantInstagram}
+          {label}
         </div>
       )}
       
       <div className="outfit-handle">
-      #{outfit.id} - @{outfit.participantInstagram}
+      {label}
       </div>
     </div>
   );

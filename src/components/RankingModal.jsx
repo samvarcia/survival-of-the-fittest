@@ -2,6 +2,7 @@
 
 import SmoothImage from '@/components/SmoothImage';
 import useAnimatedClose from '@/hooks/useAnimatedClose';
+import { getOutfitLabel } from '@/lib/outfit-label';
 
 export default function RankingModal({ stats, outfits, onClose }) {
   const ranked = outfits
@@ -45,12 +46,12 @@ export default function RankingModal({ stats, outfits, onClose }) {
               <div key={outfit.id} className={`ranking-podium-item rank-${index + 1}`}>
                 <SmoothImage
                   src={outfit.image}
-                  alt={`@${outfit.participantInstagram}`}
+                  alt={getOutfitLabel(outfit)}
                   className="ranking-podium-image"
                   priority={index === 0}
                 />
                 <div className="ranking-podium-place">{rankLabel(index)}</div>
-                <div className="ranking-podium-handle">@{outfit.participantInstagram}</div>
+                <div className="ranking-podium-handle">{getOutfitLabel(outfit)}</div>
                 <div className="ranking-podium-votes">{outfit.votes}</div>
               </div>
             ))}
@@ -62,10 +63,10 @@ export default function RankingModal({ stats, outfits, onClose }) {
                 <span className="ranking-row-place">{index + 1}</span>
                 <SmoothImage
                   src={outfit.image}
-                  alt={`@${outfit.participantInstagram}`}
+                  alt={getOutfitLabel(outfit)}
                   className="ranking-row-image"
                 />
-                <span className="ranking-row-handle">@{outfit.participantInstagram}</span>
+                <span className="ranking-row-handle">{getOutfitLabel(outfit)}</span>
                 <span className="ranking-row-votes">{outfit.votes}</span>
               </div>
             ))}

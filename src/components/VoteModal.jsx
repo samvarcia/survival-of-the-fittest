@@ -3,6 +3,7 @@ import { Turnstile } from '@marsidev/react-turnstile';
 import SmoothImage from '@/components/SmoothImage';
 import useAnimatedClose from '@/hooks/useAnimatedClose';
 import { VOTE_PACKS } from '@/data/votePacks';
+import { getOutfitLabel } from '@/lib/outfit-label';
 
 const BUILD_TIME_SITE_KEY = (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '').trim();
 
@@ -185,14 +186,14 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
           {!imageError ? (
             <SmoothImage
               src={outfit.image}
-              alt={`Outfit by @${outfit.participantInstagram}`}
+              alt={`Outfit ${getOutfitLabel(outfit)}`}
               className="modal-outfit-image"
               priority
               onError={() => setImageError(true)}
             />
           ) : (
             <div className="modal-outfit-image modal-image-fallback">
-              @{outfit.participantInstagram}
+              {getOutfitLabel(outfit)}
             </div>
           )}
         </div>
@@ -200,7 +201,7 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
         <div className="modal-content-wrapper">
           <p className="vote-modal-kicker">Vote for</p>
           <div className="modal-title">
-            @{outfit.participantInstagram}
+            {getOutfitLabel(outfit)}
           </div>
 
           <form onSubmit={handleSubmit}>

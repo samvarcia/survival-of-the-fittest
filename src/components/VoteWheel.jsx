@@ -6,6 +6,7 @@ import { FreeMode, Mousewheel } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import SmoothImage, { preloadImages } from '@/components/SmoothImage';
+import { getOutfitLabel } from '@/lib/outfit-label';
 
 const CARD_TONES = ['#E8D5A4', '#F3E6C4', '#DCC9A0', '#EFE0B5', '#E4D0A8'];
 
@@ -126,13 +127,13 @@ export default function VoteWheel({ outfits, onVote, votedFor }) {
               >
                 <SmoothImage
                   src={outfit.image}
-                  alt={`Outfit by @${outfit.participantInstagram}`}
+                  alt={`Outfit ${getOutfitLabel(outfit)}`}
                   className="vote-story-image"
                   priority={index < 3}
                 />
                 <div className="vote-story-footer">
                   <span className="vote-story-handle">
-                    @{outfit.participantInstagram}
+                    {getOutfitLabel(outfit)}
                   </span>
                 </div>
               </button>

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { outfits } from '@/data/outfits';
 import { getVoteTypeBadge, isPaidVote, getVoteCount } from '@/lib/vote-meta';
+import { getOutfitLabel } from '@/lib/outfit-label';
 
 function formatVoteTime(timestamp) {
   if (!timestamp) return '';
@@ -217,7 +218,7 @@ export default function AdminDashboard() {
 
   const getParticipant = (outfitId) => {
     const outfit = outfits.find((o) => o.id === outfitId);
-    return outfit?.participantInstagram || 'unknown';
+    return outfit ? getOutfitLabel(outfit) : 'unknown';
   };
 
   const sortedStats = [...stats].sort((a, b) => b.votes - a.votes);
@@ -356,7 +357,7 @@ export default function AdminDashboard() {
               >
                 <div className="dash-row-main">
                   <div className="dash-row-title">
-                    @{vote.username} → @{participant}
+                    @{vote.username} → {participant}
                     {voteWeight > 1 && (
                       <span className="dash-row-weight"> · {voteWeight} votes</span>
                     )}
@@ -400,7 +401,7 @@ export default function AdminDashboard() {
               >
                 <div className="dash-row-main">
                   <div className="dash-row-title">
-                    @{vote.username} → @{participant}
+                    @{vote.username} → {participant}
                     {voteWeight > 1 && (
                       <span className="dash-row-weight"> · {voteWeight} votes</span>
                     )}
@@ -459,7 +460,7 @@ export default function AdminDashboard() {
               >
                 <span className="dash-result-rank">#{index + 1}</span>
                 <div className="dash-result-info">
-                  <div className="dash-result-name">@{outfit?.participantInstagram}</div>
+                  <div className="dash-result-name">{outfit ? getOutfitLabel(outfit) : 'unknown'}</div>
                 </div>
                 <div className="dash-result-count">
                   <div className="dash-result-votes">{stat.votes}</div>

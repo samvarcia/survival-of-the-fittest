@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { useState } from 'react';
+import { getOutfitLabel } from '@/lib/outfit-label';
 
 export default function TopThree({ stats, outfits }) {
   const [imageErrors, setImageErrors] = useState({});
@@ -49,7 +50,7 @@ export default function TopThree({ stats, outfits }) {
             {!imageErrors[item.outfitId] ? (
               <img
                 src={item.outfit?.image}
-                alt={`Top ${index + 1}: @${item.outfit?.participantInstagram}`}
+                alt={`Top ${index + 1}: ${getOutfitLabel(item.outfit)}`}
                 className="podium-image"
                 onError={() => handleImageError(item.outfitId)}
                 loading="lazy"
@@ -62,7 +63,7 @@ export default function TopThree({ stats, outfits }) {
                 fontSize: '12px',
                 color: 'var(--dark-gray)'
               }}>
-                @{item.outfit?.participantInstagram}
+                {getOutfitLabel(item.outfit)}
               </div>
             )}
             
@@ -71,7 +72,7 @@ export default function TopThree({ stats, outfits }) {
             </div>
             
             <div className="podium-handle">
-              @{item.outfit?.participantInstagram}
+              {getOutfitLabel(item.outfit)}
             </div>
             
             <div className="podium-votes">
