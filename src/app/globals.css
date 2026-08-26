@@ -733,7 +733,6 @@ body.theme-main-page {
   width: 72vw;
   max-width: 340px;
   height: auto;
-  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .theme-main .vote-story-card {
@@ -755,16 +754,13 @@ body.theme-main-page {
   -webkit-tap-highlight-color: transparent;
   transform: scale(0.94);
   opacity: 0.72;
-  transition:
-    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 0.45s ease;
+  transform-origin: center center;
+  transition-property: transform, opacity;
+  transition-duration: 0ms;
   box-shadow: 0 12px 28px rgba(90, 50, 0, 0.14);
   will-change: transform, opacity;
-}
-
-.theme-main .swiper-slide-active .vote-story-card {
-  transform: scale(1);
-  opacity: 1;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .theme-main .vote-story-card.voted {

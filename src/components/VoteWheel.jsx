@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { FreeMode, Mousewheel } from 'swiper/modules';
 import 'swiper/css';
@@ -9,7 +9,36 @@ import SmoothImage, { preloadImages } from '@/components/SmoothImage';
 
 const CARD_TONES = ['#E8D5A4', '#F3E6C4', '#DCC9A0', '#EFE0B5', '#E4D0A8'];
 
+function applyCardMotion(swiper, durationMs) {
+  const duration = `${Math.max(0, durationMs)}ms`;
+
+  swiper.slides.forEach((slide) => {
+    const card = slide.querySelector('.vote-story-card');
+    if (!card) return;
+
+    const progress = Number.isFinite(slide.progress) ? slide.progress : 0;
+    const abs = Math.min(Math.abs(progress), 1.35);
+    const scale = 1 - Math.min(abs * 0.065, 0.09);
+    const opacity = 1 - Math.min(abs * 0.28, 0.34);
+
+    card.style.transitionDuration = duration;
+    card.style.transitionTimingFunction = 'cubic-bezier(0.22, 1, 0.36, 1)';
+    card.style.transform = `scale(${scale})`;
+    card.style.opacity = String(opacity);
+  });
+}
+
 export default function VoteWheel({ outfits, onVote, votedFor }) {
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia('(min-width: 768px) and (hover: hover) and (pointer: fine)');
+    const sync = () => setIsDesktop(media.matches);
+    sync();
+    media.addEventListener('change', sync);
+    return () => media.removeEventListener('change', sync);
+  }, []);
+
   useEffect(() => {
     const urls = outfits.map((outfit) => outfit.image);
     preloadImages(urls.slice(0, 4));
@@ -25,37 +54,51 @@ export default function VoteWheel({ outfits, onVote, votedFor }) {
   return (
     <div className="vote-stories-shell">
       <Swiper
+        key={isDesktop ? 'desktop' : 'mobile'}
         className="vote-stories"
-        modules={[FreeMode, Mousewheel]}
+        modules={isDesktop ? [FreeMode, Mousewheel] : []}
         grabCursor
         loop
         centeredSlides
         slidesPerView="auto"
-        spaceBetween={16}
-        speed={720}
+        spaceBetween={isDesktop ? 16 : 12}
+        speed={isDesktop ? 680 : 420}
         cssEasing="cubic-bezier(0.22, 1, 0.36, 1)"
-        freeMode={{
-          enabled: true,
-          sticky: true,
-          momentumRatio: 0.55,
-          momentumVelocityRatio: 0.7,
-          momentumBounce: false,
-          minimumVelocity: 0.08,
-        }}
-        mousewheel={{
-          forceToAxis: true,
-          sensitivity: 0.7,
-          releaseOnEdges: true,
-        }}
-        resistanceRatio={0.55}
-        threshold={4}
-        longSwipesRatio={0.2}
-        longSwipesMs={240}
+        freeMode={
+          isDesktop
+            ? {
+                enabled: true,
+                sticky: true,
+                momentumRatio: 0.5,
+                momentumVelocityRatio: 0.65,
+                momentumBounce: false,
+                minimumVelocity: 0.08,
+              }
+            : false
+        }
+        mousewheel={
+          isDesktop
+            ? {
+                forceToAxis: true,
+                sensitivity: 0.7,
+                releaseOnEdges: true,
+              }
+            : false
+        }
+        resistanceRatio={isDesktop ? 0.55 : 0.35}
+        threshold={isDesktop ? 4 : 2}
+        shortSwipes
+        longSwipesRatio={0.18}
+        longSwipesMs={220}
         followFinger
         slideToClickedSlide
         watchSlidesProgress
-        touchRatio={1.15}
-        touchAngle={35}
+        touchRatio={isDesktop ? 1.1 : 1.35}
+        touchAngle={40}
+        touchMoveStopPropagation
+        onProgress={(swiper) => applyCardMotion(swiper, 0)}
+        onSetTransition={(swiper, duration) => applyCardMotion(swiper, duration)}
+        onInit={(swiper) => applyCardMotion(swiper, 0)}
         onSlideChange={(swiper) => {
           const indexes = [
             swiper.realIndex,
