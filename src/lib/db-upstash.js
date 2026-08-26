@@ -1,5 +1,6 @@
 import { Redis } from '@upstash/redis';
 import { createRedisClient } from '@/lib/redis-config';
+import { getVoteCount } from '@/lib/vote-meta';
 
 const redis = createRedisClient(Redis);
 
@@ -45,12 +46,18 @@ export async function initializeVoteStats(outfitIds) {
 }
 
 // Submit a vote — always pending until admin approval
-export async function submitVote(outfitId, username) {
+export async function submitVote(outfitId, username, options = {}) {
   try {
     const existingVote = await getUserVote(username);
     if (existingVote) {
       throw new Error('User has already voted');
     }
+
+    const voteType = options.voteType === 'paid' ? 'paid' : 'free';
+    const voteCount = Math.max(1, Number(options.voteCount) || 1);
+    const amount = Math.max(0, Number(options.amount) || 0);
+    const currency = options.currency || 'CAD';
+    const stripeSessionId = options.stripeSessionId || null;
 
     const voteId = `${username}_${Date.now()}`;
     const voteData = {
@@ -60,6 +67,11 @@ export async function submitVote(outfitId, username) {
       timestamp: Date.now(),
       approved: false,
       verified: false,
+      voteType,
+      voteCount,
+      amount,
+      currency,
+      ...(stripeSessionId ? { stripeSessionId } : {}),
     };
 
     const key = `${PENDING_PREFIX}${voteId}`;
@@ -219,8 +231,8 @@ export async function approveVote(voteId) {
     await redis.set(approvedKey, approvedVote);
     await redis.del(pendingKey);
 
-    // Update stats
-    await updateVoteStats(voteData.outfitId, 1);
+    // Update stats by pack size (paid packs can count as multiple votes)
+    await updateVoteStats(voteData.outfitId, getVoteCount(voteData));
 
     return approvedVote;
   } catch (error) {

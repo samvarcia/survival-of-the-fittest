@@ -1,133 +1,157 @@
 export const outfits = [
   {
     id: 1,
-    participantInstagram: "an777avx",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlUlRI0zFV9df8M1rzQyJqYjBNPapmcXk7oRCF"
+    participantInstagram: "contestant01",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlBXzxz0ulKZsYF5HpfJj0v2uU9DmSyxkIGRn6"
   },
   {
     id: 2,
-    participantInstagram: "isabelokoro",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlUkYQ98V9df8M1rzQyJqYjBNPapmcXk7oRCFs"
+    participantInstagram: "contestant02",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Gl8hF26lA3BTYZt1nV5mpqQrFdWHAvb9Excg6G"
   },
   {
     id: 3,
-    participantInstagram: "diva_gaga",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlQDuEI3MaZtXl6xUencEL3vmh9qyH7KTAkDOS"
+    participantInstagram: "contestant03",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlxrD1OUjPCcUhmiMk4V3zGWaA0qupfroR1ILJ"
   },
   {
     id: 4,
-    participantInstagram: "enzomezu",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlAfcWBGePTxW7cio4GYsEX5OSBkwl9uCgZQb0"
+    participantInstagram: "contestant04",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GldD4Jsd7IHW7YEOkeysDVqvxpcUjiwC1ol93a"
   },
   {
     id: 5,
-    participantInstagram: "christinedang_ & @mwamba.ngonyo",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Gl1F3OVvXTDEmPXk63LVKxJQqf52NZMjiSzUlO"
+    participantInstagram: "contestant05",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlRMUBoV1pCY19XJqjwnOzPeovkRtW60bEBKHi"
   },
   {
     id: 6,
-    participantInstagram: "yugo.dreams",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlmHiiVJDLnOXd4BwTslftVWcp9DaC5SEuIb36"
+    participantInstagram: "contestant06",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Gl8BnQSx1A3BTYZt1nV5mpqQrFdWHAvb9Excg6"
   },
   {
     id: 7,
-    participantInstagram: "sup3rprettyblonde",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlcSeojdQIFnWalKbj5yqv3GsEVpm91BixD6dk"
+    participantInstagram: "contestant07",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlD04QjSU48PSwRtzvbGndWMEThYI5FCofp31N"
   },
   {
     id: 8,
-    participantInstagram: "tt.ii.tt.oo",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlhxFkFuoX0rnsBHE1WVa5vwulA2KqgdJytRoM"
+    participantInstagram: "contestant08",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Gld6sAbr7IHW7YEOkeysDVqvxpcUjiwC1ol93a"
   },
   {
     id: 9,
-    participantInstagram: "slesean.tv",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlDalGgQU48PSwRtzvbGndWMEThYI5FCofp31N"
+    participantInstagram: "contestant09",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlGYwBFenE2fPkeyYTJID6twFZ18VN7KnSgcav"
   },
   {
     id: 10,
-    participantInstagram: "nedyse",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlaWB6PUmF32BujQ51hfqMWZPdE7cekAgVGbs9"
+    participantInstagram: "contestant10",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlhQewcYoX0rnsBHE1WVa5vwulA2KqgdJytRoM"
   },
   {
     id: 11,
-    participantInstagram: "parkscanada_",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlkgsTlZ3vlYdoPNkK6gMi1eXqHJswzSQxj4Bn"
+    participantInstagram: "contestant11",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Gl6c6bSBCXqwrvhzFDLGoa85UNs9YmixR3bJnE"
   },
   {
     id: 12,
-    participantInstagram: "ekighai",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlxAvD0ijPCcUhmiMk4V3zGWaA0qupfroR1ILJ"
+    participantInstagram: "contestant12",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlEvGwQ9gRcOaX6TISD3pr12UodfwuQk0vLqxY"
   },
   {
     id: 13,
-    participantInstagram: "ij30ma",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlXBA34QWkSAK7Ugo6JLqjzpQYfZcDilmx9VIn"
+    participantInstagram: "contestant13",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Gl9TFZauHspafkqRYnE0SJolMwmud926IZiVWC"
   },
   {
     id: 14,
-    participantInstagram: "z3ke_sama",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlmRI4wNDLnOXd4BwTslftVWcp9DaC5SEuIb36"
+    participantInstagram: "contestant14",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlEQjynmgRcOaX6TISD3pr12UodfwuQk0vLqxY"
   },
   {
     id: 15,
-    participantInstagram: "lottamercii",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Gl2E7NQiMcpDihBKe1UMFJs0budo3RlqgSfHI5"
+    participantInstagram: "contestant15",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlwR0qDnKSps9JV2Cn4GOAXiotgeBUKHaYrPN8"
   },
   {
     id: 16,
-    participantInstagram: "okaymark0",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Glz9Ip6SrhqtUPfDR13b9dwc2T0r6l4euyZaCY"
+    participantInstagram: "contestant16",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlDZlzOWU48PSwRtzvbGndWMEThYI5FCofp31N"
   },
   {
     id: 17,
-    participantInstagram: "?",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlNe1Q6al86sFjL7pBq1fMhwOxDtKYuZWlASIG"
+    participantInstagram: "contestant17",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlDrNGtsiU48PSwRtzvbGndWMEThYI5FCofp31"
   },
   {
     id: 18,
-    participantInstagram: "?",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Glmq3iOTDLnOXd4BwTslftVWcp9DaC5SEuIb36"
+    participantInstagram: "contestant18",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlXtcm23WkSAK7Ugo6JLqjzpQYfZcDilmx9VIn"
   },
   {
     id: 19,
-    participantInstagram: "rasqas",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlXt6OFG2WkSAK7Ugo6JLqjzpQYfZcDilmx9VI"
+    participantInstagram: "contestant19",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlgmhpyBYb1qLpczTEt5S8UxgRka3oeV4Kd76W"
   },
   {
     id: 20,
-    participantInstagram: "beeudy",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlVOk6KCrLYobdpr6vmtZl3xa4w7JFzOqPN0iy"
+    participantInstagram: "contestant20",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlU0ybAFV9df8M1rzQyJqYjBNPapmcXk7oRCFs"
   },
   {
     id: 21,
-    participantInstagram: "keysstatus",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlxGxIl3jPCcUhmiMk4V3zGWaA0qupfroR1ILJ"
+    participantInstagram: "contestant21",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlXKhvTTWkSAK7Ugo6JLqjzpQYfZcDilmx9VIn"
   },
   {
     id: 22,
-    participantInstagram: "valectron",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GllAVeo4kGR0eAmZtr5cnyHCXYQ9hua2bKVz6U"
+    participantInstagram: "contestant22",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlIisRQ7JSFP5Gl7bHVfXtN1SYJTw6qQgpzm3K"
   },
   {
     id: 23,
-    participantInstagram: "timilehinnn_",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlOVFknULZKfS9sadLroeTAbYCBIQyMj32150G"
+    participantInstagram: "contestant23",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlmAIgLHDLnOXd4BwTslftVWcp9DaC5SEuIb36"
   },
   {
     id: 24,
-    participantInstagram: "_chantellea",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlDrBuNMlU48PSwRtzvbGndWMEThYI5FCofp31"
+    participantInstagram: "contestant24",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Gl8WqDPsA3BTYZt1nV5mpqQrFdWHAvb9Excg6G"
   },
   {
     id: 25,
-    participantInstagram: "hirakish_",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Glrzf4y0ltiQwnKO2l03A8mpTGL1efPC6jMzs5"
+    participantInstagram: "contestant25",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlvMKsDTxErK3RUHaPhbAkWJXzBdZYVsDIQule"
   },
   {
     id: 26,
-    participantInstagram: "k_sznn",
-    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlY8mcBypThHMi36wVBSdPICxAvgotbQFfjsDn"
+    participantInstagram: "contestant26",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlNS9LoT86sFjL7pBq1fMhwOxDtKYuZWlASIG2"
   },
-
+  {
+    id: 27,
+    participantInstagram: "contestant27",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Glm4Qp7JDLnOXd4BwTslftVWcp9DaC5SEuIb36"
+  },
+  {
+    id: 28,
+    participantInstagram: "contestant28",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GllNWgtONkGR0eAmZtr5cnyHCXYQ9hua2bKVz6"
+  },
+  {
+    id: 29,
+    participantInstagram: "contestant29",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlLB1k2WGNiuxz17KGMZVSdhwY8BAEjvlO5r4Q"
+  },
+  {
+    id: 30,
+    participantInstagram: "contestant30",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlT9RWMO4xZKJ3qmipGdCjuwIl9D7caevgyTkP"
+  },
+  {
+    id: 31,
+    participantInstagram: "contestant31",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Gl9kImW1HspafkqRYnE0SJolMwmud926IZiVWC"
+  }
 ];

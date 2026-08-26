@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { outfits } from '@/data/outfits';
+import { getVoteTypeBadge, isPaidVote, getVoteCount } from '@/lib/vote-meta';
 
 function formatVoteTime(timestamp) {
   if (!timestamp) return '';
@@ -12,6 +13,23 @@ function formatVoteTime(timestamp) {
     hour: 'numeric',
     minute: '2-digit',
   });
+}
+
+function VoteTypeBadge({ vote }) {
+  const typeBadge = getVoteTypeBadge(vote);
+  return <span className={`dash-badge ${typeBadge.className}`}>{typeBadge.label}</span>;
+}
+
+function VoteStatusBadge({ status }) {
+  return (
+    <span
+      className={`dash-badge ${
+        status === 'pending' ? 'dash-badge-pending' : 'dash-badge-approved'
+      }`}
+    >
+      {status}
+    </span>
+  );
 }
 
 function ChevronIcon({ open = false }) {
@@ -32,6 +50,15 @@ function ChevronIcon({ open = false }) {
         strokeLinejoin="round"
       />
     </svg>
+  );
+}
+
+function VoteRowBadges({ vote, status }) {
+  return (
+    <div className="dash-row-badges">
+      <VoteTypeBadge vote={vote} />
+      {status && <VoteStatusBadge status={status} />}
+    </div>
   );
 }
 
@@ -70,6 +97,7 @@ export default function AdminDashboard() {
   const [processingVotes, setProcessingVotes] = useState(new Set());
   const [authError, setAuthError] = useState('');
   const [voteFilter, setVoteFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
   const [openSections, setOpenSections] = useState(() => new Set(['pending', 'log', 'results']));
   const [expandedOutfits, setExpandedOutfits] = useState(() => new Set());
 
@@ -207,6 +235,15 @@ export default function AdminDashboard() {
         ? allVotes.filter((v) => v.status === 'approved')
         : allVotes;
 
+  const filteredByType =
+    typeFilter === 'paid'
+      ? filteredVotes.filter((v) => isPaidVote(v))
+      : typeFilter === 'free'
+        ? filteredVotes.filter((v) => !isPaidVote(v))
+        : filteredVotes;
+
+  const pendingPaidCount = sortedPending.filter((v) => isPaidVote(v)).length;
+
   if (!isAuthenticated) {
     return (
       <div className="container">
@@ -257,6 +294,10 @@ export default function AdminDashboard() {
           <div className="dash-summary-label">Pending</div>
         </div>
         <div className="dash-summary-stat">
+          <div className="dash-summary-value">{pendingPaidCount}</div>
+          <div className="dash-summary-label">Paid pending</div>
+        </div>
+        <div className="dash-summary-stat">
           <div className="dash-summary-value">{allVotes.length}</div>
           <div className="dash-summary-label">Total</div>
         </div>
@@ -265,7 +306,7 @@ export default function AdminDashboard() {
       <CollapsibleSection
         id="log"
         title="Vote log"
-        badge={filteredVotes.length}
+        badge={filteredByType.length}
         open={openSections.has('log')}
         onToggle={toggleSection}
       >
@@ -281,27 +322,40 @@ export default function AdminDashboard() {
             </button>
           ))}
         </div>
+        <div className="dash-filters dash-filters-type">
+          {['all', 'paid', 'free'].map((filter) => (
+            <button
+              key={filter}
+              type="button"
+              className={`dash-filter-btn dash-filter-btn-type${typeFilter === filter ? ' is-active' : ''}${filter === 'paid' ? ' is-paid' : ''}`}
+              onClick={() => setTypeFilter(filter)}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
 
-        {filteredVotes.length === 0 ? (
+        {filteredByType.length === 0 ? (
           <div className="dash-empty">No votes yet</div>
         ) : (
-          filteredVotes.map((vote) => {
+          filteredByType.map((vote) => {
             const participant = getParticipant(vote.outfitId);
+            const voteWeight = getVoteCount(vote);
             return (
-              <div key={vote.id} className="dash-row">
+              <div
+                key={vote.id}
+                className={`dash-row${isPaidVote(vote) ? ' is-paid' : ''}`}
+              >
                 <div className="dash-row-main">
                   <div className="dash-row-title">
                     @{vote.username} → @{participant}
+                    {voteWeight > 1 && (
+                      <span className="dash-row-weight"> · {voteWeight} votes</span>
+                    )}
                   </div>
                   <div className="dash-row-sub">{formatVoteTime(vote.timestamp)}</div>
                 </div>
-                <span
-                  className={`dash-badge ${
-                    vote.status === 'pending' ? 'dash-badge-pending' : 'dash-badge-approved'
-                  }`}
-                >
-                  {vote.status}
-                </span>
+                <VoteRowBadges vote={vote} status={vote.status} />
               </div>
             );
           })
@@ -319,16 +373,25 @@ export default function AdminDashboard() {
           {sortedPending.map((vote) => {
             const isProcessing = processingVotes.has(vote.id);
             const participant = getParticipant(vote.outfitId);
+            const voteWeight = getVoteCount(vote);
 
             return (
-              <div key={vote.id} className="dash-row">
+              <div
+                key={vote.id}
+                className={`dash-row${isPaidVote(vote) ? ' is-paid' : ''}`}
+              >
                 <div className="dash-row-main">
                   <div className="dash-row-title">
                     @{vote.username} → @{participant}
+                    {voteWeight > 1 && (
+                      <span className="dash-row-weight"> · {voteWeight} votes</span>
+                    )}
                   </div>
                   <div className="dash-row-sub">{formatVoteTime(vote.timestamp)}</div>
                 </div>
-                <div className="dash-actions">
+                <div className="dash-actions-wrap">
+                  <VoteTypeBadge vote={vote} />
+                  <div className="dash-actions">
                   <button
                     type="button"
                     className="dash-btn dash-btn-approve"
@@ -345,6 +408,7 @@ export default function AdminDashboard() {
                   >
                     Reject
                   </button>
+                  </div>
                 </div>
               </div>
             );
@@ -390,7 +454,10 @@ export default function AdminDashboard() {
                 <div className="dash-voter-list">
                   {votersForOutfit.map((vote) => (
                     <div key={vote.id} className="dash-voter-item">
-                      <strong>@{vote.username}</strong>
+                      <div className="dash-voter-main">
+                        <strong>@{vote.username}</strong>
+                        <VoteTypeBadge vote={vote} />
+                      </div>
                       <span>{formatVoteTime(vote.timestamp)}</span>
                     </div>
                   ))}

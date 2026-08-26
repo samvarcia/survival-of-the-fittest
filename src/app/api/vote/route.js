@@ -52,7 +52,11 @@ export async function POST(request) {
       );
     }
 
-    const voteData = await submitVote(outfitId, normalizedUsername);
+    const voteData = await submitVote(outfitId, normalizedUsername, {
+      voteType: 'free',
+      voteCount: 1,
+      amount: 0,
+    });
 
     return NextResponse.json({
       success: true,

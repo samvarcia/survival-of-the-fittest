@@ -92,11 +92,33 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
         return;
       }
 
-      const url = new URL(selectedPack.stripeUrl);
-      url.searchParams.set('outfitId', String(outfit.id));
-      url.searchParams.set('username', username.trim());
-      url.searchParams.set('votes', String(selectedPack.votes));
-      window.location.href = url.toString();
+      try {
+        const response = await fetch('/api/stripe/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            outfitId: outfit.id,
+            username: username.trim(),
+            votes: selectedPack.votes,
+            captchaToken,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (data.success && data.checkoutUrl) {
+          window.location.href = data.checkoutUrl;
+          return;
+        }
+
+        setError(data.error || 'Checkout failed');
+        resetCaptcha();
+        setIsLoading(false);
+      } catch {
+        setError('Network error');
+        resetCaptcha();
+        setIsLoading(false);
+      }
       return;
     }
 

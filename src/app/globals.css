@@ -1643,8 +1643,19 @@ body.theme-main-page {
 
 .dash-filters {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
   padding: 0 8px 8px;
+}
+
+.dash-filters-type {
+  padding-top: 0;
+}
+
+.dash-filter-btn-type.is-paid.is-active {
+  background: rgba(184, 134, 11, 0.22);
+  border-color: rgba(184, 134, 11, 0.45);
+  color: #7a5a00;
 }
 
 .dash-filter-btn {
@@ -1675,6 +1686,31 @@ body.theme-main-page {
 
 .dash-row + .dash-row {
   margin-top: 4px;
+}
+
+.dash-row.is-paid {
+  background: rgba(184, 134, 11, 0.08);
+}
+
+.dash-row-weight {
+  font-weight: 600;
+  color: #7a5a00;
+}
+
+.dash-row-badges {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.dash-actions-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .dash-row-main {
@@ -1711,6 +1747,16 @@ body.theme-main-page {
 .dash-badge-approved {
   background: rgba(76, 175, 80, 0.15);
   color: #2e7d32;
+}
+
+.dash-badge-free {
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--dark-gray);
+}
+
+.dash-badge-paid {
+  background: rgba(184, 134, 11, 0.22);
+  color: #7a5a00;
 }
 
 .dash-actions {
@@ -1809,9 +1855,18 @@ body.theme-main-page {
 .dash-voter-item {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 8px;
   font-size: 12px;
   color: var(--dark-gray);
+}
+
+.dash-voter-main {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  min-width: 0;
 }
 
 .dash-voter-item strong {
