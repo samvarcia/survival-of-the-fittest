@@ -161,7 +161,7 @@ export default function HomePage() {
             </div>
 
             <button type="button" className="ranking-button" onClick={() => setShowRanking(true)}>
-              🏆 RANKING
+              FINALS
             </button>
           </div>
         </div>

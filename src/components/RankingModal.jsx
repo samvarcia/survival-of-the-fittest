@@ -34,7 +34,7 @@ export default function RankingModal({ stats, outfits, onClose }) {
     <div className={`modal-overlay ranking-overlay${closing ? ' is-closing' : ''}`} onClick={handleOverlayClick}>
       <div className="ranking-modal">
         <div className="ranking-modal-header">
-          <h2>🏆 RANKING</h2>
+          <h2>FINALS</h2>
           <button type="button" className="ranking-close" onClick={requestClose} aria-label="Close">
             ×
           </button>
@@ -53,21 +53,6 @@ export default function RankingModal({ stats, outfits, onClose }) {
                 <div className="ranking-podium-place">{rankLabel(index)}</div>
                 <div className="ranking-podium-handle">{getOutfitLabel(outfit)}</div>
                 <div className="ranking-podium-votes">{outfit.votes}</div>
-              </div>
-            ))}
-          </div>
-
-          <div className="ranking-list">
-            {ranked.map((outfit, index) => (
-              <div key={outfit.id} className="ranking-row">
-                <span className="ranking-row-place">{index + 1}</span>
-                <SmoothImage
-                  src={outfit.image}
-                  alt={getOutfitLabel(outfit)}
-                  className="ranking-row-image"
-                />
-                <span className="ranking-row-handle">{getOutfitLabel(outfit)}</span>
-                <span className="ranking-row-votes">{outfit.votes}</span>
               </div>
             ))}
           </div>
