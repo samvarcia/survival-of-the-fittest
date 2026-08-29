@@ -610,6 +610,12 @@ body.theme-main-page {
     order: 3;
   }
 
+  .theme-main .voting-closed-panel {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    min-height: 240px;
+  }
+
   .main-page-foot {
     order: 4;
   }
@@ -737,6 +743,32 @@ body.theme-main-page {
     filter: none;
     transition: none;
   }
+}
+
+.theme-main .voting-closed-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 280px;
+  padding: 40px 28px;
+  box-sizing: border-box;
+  text-align: center;
+  background: rgba(155, 28, 22, 0.07);
+  border: 1px solid rgba(155, 28, 22, 0.22);
+  border-radius: 16px;
+  corner-shape: squircle;
+}
+
+.theme-main .voting-closed-message {
+  margin: 0;
+  max-width: 22ch;
+  font-size: clamp(20px, 5vw, 28px);
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  color: #9B1C16;
+  text-wrap: balance;
 }
 
 .theme-main .vote-stories-shell {
@@ -1437,6 +1469,14 @@ body.theme-main-page {
     width: 190px;
     font-size: 22px;
     padding: 8px 20px;
+  }
+
+  .theme-main .voting-closed-panel {
+    min-height: 0;
+    height: 100%;
+    max-width: 360px;
+    margin-inline: auto;
+    padding: 32px 24px;
   }
 
   .theme-main .vote-stories-shell {

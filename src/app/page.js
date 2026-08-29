@@ -167,12 +167,19 @@ export default function HomePage() {
         </div>
 
         <div className="main-page-carousel">
-          <VoteWheel
-            outfits={outfits}
-            onVote={handleVote}
-            votedFor={votedFor}
-            votingClosed={votingClosed}
-          />
+          {votingClosed ? (
+            <div className="voting-closed-panel" role="status" aria-live="polite">
+              <p className="voting-closed-message">
+                Voting is closed, thanks for participating
+              </p>
+            </div>
+          ) : (
+            <VoteWheel
+              outfits={outfits}
+              onVote={handleVote}
+              votedFor={votedFor}
+            />
+          )}
         </div>
       </main>
 
