@@ -608,11 +608,15 @@ body.theme-main-page {
 
   .main-page-carousel {
     order: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
   }
 
   .theme-main .voting-closed-panel {
-    width: 100vw;
-    margin-left: calc(50% - 50vw);
+    width: 100%;
+    margin-inline: auto;
     min-height: 240px;
   }
 
@@ -750,6 +754,8 @@ body.theme-main-page {
   align-items: center;
   justify-content: center;
   width: 100%;
+  max-width: 360px;
+  margin-inline: auto;
   min-height: 280px;
   padding: 40px 28px;
   box-sizing: border-box;
@@ -761,13 +767,14 @@ body.theme-main-page {
 }
 
 .theme-main .voting-closed-message {
-  margin: 0;
+  margin: 0 auto;
   max-width: 22ch;
   font-size: clamp(20px, 5vw, 28px);
   font-weight: 700;
   line-height: 1.4;
   letter-spacing: 0.02em;
   color: #9B1C16;
+  text-align: center;
   text-wrap: balance;
 }
 
@@ -1428,6 +1435,7 @@ body.theme-main-page {
     height: 100%;
     display: flex;
     align-items: center;
+    justify-content: center;
     overflow: hidden;
   }
 
@@ -1473,7 +1481,7 @@ body.theme-main-page {
 
   .theme-main .voting-closed-panel {
     min-height: 0;
-    height: 100%;
+    height: auto;
     max-width: 360px;
     margin-inline: auto;
     padding: 32px 24px;
