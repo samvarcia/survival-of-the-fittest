@@ -8,7 +8,7 @@ import 'swiper/css/free-mode';
 import SmoothImage, { preloadImages } from '@/components/SmoothImage';
 import { getOutfitLabel } from '@/lib/outfit-label';
 
-const CARD_TONES = ['#E8D5A4', '#F3E6C4', '#DCC9A0', '#EFE0B5', '#E4D0A8'];
+const CARD_TONES = ['#121212', '#161010', '#101010', '#1a0f0f', '#141212'];
 
 function applyCardMotion(swiper, durationMs) {
   const duration = `${Math.max(0, durationMs)}ms`;
@@ -52,6 +52,8 @@ export default function VoteWheel({ outfits, onVote, votedFor, votingClosed = fa
     return () => cancel(id);
   }, [outfits]);
 
+  const canLoop = outfits.length > 2;
+
   return (
     <div className={`vote-stories-shell${votingClosed ? ' is-closed' : ''}`}>
       <Swiper
@@ -59,11 +61,11 @@ export default function VoteWheel({ outfits, onVote, votedFor, votingClosed = fa
         className="vote-stories"
         modules={isDesktop ? [FreeMode, Mousewheel] : []}
         grabCursor
-        loop
+        loop={canLoop}
         centeredSlides
         slidesPerView="auto"
-        spaceBetween={isDesktop ? 16 : 12}
-        speed={isDesktop ? 680 : 420}
+        spaceBetween={isDesktop ? 16 : 14}
+        speed={isDesktop ? 680 : 450}
         cssEasing="cubic-bezier(0.22, 1, 0.36, 1)"
         freeMode={
           isDesktop
@@ -86,20 +88,21 @@ export default function VoteWheel({ outfits, onVote, votedFor, votingClosed = fa
               }
             : false
         }
-        resistanceRatio={isDesktop ? 0.55 : 0.35}
-        threshold={isDesktop ? 4 : 2}
+        resistanceRatio={0.45}
+        threshold={isDesktop ? 4 : 6}
         shortSwipes
-        longSwipesRatio={0.18}
-        longSwipesMs={220}
+        longSwipesRatio={0.25}
+        longSwipesMs={240}
         followFinger
         slideToClickedSlide
         watchSlidesProgress
-        touchRatio={isDesktop ? 1.1 : 1.35}
-        touchAngle={40}
-        touchMoveStopPropagation
+        touchRatio={1}
+        touchAngle={35}
         onProgress={(swiper) => applyCardMotion(swiper, 0)}
         onSetTransition={(swiper, duration) => applyCardMotion(swiper, duration)}
-        onInit={(swiper) => applyCardMotion(swiper, 0)}
+        onInit={(swiper) => {
+          applyCardMotion(swiper, 0);
+        }}
         onSlideChange={(swiper) => {
           const indexes = [
             swiper.realIndex,
@@ -110,7 +113,7 @@ export default function VoteWheel({ outfits, onVote, votedFor, votingClosed = fa
           preloadImages(
             indexes
               .map((i) => outfits[((i % outfits.length) + outfits.length) % outfits.length]?.image)
-              .filter(Boolean)
+              .filter(Boolean),
           );
         }}
       >

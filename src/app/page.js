@@ -105,7 +105,7 @@ export default function HomePage() {
     document.body.classList.add('theme-main-page');
     const themeMeta = document.querySelector('meta[name="theme-color"]');
     const previousTheme = themeMeta?.getAttribute('content');
-    themeMeta?.setAttribute('content', '#FFEDC5');
+    themeMeta?.setAttribute('content', '#050505');
     return () => {
       document.documentElement.classList.remove('theme-main-page');
       document.body.classList.remove('theme-main-page');
@@ -125,6 +125,31 @@ export default function HomePage() {
 
   return (
     <div className="theme-main">
+      <div className="party-flies" aria-hidden="true">
+        {[0, 1, 2, 3].map((i) => (
+          <span key={i} className="party-fly">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="32" cy="34" rx="5" ry="8" fill="currentColor" />
+              <path
+                d="M32 28c-8-10-18-12-24-8 6 2 12 10 16 16"
+                stroke="currentColor"
+                strokeWidth="1.4"
+                fill="none"
+                opacity="0.85"
+              />
+              <path
+                d="M32 28c8-10 18-12 24-8-6 2-12 10-16 16"
+                stroke="currentColor"
+                strokeWidth="1.4"
+                fill="none"
+                opacity="0.85"
+              />
+              <path d="M30 42l-3 8M34 42l3 8M28 38l-6 4M36 38l6 4" stroke="currentColor" strokeWidth="1.2" />
+            </svg>
+          </span>
+        ))}
+      </div>
+
       <main className="main-page-layout">
         <div className="main-page-sidebar">
           <Header />
@@ -156,7 +181,7 @@ export default function HomePage() {
           <div className="main-page-foot">
             <div className="intro">
               <p>
-                Survival of the Fittest is back. Vote for the best fit — you must follow @survivalofthefittttest for your vote to count. Who will survive?
+                Survival of the Fittest Halloween — vote for the best fit. You must follow @survivalofthefittttest for your vote to count. Who will survive the night?
               </p>
             </div>
 

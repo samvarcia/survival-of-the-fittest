@@ -8,10 +8,10 @@ if (!token) {
   process.exit(1);
 }
 
-const srcDir = path.join(process.env.HOME, 'Downloads/sotfImages-web');
+const srcDir = path.join(process.env.HOME, 'Downloads/BEST_TINIFIED');
 const files = fs.readdirSync(srcDir)
-  .filter((f) => f.toLowerCase().endsWith('.jpg'))
-  .sort();
+  .filter((f) => /\.(jpe?g|png|webp)$/i.test(f))
+  .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
 console.log(`Found ${files.length} files in ${srcDir}`);
 
@@ -23,7 +23,13 @@ for (let i = 0; i < files.length; i += batchSize) {
   const batch = files.slice(i, i + batchSize);
   const utFiles = batch.map((name) => {
     const buf = fs.readFileSync(path.join(srcDir, name));
-    return new UTFile([buf], name, { type: 'image/jpeg' });
+    const lower = name.toLowerCase();
+    const type = lower.endsWith('.png')
+      ? 'image/png'
+      : lower.endsWith('.webp')
+        ? 'image/webp'
+        : 'image/jpeg';
+    return new UTFile([buf], name, { type });
   });
 
   console.log(`Uploading batch ${i / batchSize + 1}: ${batch.join(', ')}`);

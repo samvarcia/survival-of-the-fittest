@@ -142,18 +142,18 @@ if (existingActive.length === 0) {
     insert into parties (id, name, status, voting_end_at, intro, ranking_label, outfits, notes)
     values (
       ${activeId},
-      ${'November 2026'},
+      ${'Halloween 2026'},
       ${'active'},
       ${'2026-11-09T17:00:00.000Z'},
-      ${'Survival of the Fittest is back. Vote for the best fit — you must follow @survivalofthefittttest for your vote to count. Who will survive?'},
+      ${'Survival of the Fittest Halloween — vote for the best fit. You must follow @survivalofthefittttest for your vote to count. Who will survive the night?'},
       ${'RANKING'},
       ${sql.json(outfitSnapshot)},
-      ${'Fresh party on Supabase. Update contestants in src/data/outfits.js when ready.'}
+      ${'Halloween party on Supabase. Update contestants in src/data/outfits.js when ready.'}
     )
     on conflict (id) do nothing
   `;
 
-  console.log('Seeded archived finals shell + active November 2026 party');
+  console.log('Seeded archived finals shell + active Halloween 2026 party');
 } else {
   console.log('Active party already exists:', existingActive[0].id);
 }
