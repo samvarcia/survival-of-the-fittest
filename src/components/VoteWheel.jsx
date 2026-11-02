@@ -6,6 +6,7 @@ import { FreeMode, Mousewheel } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/free-mode';
 import SmoothImage, { preloadImages } from '@/components/SmoothImage';
+import ImageLightbox from '@/components/ImageLightbox';
 import { getOutfitLabel } from '@/lib/outfit-label';
 
 const CARD_TONES = ['#121212', '#161010', '#101010', '#1a0f0f', '#141212'];
@@ -31,6 +32,7 @@ function applyCardMotion(swiper, durationMs) {
 
 export default function VoteWheel({ outfits, onVote, votedFor, votingClosed = false }) {
   const [isDesktop, setIsDesktop] = useState(false);
+  const [previewOutfit, setPreviewOutfit] = useState(null);
 
   useEffect(() => {
     const media = window.matchMedia('(min-width: 768px) and (hover: hover) and (pointer: fine)');
@@ -120,31 +122,58 @@ export default function VoteWheel({ outfits, onVote, votedFor, votingClosed = fa
         {outfits.map((outfit, index) => (
           <SwiperSlide key={outfit.id}>
             {({ isActive }) => (
-              <button
-                type="button"
-                className={`vote-story-card ${votedFor === outfit.id ? 'voted' : ''}${votingClosed ? ' is-closed' : ''}`}
+              <div
+                className={`vote-story-card ${votedFor === outfit.id ? 'voted' : ''}${votingClosed ? ' is-closed' : ''}${isActive ? ' is-active' : ''}`}
                 style={{ background: CARD_TONES[index % CARD_TONES.length] }}
-                onClick={() => {
-                  if (votingClosed) return;
-                  if (isActive) onVote(outfit);
-                }}
               >
-                <SmoothImage
-                  src={outfit.image}
-                  alt={`Outfit ${getOutfitLabel(outfit)}`}
-                  className="vote-story-image"
-                  priority={index < 3}
-                />
-                <div className="vote-story-footer">
+                <button
+                  type="button"
+                  className="vote-story-image-btn"
+                  aria-label={`View ${getOutfitLabel(outfit)} full size`}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    if (!isActive) return;
+                    setPreviewOutfit(outfit);
+                  }}
+                >
+                  <SmoothImage
+                    src={outfit.image}
+                    alt={`Outfit ${getOutfitLabel(outfit)}`}
+                    className="vote-story-image"
+                    priority={index < 3}
+                  />
+                </button>
+                <button
+                  type="button"
+                  className="vote-story-footer"
+                  disabled={votingClosed || !isActive}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    if (votingClosed || !isActive) return;
+                    onVote(outfit);
+                  }}
+                >
                   <span className="vote-story-handle">
                     {getOutfitLabel(outfit)}
                   </span>
-                </div>
-              </button>
+                  {!votingClosed && (
+                    <span className="vote-story-cta">
+                      {votedFor === outfit.id ? 'Voted' : 'Tap to vote'}
+                    </span>
+                  )}
+                </button>
+              </div>
             )}
           </SwiperSlide>
         ))}
       </Swiper>
+
+      {previewOutfit && (
+        <ImageLightbox
+          outfit={previewOutfit}
+          onClose={() => setPreviewOutfit(null)}
+        />
+      )}
     </div>
   );
 }

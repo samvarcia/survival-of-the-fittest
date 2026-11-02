@@ -795,10 +795,12 @@ body.theme-main-page {
 
   .theme-main .must {
     margin: 0;
-    max-width: 28ch;
+    max-width: 22em;
     font-size: 12px;
-    line-height: 1.45;
+    line-height: 1.65;
+    letter-spacing: 0.04em;
     text-align: center;
+    text-wrap: balance;
   }
 
   .theme-main .main-page-lead .timer-block {
@@ -1053,12 +1055,17 @@ body.theme-main-page {
 
 .theme-main .must {
   color: var(--party-muted);
+  line-height: 1.65;
+  letter-spacing: 0.04em;
 }
 
 .theme-main .must a {
   color: var(--party-neon);
-  border-bottom: 1px solid currentColor;
-  padding-bottom: 1px;
+  border-bottom: none;
+  padding-bottom: 0;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
   text-shadow: 0 0 12px rgba(255, 42, 31, 0.35);
 }
 
@@ -1146,12 +1153,9 @@ body.theme-main-page {
   border-radius: 16px;
   corner-shape: squircle;
   overflow: hidden;
-  cursor: pointer;
   text-align: center;
   color: var(--party-text);
   background: var(--party-surface);
-  appearance: none;
-  -webkit-appearance: none;
   -webkit-tap-highlight-color: transparent;
   transform: scale(0.94);
   opacity: 0.72;
@@ -1162,6 +1166,25 @@ body.theme-main-page {
   will-change: transform, opacity;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+}
+
+.theme-main .vote-story-image-btn {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: zoom-in;
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.theme-main .vote-story-card:not(.is-active) .vote-story-image-btn,
+.theme-main .vote-story-card:not(.is-active) .vote-story-footer {
+  cursor: default;
+  pointer-events: none;
 }
 
 .theme-main .swiper-slide-active .vote-story-card {
@@ -1199,14 +1222,29 @@ body.theme-main-page {
 
 .theme-main .vote-story-footer {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 4px;
   width: 100%;
   box-sizing: border-box;
+  margin: 0;
   padding: 14px 16px 16px;
-  text-align: center;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(188, 17, 13, 0.12) 100%);
+  border: none;
   border-top: 1px solid rgba(255, 42, 31, 0.12);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(188, 17, 13, 0.12) 100%);
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.theme-main .vote-story-footer:disabled {
+  cursor: default;
+  opacity: 1;
 }
 
 .theme-main .vote-story-handle {
@@ -1221,8 +1259,95 @@ body.theme-main-page {
   color: var(--party-text);
 }
 
+.theme-main .vote-story-cta {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--party-neon);
+  text-shadow: 0 0 10px rgba(255, 42, 31, 0.35);
+}
+
 .theme-main .swiper-slide-active .vote-story-handle {
   text-shadow: 0 0 12px rgba(255, 42, 31, 0.35);
+}
+
+.theme-main .image-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(10px);
+  animation: imageLightboxIn 0.24s ease-out;
+}
+
+.theme-main .image-lightbox.is-closing {
+  animation: imageLightboxOut 0.22s ease-in forwards;
+}
+
+.theme-main .image-lightbox-close {
+  position: absolute;
+  top: max(12px, env(safe-area-inset-top));
+  right: 14px;
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: none;
+  color: #fff;
+  font-size: 34px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.theme-main .image-lightbox-frame {
+  width: min(100%, 520px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.theme-main .image-lightbox-image {
+  width: 100%;
+  max-height: min(78dvh, 820px);
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.55),
+    0 0 28px rgba(255, 42, 31, 0.22);
+}
+
+.theme-main .image-lightbox-caption {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--party-text);
+  text-shadow: 0 0 12px rgba(255, 42, 31, 0.3);
+}
+
+@keyframes imageLightboxIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes imageLightboxOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 .theme-main .outfit-card {
@@ -1835,7 +1960,8 @@ body.theme-main-page {
     max-width: none;
     margin: 0;
     font-size: 12px;
-    line-height: 1.45;
+    line-height: 1.65;
+    letter-spacing: 0.04em;
     text-align: left;
   }
 
