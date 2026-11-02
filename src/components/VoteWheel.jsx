@@ -63,8 +63,8 @@ export default function VoteWheel({ outfits, onVote, votedFor, votingClosed = fa
         grabCursor
         loop={canLoop}
         centeredSlides
-        slidesPerView="auto"
-        spaceBetween={isDesktop ? 16 : 14}
+        slidesPerView={isDesktop ? 'auto' : 1.2}
+        spaceBetween={isDesktop ? 16 : 12}
         speed={isDesktop ? 680 : 450}
         cssEasing="cubic-bezier(0.22, 1, 0.36, 1)"
         freeMode={
@@ -89,10 +89,10 @@ export default function VoteWheel({ outfits, onVote, votedFor, votingClosed = fa
             : false
         }
         resistanceRatio={0.45}
-        threshold={isDesktop ? 4 : 6}
+        threshold={isDesktop ? 4 : 8}
         shortSwipes
-        longSwipesRatio={0.25}
-        longSwipesMs={240}
+        longSwipesRatio={0.3}
+        longSwipesMs={260}
         followFinger
         slideToClickedSlide
         watchSlidesProgress

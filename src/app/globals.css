@@ -556,9 +556,12 @@ body.theme-main-page {
   --party-blood: #bc110d;
   --party-neon: #ff2a1f;
   --party-neon-soft: rgba(255, 42, 31, 0.45);
+  --party-gold: #ffd84a;
+  --party-gold-soft: rgba(255, 216, 74, 0.45);
   --party-blood-dim: rgba(188, 17, 13, 0.18);
   --party-border: rgba(255, 255, 255, 0.12);
   --party-glow: 0 0 18px rgba(255, 42, 31, 0.35), 0 0 42px rgba(188, 17, 13, 0.22);
+  --party-gold-glow: 0 0 16px rgba(255, 216, 74, 0.4), 0 0 36px rgba(255, 180, 40, 0.22);
   background-color: var(--party-bg);
   color: var(--party-text);
   -webkit-tap-highlight-color: transparent;
@@ -583,9 +586,12 @@ body.theme-main-page {
   --party-blood: #bc110d;
   --party-neon: #ff2a1f;
   --party-neon-soft: rgba(255, 42, 31, 0.45);
+  --party-gold: #ffd84a;
+  --party-gold-soft: rgba(255, 216, 74, 0.45);
   --party-blood-dim: rgba(188, 17, 13, 0.18);
   --party-border: rgba(255, 255, 255, 0.12);
   --party-glow: 0 0 18px rgba(255, 42, 31, 0.35), 0 0 42px rgba(188, 17, 13, 0.22);
+  --party-gold-glow: 0 0 16px rgba(255, 216, 74, 0.4), 0 0 36px rgba(255, 180, 40, 0.22);
   position: relative;
   isolation: isolate;
   min-height: 100vh;
@@ -731,8 +737,9 @@ body.theme-main-page {
 @media (max-width: 767px) {
   .main-page-layout {
     max-width: 100%;
-    padding: 10px 22px 132px;
+    padding: 18px 22px 132px;
     align-items: center;
+    overflow: visible;
   }
 
   .main-page-sidebar {
@@ -743,10 +750,21 @@ body.theme-main-page {
   .theme-main .sotf-header {
     width: 70%;
     max-width: 260px;
-    margin: 8px auto 14px;
-    padding: 10px 12px;
+    margin: 4px auto 10px;
+    padding: 18px 16px;
     overflow: visible;
     background: transparent;
+  }
+
+  .theme-main .sotf-header::before {
+    inset: 0;
+    background: radial-gradient(
+      ellipse 78% 62% at 50% 48%,
+      rgba(255, 42, 31, 0.42),
+      rgba(255, 42, 31, 0.12) 48%,
+      transparent 72%
+    );
+    filter: blur(12px);
   }
 
   .theme-main .sotf-header img {
@@ -754,7 +772,8 @@ body.theme-main-page {
     height: auto;
     display: block;
     margin: 0 auto;
-    filter: drop-shadow(0 0 18px rgba(255, 42, 31, 0.45));
+    /* Keep glow inside padded header so it isn't clipped by page overflow */
+    filter: drop-shadow(0 0 10px rgba(255, 42, 31, 0.35));
   }
 
   .main-page-lead {
@@ -801,30 +820,46 @@ body.theme-main-page {
   .main-page-carousel {
     order: 3;
     display: block;
-    width: 100vw;
-    max-width: 100vw;
-    margin: 18px 0 8px;
-    margin-left: calc(50% - 50vw);
+    width: calc(100% + 44px);
+    max-width: none;
+    margin: 10px -22px 4px;
+    padding: 20px 0 24px;
     position: relative;
+    /* Padding keeps neon card glow inside the clip box */
     overflow: hidden;
   }
 
   .theme-main .vote-stories-shell {
     width: 100%;
     margin: 0;
+    overflow: visible;
   }
 
   .theme-main .vote-stories {
     width: 100%;
-    padding: 10px 0 14px;
-    overflow: hidden;
+    padding: 0;
+    overflow: visible;
   }
 
   .theme-main .vote-stories .swiper-slide {
-    width: 72vw;
-    max-width: 280px;
+    width: auto;
     height: auto;
     box-sizing: border-box;
+    overflow: visible;
+  }
+
+  .theme-main .vote-story-card {
+    /* Softer, tighter glow so it fits the padded clip area */
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.4);
+  }
+
+  .theme-main .swiper-slide-active .vote-story-card {
+    border-color: rgba(255, 42, 31, 0.65);
+    box-shadow:
+      0 12px 26px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(255, 42, 31, 0.28),
+      0 0 18px rgba(255, 42, 31, 0.38),
+      0 0 36px rgba(188, 17, 13, 0.2);
   }
 
   .theme-main .voting-closed-panel {
@@ -880,15 +915,16 @@ body.theme-main-page {
 .theme-main .sotf-header::before {
   content: "";
   position: absolute;
-  inset: 8% 0;
+  inset: 0;
   z-index: 0;
   pointer-events: none;
   background: radial-gradient(
-    ellipse 70% 55% at 50% 50%,
-    rgba(255, 42, 31, 0.38),
-    transparent 70%
+    ellipse 72% 58% at 50% 48%,
+    rgba(255, 42, 31, 0.36),
+    rgba(255, 42, 31, 0.1) 50%,
+    transparent 74%
   );
-  filter: blur(10px);
+  filter: blur(14px);
 }
 
 .theme-main .sotf-header img {
@@ -897,7 +933,7 @@ body.theme-main-page {
   width: 100%;
   height: auto;
   display: block;
-  filter: drop-shadow(0 0 14px rgba(255, 42, 31, 0.35));
+  filter: drop-shadow(0 0 12px rgba(255, 42, 31, 0.3));
 }
 
 .theme-main .logo-image {
@@ -918,8 +954,9 @@ body.theme-main-page {
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--party-muted);
+  color: var(--party-gold);
   text-align: center;
+  text-shadow: 0 0 10px rgba(255, 216, 74, 0.35);
 }
 
 .theme-main .timer {
@@ -936,14 +973,16 @@ body.theme-main-page {
   padding: 10px 22px;
   overflow: hidden;
   font-variant-numeric: tabular-nums;
-  background-color: #000;
-  border: 1px solid rgba(255, 42, 31, 0.7);
+  background:
+    linear-gradient(180deg, rgba(255, 216, 74, 0.08), transparent 55%),
+    #0a0904;
+  border: 1px solid rgba(255, 216, 74, 0.75);
   border-radius: 8px;
   corner-shape: squircle;
-  box-shadow: var(--party-glow);
-  color: #fff;
-  text-shadow: 0 0 10px rgba(255, 42, 31, 0.55);
-  animation: partyNeonPulse 3.6s ease-in-out infinite;
+  box-shadow: var(--party-gold-glow);
+  color: var(--party-gold);
+  text-shadow: 0 0 12px rgba(255, 216, 74, 0.55);
+  animation: partyGoldPulse 3.6s ease-in-out infinite;
 }
 
 .theme-main .timer::before {
@@ -951,24 +990,30 @@ body.theme-main-page {
   position: absolute;
   inset: -40% -20%;
   z-index: -1;
-  background: radial-gradient(circle at 50% 50%, rgba(255, 42, 31, 0.22), transparent 62%);
-  opacity: 0.85;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 216, 74, 0.22), transparent 62%);
+  opacity: 0.9;
 }
 
 .theme-main .timer-block.is-closed .timer {
   animation: none;
   border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
   box-shadow: none;
   text-shadow: none;
 }
 
-@keyframes partyNeonPulse {
+.theme-main .timer-block.is-closed .timer-label {
+  color: var(--party-muted);
+  text-shadow: none;
+}
+
+@keyframes partyGoldPulse {
   0%,
   100% {
-    box-shadow: 0 0 14px rgba(255, 42, 31, 0.28), 0 0 30px rgba(188, 17, 13, 0.16);
+    box-shadow: 0 0 12px rgba(255, 216, 74, 0.28), 0 0 28px rgba(255, 180, 40, 0.14);
   }
   50% {
-    box-shadow: 0 0 22px rgba(255, 42, 31, 0.5), 0 0 48px rgba(188, 17, 13, 0.28);
+    box-shadow: 0 0 22px rgba(255, 216, 74, 0.55), 0 0 46px rgba(255, 180, 40, 0.28);
   }
 }
 
