@@ -185,7 +185,13 @@ export default function HomePage() {
               </p>
             </div>
 
-            <button type="button" className="ranking-button" onClick={() => setShowRanking(true)}>
+            <button
+              type="button"
+              className="ranking-button"
+              onClick={() => setShowRanking(true)}
+              aria-haspopup="dialog"
+              aria-expanded={showRanking}
+            >
               RANKING
             </button>
           </div>
