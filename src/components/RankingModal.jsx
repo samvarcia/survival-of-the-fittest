@@ -34,7 +34,7 @@ export default function RankingModal({ stats, outfits, onClose }) {
     <div className={`modal-overlay ranking-overlay${closing ? ' is-closing' : ''}`} onClick={handleOverlayClick}>
       <div className="ranking-modal">
         <div className="ranking-modal-header">
-          <h2>FINALS</h2>
+          <h2>RANKING</h2>
           <button type="button" className="ranking-close" onClick={requestClose} aria-label="Close">
             ×
           </button>

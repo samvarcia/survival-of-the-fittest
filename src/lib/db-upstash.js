@@ -1,322 +1,280 @@
-import { Redis } from '@upstash/redis';
-import { createRedisClient } from '@/lib/redis-config';
+import { getServiceSupabase } from '@/lib/supabase';
 import { getVoteCount } from '@/lib/vote-meta';
+import { requireActiveParty } from '@/lib/parties';
+import { outfits } from '@/data/outfits';
 
-const redis = createRedisClient(Redis);
+function mapVote(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    outfitId: row.outfit_id,
+    username: row.username,
+    timestamp: Number(row.timestamp),
+    approved: Boolean(row.approved),
+    verified: Boolean(row.verified),
+    voteType: row.vote_type || 'free',
+    voteCount: Number(row.vote_count) || 1,
+    amount: Number(row.amount) || 0,
+    currency: row.currency || 'CAD',
+    ...(row.stripe_session_id ? { stripeSessionId: row.stripe_session_id } : {}),
+    partyId: row.party_id,
+  };
+}
 
-// Clean key prefixes to avoid conflicts
-const VOTES_PREFIX = 'approved_vote:';
-const PENDING_PREFIX = 'pending_vote:';
-const VOTE_STATS_KEY = 'voting_statistics';
+async function ensureStatsRows(partyId, outfitIds = outfits.map((o) => o.id)) {
+  const supabase = getServiceSupabase();
+  const rows = outfitIds.map((outfitId) => ({
+    party_id: partyId,
+    outfit_id: outfitId,
+    votes: 0,
+  }));
 
-// Initialize vote stats for all outfits
+  const { error } = await supabase.from('vote_stats').upsert(rows, {
+    onConflict: 'party_id,outfit_id',
+    ignoreDuplicates: true,
+  });
+
+  if (error) throw error;
+}
+
 export async function initializeVoteStats(outfitIds) {
-  try {
-    const existingStats = await redis.get(VOTE_STATS_KEY);
-    
-    if (!existingStats) {
-      const initialStats = outfitIds.map(id => ({
-        outfitId: id,
-        votes: 0
-      }));
-      
-      await redis.set(VOTE_STATS_KEY, initialStats);
-      return initialStats;
-    }
-    
-    // Handle both object and string responses from Upstash
-    if (typeof existingStats === 'object') {
-      return existingStats;
-    }
-    
-    try {
-      return JSON.parse(existingStats);
-    } catch (parseError) {
-      console.warn('Failed to parse stats, reinitializing:', parseError);
-      const fallbackStats = outfitIds.map(id => ({ outfitId: id, votes: 0 }));
-      await redis.set(VOTE_STATS_KEY, fallbackStats);
-      return fallbackStats;
-    }
-  } catch (error) {
-    console.error('Error initializing vote stats:', error);
-    const fallbackStats = outfitIds.map(id => ({ outfitId: id, votes: 0 }));
-    await redis.set(VOTE_STATS_KEY, fallbackStats);
-    return fallbackStats;
-  }
+  const party = await requireActiveParty();
+  await ensureStatsRows(party.id, outfitIds);
+
+  const supabase = getServiceSupabase();
+  const { data, error } = await supabase
+    .from('vote_stats')
+    .select('outfit_id, votes')
+    .eq('party_id', party.id);
+
+  if (error) throw error;
+
+  const byId = new Map((data || []).map((row) => [row.outfit_id, row.votes]));
+  return outfitIds.map((outfitId) => ({
+    outfitId,
+    votes: Number(byId.get(outfitId)) || 0,
+  }));
 }
 
-// Submit a vote — always pending until admin approval.
-// Free votes are one per username; paid packs can be submitted multiple times.
 export async function submitVote(outfitId, username, options = {}) {
-  try {
-    const voteType = options.voteType === 'paid' ? 'paid' : 'free';
+  const party = await requireActiveParty();
+  const supabase = getServiceSupabase();
+  const voteType = options.voteType === 'paid' ? 'paid' : 'free';
 
-    if (voteType === 'free') {
-      const existingVote = await getUserVote(username);
-      if (existingVote) {
-        throw new Error('User has already voted');
-      }
+  if (voteType === 'free') {
+    const existingVote = await getUserVote(username);
+    if (existingVote) {
+      throw new Error('User has already voted');
     }
+  }
 
-    const voteCount = Math.max(1, Number(options.voteCount) || 1);
-    const amount = Math.max(0, Number(options.amount) || 0);
-    const currency = options.currency || 'CAD';
-    const stripeSessionId = options.stripeSessionId || null;
+  const voteCount = Math.max(1, Number(options.voteCount) || 1);
+  const amount = Math.max(0, Number(options.amount) || 0);
+  const currency = options.currency || 'CAD';
+  const stripeSessionId = options.stripeSessionId || null;
+  const voteId = `${username}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 
-    const voteId = `${username}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-    const voteData = {
-      id: voteId,
-      outfitId,
-      username,
-      timestamp: Date.now(),
-      approved: false,
-      verified: false,
-      voteType,
-      voteCount,
-      amount,
-      currency,
-      ...(stripeSessionId ? { stripeSessionId } : {}),
-    };
+  const row = {
+    id: voteId,
+    party_id: party.id,
+    outfit_id: Number(outfitId),
+    username,
+    timestamp: Date.now(),
+    approved: false,
+    verified: false,
+    vote_type: voteType,
+    vote_count: voteCount,
+    amount,
+    currency,
+    stripe_session_id: stripeSessionId,
+  };
 
-    const key = `${PENDING_PREFIX}${voteId}`;
-    await redis.set(key, voteData);
-
-    return voteData;
-  } catch (error) {
-    console.error('Error submitting vote:', error);
+  const { data, error } = await supabase.from('votes').insert(row).select('*').single();
+  if (error) {
+    if (error.code === '23505') {
+      throw new Error('User has already voted');
+    }
     throw error;
   }
+
+  return mapVote(data);
 }
 
-// Get user's vote
 export async function getUserVote(username) {
-  try {
-    // Check approved votes first
-    const approvedKeys = await redis.keys(`${VOTES_PREFIX}${username}_*`);
-    for (const key of approvedKeys) {
-      try {
-        const vote = await redis.get(key);
-        if (vote) {
-          return typeof vote === 'object' ? vote : JSON.parse(vote);
-        }
-      } catch (parseError) {
-        console.warn(`Failed to parse approved vote ${key}:`, parseError);
-        continue;
-      }
-    }
-    
-    // Check pending votes
-    const pendingKeys = await redis.keys(`${PENDING_PREFIX}${username}_*`);
-    for (const key of pendingKeys) {
-      try {
-        const vote = await redis.get(key);
-        if (vote) {
-          return typeof vote === 'object' ? vote : JSON.parse(vote);
-        }
-      } catch (parseError) {
-        console.warn(`Failed to parse pending vote ${key}:`, parseError);
-        continue;
-      }
-    }
+  const party = await requireActiveParty();
+  const supabase = getServiceSupabase();
 
-    return null;
-  } catch (error) {
-    console.error('Error getting user vote:', error);
-    return null;
-  }
+  const { data, error } = await supabase
+    .from('votes')
+    .select('*')
+    .eq('party_id', party.id)
+    .eq('username', username)
+    .order('timestamp', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) throw error;
+  return mapVote(data);
 }
 
-// Update vote statistics
 export async function updateVoteStats(outfitId, increment = 1) {
-  try {
-    const existingStats = await redis.get(VOTE_STATS_KEY);
-    let stats = [];
-    
-    if (existingStats) {
-      if (typeof existingStats === 'object') {
-        stats = existingStats;
-      } else {
-        try {
-          stats = JSON.parse(existingStats);
-        } catch (parseError) {
-          console.warn('Failed to parse stats, using empty array');
-          stats = [];
-        }
-      }
-    }
-    
-    const updatedStats = stats.map(stat => 
-      stat.outfitId === outfitId 
-        ? { ...stat, votes: Math.max(0, stat.votes + increment) }
-        : stat
-    );
+  const party = await requireActiveParty();
+  await ensureStatsRows(party.id);
 
-    await redis.set(VOTE_STATS_KEY, updatedStats);
-    return updatedStats;
-  } catch (error) {
-    console.error('Error updating vote stats:', error);
-    throw error;
-  }
+  const supabase = getServiceSupabase();
+  const { data: existing, error: readError } = await supabase
+    .from('vote_stats')
+    .select('votes')
+    .eq('party_id', party.id)
+    .eq('outfit_id', Number(outfitId))
+    .maybeSingle();
+
+  if (readError) throw readError;
+
+  const nextVotes = Math.max(0, (Number(existing?.votes) || 0) + increment);
+  const { error: writeError } = await supabase.from('vote_stats').upsert({
+    party_id: party.id,
+    outfit_id: Number(outfitId),
+    votes: nextVotes,
+  });
+
+  if (writeError) throw writeError;
+  return getVoteStats();
 }
 
-// Get current vote statistics
-export async function getVoteStats() {
-  try {
-    const stats = await redis.get(VOTE_STATS_KEY);
-    
-    if (!stats) {
-      return [];
-    }
-    
-    if (typeof stats === 'object') {
-      return stats;
-    }
-    
-    try {
-      return JSON.parse(stats);
-    } catch (parseError) {
-      console.warn('Failed to parse stats, returning empty array');
-      return [];
-    }
-  } catch (error) {
-    console.error('Error getting vote stats:', error);
-    return [];
-  }
+export async function getVoteStats(partyId) {
+  const party = partyId ? { id: partyId } : await requireActiveParty();
+  await ensureStatsRows(party.id);
+
+  const supabase = getServiceSupabase();
+  const { data, error } = await supabase
+    .from('vote_stats')
+    .select('outfit_id, votes')
+    .eq('party_id', party.id);
+
+  if (error) throw error;
+
+  return (data || []).map((row) => ({
+    outfitId: row.outfit_id,
+    votes: Number(row.votes) || 0,
+  }));
 }
 
-// Get pending votes for admin approval
-export async function getPendingVotes() {
-  try {
-    console.log('Getting pending votes...');
-    const pendingKeys = await redis.keys(`${PENDING_PREFIX}*`);
-    console.log(`Found ${pendingKeys.length} pending keys:`, pendingKeys);
-    
-    const votes = [];
-    
-    for (const key of pendingKeys) {
-      try {
-        const vote = await redis.get(key);
-        console.log(`Retrieved vote from ${key}:`, vote);
-        
-        if (vote) {
-          const voteData = typeof vote === 'object' ? vote : JSON.parse(vote);
-          votes.push(voteData);
-        }
-      } catch (parseError) {
-        console.warn(`Failed to parse pending vote ${key}:`, parseError);
-        continue;
-      }
-    }
-    
-    console.log(`Returning ${votes.length} pending votes`);
-    return votes;
-  } catch (error) {
-    console.error('Error getting pending votes:', error);
-    return [];
-  }
+export async function getPendingVotes(partyId) {
+  const party = partyId ? { id: partyId } : await requireActiveParty();
+  const supabase = getServiceSupabase();
+  const { data, error } = await supabase
+    .from('votes')
+    .select('*')
+    .eq('party_id', party.id)
+    .eq('approved', false)
+    .order('timestamp', { ascending: false });
+
+  if (error) throw error;
+  return (data || []).map(mapVote);
 }
 
-// Approve a pending vote
+export async function getApprovedVotes(partyId) {
+  const party = partyId ? { id: partyId } : await requireActiveParty();
+  const supabase = getServiceSupabase();
+  const { data, error } = await supabase
+    .from('votes')
+    .select('*')
+    .eq('party_id', party.id)
+    .eq('approved', true)
+    .order('timestamp', { ascending: false });
+
+  if (error) throw error;
+  return (data || []).map(mapVote);
+}
+
 export async function approveVote(voteId) {
-  try {
-    const pendingKey = `${PENDING_PREFIX}${voteId}`;
-    const vote = await redis.get(pendingKey);
-    
-    if (!vote) {
-      throw new Error('Vote not found');
-    }
+  const supabase = getServiceSupabase();
+  const { data: vote, error } = await supabase
+    .from('votes')
+    .select('*')
+    .eq('id', voteId)
+    .maybeSingle();
 
-    const voteData = typeof vote === 'object' ? vote : JSON.parse(vote);
-    
-    // Move from pending to approved
-    const approvedVote = { ...voteData, approved: true };
-    const approvedKey = `${VOTES_PREFIX}${voteId}`;
-    
-    await redis.set(approvedKey, approvedVote);
-    await redis.del(pendingKey);
+  if (error) throw error;
+  if (!vote) throw new Error('Vote not found');
+  if (vote.approved) return mapVote(vote);
 
-    // Update stats by pack size (paid packs can count as multiple votes)
-    await updateVoteStats(voteData.outfitId, getVoteCount(voteData));
+  const { data: updated, error: updateError } = await supabase
+    .from('votes')
+    .update({ approved: true })
+    .eq('id', voteId)
+    .select('*')
+    .single();
 
-    return approvedVote;
-  } catch (error) {
-    console.error('Error approving vote:', error);
-    throw error;
-  }
+  if (updateError) throw updateError;
+
+  await updateVoteStatsForParty(vote.party_id, vote.outfit_id, getVoteCount(mapVote(vote)));
+  return mapVote(updated);
 }
 
-// Reject a pending vote
 export async function rejectVote(voteId) {
-  try {
-    const pendingKey = `${PENDING_PREFIX}${voteId}`;
-    const vote = await redis.get(pendingKey);
-    
-    if (!vote) {
-      throw new Error('Vote not found');
-    }
+  const supabase = getServiceSupabase();
+  const { data: vote, error } = await supabase
+    .from('votes')
+    .select('*')
+    .eq('id', voteId)
+    .maybeSingle();
 
-    const voteData = typeof vote === 'object' ? vote : JSON.parse(vote);
-    await redis.del(pendingKey);
-    return voteData;
-  } catch (error) {
-    console.error('Error rejecting vote:', error);
-    throw error;
-  }
+  if (error) throw error;
+  if (!vote) throw new Error('Vote not found');
+  if (vote.approved) throw new Error('Cannot reject an approved vote — remove it instead');
+
+  const { error: deleteError } = await supabase.from('votes').delete().eq('id', voteId);
+  if (deleteError) throw deleteError;
+  return mapVote(vote);
 }
 
-/**
- * Remove a vote entirely — pending or approved.
- * Approved removals also subtract the pack weight from live stats.
- */
 export async function removeVote(voteId) {
-  try {
-    const approvedKey = `${VOTES_PREFIX}${voteId}`;
-    const pendingKey = `${PENDING_PREFIX}${voteId}`;
+  const supabase = getServiceSupabase();
+  const { data: vote, error } = await supabase
+    .from('votes')
+    .select('*')
+    .eq('id', voteId)
+    .maybeSingle();
 
-    const approved = await redis.get(approvedKey);
-    if (approved) {
-      const voteData = typeof approved === 'object' ? approved : JSON.parse(approved);
-      await redis.del(approvedKey);
-      await updateVoteStats(voteData.outfitId, -getVoteCount(voteData));
-      return { ...voteData, removedFrom: 'approved' };
-    }
+  if (error) throw error;
+  if (!vote) throw new Error('Vote not found');
 
-    const pending = await redis.get(pendingKey);
-    if (pending) {
-      const voteData = typeof pending === 'object' ? pending : JSON.parse(pending);
-      await redis.del(pendingKey);
-      return { ...voteData, removedFrom: 'pending' };
-    }
+  const { error: deleteError } = await supabase.from('votes').delete().eq('id', voteId);
+  if (deleteError) throw deleteError;
 
-    throw new Error('Vote not found');
-  } catch (error) {
-    console.error('Error removing vote:', error);
-    throw error;
+  if (vote.approved) {
+    await updateVoteStatsForParty(
+      vote.party_id,
+      vote.outfit_id,
+      -getVoteCount(mapVote(vote)),
+    );
+    return { ...mapVote(vote), removedFrom: 'approved' };
   }
+
+  return { ...mapVote(vote), removedFrom: 'pending' };
 }
 
-// Get all approved votes
-export async function getApprovedVotes() {
-  try {
-    const approvedKeys = await redis.keys(`${VOTES_PREFIX}*`);
-    const votes = [];
-    
-    for (const key of approvedKeys) {
-      try {
-        const vote = await redis.get(key);
-        if (vote) {
-          const voteData = typeof vote === 'object' ? vote : JSON.parse(vote);
-          votes.push(voteData);
-        }
-      } catch (parseError) {
-        console.warn(`Failed to parse approved vote ${key}:`, parseError);
-        continue;
-      }
-    }
-    
-    return votes;
-  } catch (error) {
-    console.error('Error getting approved votes:', error);
-    return [];
-  }
+async function updateVoteStatsForParty(partyId, outfitId, increment) {
+  const supabase = getServiceSupabase();
+  await ensureStatsRows(partyId);
+
+  const { data: existing, error: readError } = await supabase
+    .from('vote_stats')
+    .select('votes')
+    .eq('party_id', partyId)
+    .eq('outfit_id', Number(outfitId))
+    .maybeSingle();
+
+  if (readError) throw readError;
+
+  const nextVotes = Math.max(0, (Number(existing?.votes) || 0) + increment);
+  const { error: writeError } = await supabase.from('vote_stats').upsert({
+    party_id: partyId,
+    outfit_id: Number(outfitId),
+    votes: nextVotes,
+  });
+
+  if (writeError) throw writeError;
 }

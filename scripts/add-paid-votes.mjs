@@ -1,68 +1,98 @@
-import { Redis } from '@upstash/redis';
+import fs from 'fs';
+import path from 'path';
+import { createClient } from '@supabase/supabase-js';
 
-const url =
-  process.env.STORAGE_KV_REST_API_URL_KV_REST_API_URL ||
-  process.env.UPSTASH_REDIS_REST_URL;
-const token =
-  process.env.STORAGE_KV_REST_API_URL_KV_REST_API_TOKEN ||
-  process.env.UPSTASH_REDIS_REST_TOKEN;
+function loadEnvLocal() {
+  const envPath = path.join(process.cwd(), '.env.local');
+  if (!fs.existsSync(envPath)) return;
+  for (const line of fs.readFileSync(envPath, 'utf8').split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#') || !trimmed.includes('=')) continue;
+    const i = trimmed.indexOf('=');
+    const key = trimmed.slice(0, i).trim();
+    let value = trimmed.slice(i + 1).trim();
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+    if (!process.env[key]) process.env[key] = value;
+  }
+}
 
-if (!url || !token) {
-  console.error('Missing Redis credentials in environment');
+loadEnvLocal();
+
+const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+if (!url || !key) {
+  console.error('Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
   process.exit(1);
 }
 
 const outfitArg = process.argv.find((arg) => arg.startsWith('--outfit='));
 const countArg = process.argv.find((arg) => arg.startsWith('--count='));
-const outfitId = Number(outfitArg?.split('=')[1] ?? 26);
+const outfitId = Number(outfitArg?.split('=')[1] ?? 1);
 const voteCount = Number(countArg?.split('=')[1] ?? 100);
 
 if (!Number.isFinite(outfitId) || !Number.isFinite(voteCount) || voteCount <= 0) {
-  console.error('Usage: node scripts/add-paid-votes.mjs --outfit=26 --count=100');
+  console.error('Usage: node scripts/add-paid-votes.mjs --outfit=1 --count=100');
   process.exit(1);
 }
 
-const redis = new Redis({ url, token });
+const supabase = createClient(url, key, {
+  auth: { persistSession: false, autoRefreshToken: false },
+});
 
-const VOTES_PREFIX = 'approved_vote:';
-const VOTE_STATS_KEY = 'voting_statistics';
+const { data: party, error: partyError } = await supabase
+  .from('parties')
+  .select('id')
+  .eq('status', 'active')
+  .maybeSingle();
+
+if (partyError || !party) {
+  console.error('No active party found', partyError);
+  process.exit(1);
+}
 
 const voteId = `admin_boost_${outfitId}_${Date.now()}`;
 const voteData = {
   id: voteId,
-  outfitId,
+  party_id: party.id,
+  outfit_id: outfitId,
   username: 'admin_boost',
   timestamp: Date.now(),
   approved: true,
   verified: false,
-  voteType: 'paid',
-  voteCount,
+  vote_type: 'paid',
+  vote_count: voteCount,
   amount: 0,
   currency: 'CAD',
 };
 
-await redis.set(`${VOTES_PREFIX}${voteId}`, voteData);
+const { error: voteError } = await supabase.from('votes').insert(voteData);
+if (voteError) {
+  console.error('Failed to insert vote', voteError);
+  process.exit(1);
+}
 
-const stats = await redis.get(VOTE_STATS_KEY);
-let parsed = typeof stats === 'object' ? stats : JSON.parse(stats);
-parsed = parsed.map((stat) =>
-  stat.outfitId === outfitId
-    ? { ...stat, votes: (stat.votes || 0) + voteCount }
-    : stat,
-);
-await redis.set(VOTE_STATS_KEY, parsed);
+const { data: existing } = await supabase
+  .from('vote_stats')
+  .select('votes')
+  .eq('party_id', party.id)
+  .eq('outfit_id', outfitId)
+  .maybeSingle();
 
-const updated = parsed.find((stat) => stat.outfitId === outfitId);
-console.log(
-  JSON.stringify(
-    {
-      success: true,
-      outfitId,
-      addedVotes: voteCount,
-      newTotal: updated?.votes ?? null,
-      voteId,
-    },
-    null,
-    2,
-  ),
-);
+const nextVotes = (Number(existing?.votes) || 0) + voteCount;
+const { error: statsError } = await supabase.from('vote_stats').upsert({
+  party_id: party.id,
+  outfit_id: outfitId,
+  votes: nextVotes,
+});
+
+if (statsError) {
+  console.error('Failed to update stats', statsError);
+  process.exit(1);
+}
+
+console.log(`Added ${voteCount} paid votes to outfit ${outfitId} on ${party.id} (total ${nextVotes})`);

@@ -88,10 +88,22 @@ function CollapsibleSection({ id, title, meta, badge, defaultOpen = false, open,
   );
 }
 
+function formatPartyDate(value) {
+  if (!value) return '';
+  return new Date(value).toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState([]);
   const [pendingVotes, setPendingVotes] = useState([]);
   const [approvedVotes, setApprovedVotes] = useState([]);
+  const [parties, setParties] = useState([]);
+  const [selectedPartyId, setSelectedPartyId] = useState(null);
+  const [selectedPartyDetail, setSelectedPartyDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [adminPassword, setAdminPassword] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -99,7 +111,7 @@ export default function AdminDashboard() {
   const [authError, setAuthError] = useState('');
   const [voteFilter, setVoteFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
-  const [openSections, setOpenSections] = useState(() => new Set(['pending', 'log', 'results']));
+  const [openSections, setOpenSections] = useState(() => new Set(['pending', 'log', 'results', 'parties']));
   const [expandedOutfits, setExpandedOutfits] = useState(() => new Set());
 
   const toggleSection = (id) => {
@@ -150,10 +162,49 @@ export default function AdminDashboard() {
     }
   }, [adminPassword]);
 
+  const loadParties = useCallback(async () => {
+    try {
+      const response = await fetch('/api/parties', {
+        headers: { Authorization: `Bearer ${adminPassword}` },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) setParties(data.parties || []);
+      }
+    } catch (error) {
+      console.error('Failed to load parties:', error);
+    }
+  }, [adminPassword]);
+
+  const loadPartyDetail = useCallback(
+    async (partyId) => {
+      if (!partyId) {
+        setSelectedPartyId(null);
+        setSelectedPartyDetail(null);
+        return;
+      }
+      try {
+        const response = await fetch(`/api/parties?id=${encodeURIComponent(partyId)}`, {
+          headers: { Authorization: `Bearer ${adminPassword}` },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setSelectedPartyId(partyId);
+            setSelectedPartyDetail(data);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load party detail:', error);
+      }
+    },
+    [adminPassword],
+  );
+
   const loadData = useCallback(async () => {
-    await Promise.all([loadStats(), loadVotes()]);
+    await Promise.all([loadStats(), loadVotes(), loadParties()]);
     setLoading(false);
-  }, [loadStats, loadVotes]);
+  }, [loadStats, loadVotes, loadParties]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -288,6 +339,17 @@ export default function AdminDashboard() {
     );
   }
 
+  const archivedParties = parties.filter((party) => party.status === 'archived');
+  const activeParty = parties.find((party) => party.status === 'active');
+  const detailOutfits =
+    selectedPartyDetail?.party?.outfits?.length > 0
+      ? selectedPartyDetail.party.outfits
+      : outfits;
+  const detailStats = [...(selectedPartyDetail?.stats || [])].sort(
+    (a, b) => b.votes - a.votes,
+  );
+  const detailTotal = detailStats.reduce((sum, row) => sum + (row.votes || 0), 0);
+
   return (
     <div className="container">
       <div className="logo">Admin Dashboard</div>
@@ -310,6 +372,92 @@ export default function AdminDashboard() {
           <div className="dash-summary-label">Total</div>
         </div>
       </div>
+
+      {activeParty && (
+        <div className="dash-party-banner">
+          <div>
+            <div className="dash-party-banner-label">Active party</div>
+            <div className="dash-party-banner-name">{activeParty.name}</div>
+          </div>
+          <div className="dash-party-banner-meta">
+            Ends {formatPartyDate(activeParty.votingEndAt) || '—'}
+          </div>
+        </div>
+      )}
+
+      <CollapsibleSection
+        id="parties"
+        title="Past parties"
+        badge={archivedParties.length}
+        meta="Archived rounds saved in Supabase"
+        open={openSections.has('parties')}
+        onToggle={toggleSection}
+      >
+        {archivedParties.length === 0 ? (
+          <div className="dash-empty">No archived parties yet</div>
+        ) : (
+          archivedParties.map((party) => {
+            const isSelected = selectedPartyId === party.id;
+            return (
+              <div key={party.id} className="dash-party-card">
+                <button
+                  type="button"
+                  className={`dash-party-toggle${isSelected ? ' is-open' : ''}`}
+                  onClick={() =>
+                    isSelected ? loadPartyDetail(null) : loadPartyDetail(party.id)
+                  }
+                >
+                  <div>
+                    <div className="dash-row-title">{party.name}</div>
+                    <div className="dash-row-sub">
+                      Archived {formatPartyDate(party.archivedAt)} ·{' '}
+                      {party.summary?.totalVotes ?? 0} votes ·{' '}
+                      {party.summary?.approvedBallots ?? 0} approved ballots
+                    </div>
+                    {party.notes && (
+                      <div className="dash-party-notes">{party.notes}</div>
+                    )}
+                  </div>
+                  <ChevronIcon open={isSelected} />
+                </button>
+
+                {isSelected && selectedPartyDetail?.party?.id === party.id && (
+                  <div className="dash-party-detail">
+                    {selectedPartyDetail.party.intro && (
+                      <p className="dash-party-intro">{selectedPartyDetail.party.intro}</p>
+                    )}
+                    {detailStats.length === 0 ? (
+                      <div className="dash-empty">No vote totals stored for this party</div>
+                    ) : (
+                      detailStats.map((stat, index) => {
+                        const outfit = detailOutfits.find((o) => o.id === stat.outfitId);
+                        const percentage =
+                          detailTotal > 0
+                            ? Math.round((stat.votes / detailTotal) * 100)
+                            : 0;
+                        return (
+                          <div key={stat.outfitId} className="dash-result-header">
+                            <span className="dash-result-rank">#{index + 1}</span>
+                            <div className="dash-result-info">
+                              <div className="dash-result-name">
+                                {outfit ? getOutfitLabel(outfit) : `outfit ${stat.outfitId}`}
+                              </div>
+                            </div>
+                            <div className="dash-result-count">
+                              <div className="dash-result-votes">{stat.votes}</div>
+                              <div className="dash-result-pct">{percentage}%</div>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
+      </CollapsibleSection>
 
       <CollapsibleSection
         id="log"

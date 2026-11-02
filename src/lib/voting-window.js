@@ -1,9 +1,9 @@
 const VOTING_TIME_ZONE = 'America/Toronto';
-/** Local wall time in Toronto: Saturday Aug 29, 2026 at 12:00 (~72h from Wed noon). */
+/** Local wall time in Toronto: Sunday Nov 9, 2026 at 12:00. */
 const VOTING_END_LOCAL = {
   year: 2026,
-  month: 8, // August
-  day: 29,
+  month: 11, // November
+  day: 9,
   hour: 12,
   minute: 0,
   second: 0,
@@ -24,8 +24,8 @@ function torontoLocalToUtc({ year, month, day, hour, minute, second }) {
     hourCycle: 'h23',
   });
 
-  // Start with a UTC guess (Toronto is UTC-4 in late August).
-  let utcMs = Date.UTC(year, month - 1, day, hour + 4, minute, second);
+  // Start with a UTC guess (Toronto is UTC-5 in early November).
+  let utcMs = Date.UTC(year, month - 1, day, hour + 5, minute, second);
 
   for (let i = 0; i < 4; i += 1) {
     const parts = Object.fromEntries(

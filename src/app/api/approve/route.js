@@ -12,18 +12,9 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'YVL';
 
 function isAuthorized(request) {
   const authHeader = request.headers.get('authorization');
-  console.log('Auth header received:', authHeader ? 'Present' : 'Missing');
-  
   if (!authHeader) return false;
-  
-  const token = authHeader.replace('Bearer ', '');
-  const expectedPassword = process.env.ADMIN_PASSWORD;
-  
-  console.log('Token provided:', token.substring(0, 3) + '...');
-  console.log('Expected password:', expectedPassword ? expectedPassword.substring(0, 3) + '...' : 'Not set');
-  console.log('Auth result:', token === expectedPassword);
-  
-  return token === expectedPassword;
+  const token = authHeader.replace(/^Bearer\s+/i, '');
+  return token === ADMIN_PASSWORD;
 }
 
 export async function POST(request) {

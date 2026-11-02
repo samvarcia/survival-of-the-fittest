@@ -156,12 +156,12 @@ export default function HomePage() {
           <div className="main-page-foot">
             <div className="intro">
               <p>
-                Survival of the Fittest exceeded all expectations — 150+ contestants, incredible fashion, unforgettable energy. Now, 26 finalists remain standing. You decide who takes home $1000. Only 48 hours. You must follow @survivalofthefittttest for your vote to count. Vote now. Who will survive?
+                Survival of the Fittest is back. Vote for the best fit — you must follow @survivalofthefittttest for your vote to count. Who will survive?
               </p>
             </div>
 
             <button type="button" className="ranking-button" onClick={() => setShowRanking(true)}>
-              FINALS
+              RANKING
             </button>
           </div>
         </div>
