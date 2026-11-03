@@ -18,8 +18,9 @@ export default function RankingModal({ stats, outfits, onClose }) {
     })
     .sort((a, b) => b.votes - a.votes);
 
-  const topThree = ranked.slice(0, 3);
-  const rest = ranked.slice(3);
+  const topTwenty = ranked.slice(0, 20);
+  const topThree = topTwenty.slice(0, 3);
+  const rest = topTwenty.slice(3);
   const { closing, requestClose } = useAnimatedClose(onClose, 280);
 
   useEffect(() => {
