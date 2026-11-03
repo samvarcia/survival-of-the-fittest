@@ -866,13 +866,13 @@ body.theme-main-page {
 
   .theme-main .partner-credit {
     top: 8px;
-    left: 6px;
+    left: -14px;
     bottom: auto;
-    width: min(38vw, 132px);
+    width: min(46vw, 158px);
   }
 
   .theme-main .partner-credit-logo {
-    max-height: 104px;
+    max-height: 125px;
     width: 100%;
     transform-origin: top left;
   }
@@ -1080,10 +1080,10 @@ body.theme-main-page {
 .theme-main .partner-credit {
   position: absolute;
   top: 10px;
-  left: 8px;
+  left: -12px;
   bottom: auto;
   z-index: 30;
-  width: min(36vw, 140px);
+  width: min(43vw, 168px);
   margin: 0;
   pointer-events: none;
 }
@@ -1092,7 +1092,7 @@ body.theme-main-page {
   display: block;
   width: 100%;
   height: auto;
-  max-height: 112px;
+  max-height: 134px;
   object-fit: contain;
   transform: rotate(-8deg);
   transform-origin: top left;
@@ -2332,13 +2332,13 @@ body.theme-main-page {
 
   .theme-main .partner-credit {
     top: 14px;
-    left: 14px;
+    left: -6px;
     bottom: auto;
-    width: min(16vw, 140px);
+    width: min(19vw, 168px);
   }
 
   .theme-main .partner-credit-logo {
-    max-height: 110px;
+    max-height: 132px;
     transform-origin: top left;
   }
 
