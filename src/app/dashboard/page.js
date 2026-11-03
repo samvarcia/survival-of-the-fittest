@@ -364,10 +364,6 @@ export default function AdminDashboard() {
 
       <div className="dash-summary">
         <div className="dash-summary-stat">
-          <div className="dash-summary-value">{revenueLabel}</div>
-          <div className="dash-summary-label">Paid revenue</div>
-        </div>
-        <div className="dash-summary-stat">
           <div className="dash-summary-value">{totalVotes}</div>
           <div className="dash-summary-label">Approved</div>
         </div>
@@ -383,7 +379,65 @@ export default function AdminDashboard() {
           <div className="dash-summary-value">{allVotes.length}</div>
           <div className="dash-summary-label">Total</div>
         </div>
+        <div className="dash-summary-stat dash-summary-stat-subtle">
+          <div className="dash-summary-value">{revenueLabel}</div>
+          <div className="dash-summary-label">Paid revenue</div>
+        </div>
       </div>
+
+      {pendingVotes.length > 0 && (
+        <CollapsibleSection
+          id="pending"
+          title="Pending approval"
+          badge={pendingVotes.length}
+          open={openSections.has('pending')}
+          onToggle={toggleSection}
+        >
+          {sortedPending.map((vote) => {
+            const isProcessing = processingVotes.has(vote.id);
+            const participant = getParticipant(vote.outfitId);
+            const voteWeight = getVoteCount(vote);
+
+            return (
+              <div
+                key={vote.id}
+                className={`dash-row${isPaidVote(vote) ? ' is-paid' : ''}`}
+              >
+                <div className="dash-row-main">
+                  <div className="dash-row-title">
+                    @{vote.username} → {participant}
+                    {voteWeight > 1 && (
+                      <span className="dash-row-weight"> · {voteWeight} votes</span>
+                    )}
+                  </div>
+                  <div className="dash-row-sub">{formatVoteTime(vote.timestamp)}</div>
+                </div>
+                <div className="dash-actions-wrap">
+                  <VoteTypeBadge vote={vote} />
+                  <div className="dash-actions">
+                  <button
+                    type="button"
+                    className="dash-btn dash-btn-approve"
+                    onClick={() => handleVoteAction(vote.id, 'approve')}
+                    disabled={isProcessing}
+                  >
+                    {isProcessing ? '…' : 'Approve'}
+                  </button>
+                  <button
+                    type="button"
+                    className="dash-btn dash-btn-reject"
+                    onClick={() => handleVoteAction(vote.id, 'reject')}
+                    disabled={isProcessing}
+                  >
+                    Reject
+                  </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </CollapsibleSection>
+      )}
 
       {activeParty && (
         <div className="dash-party-banner">
@@ -540,60 +594,6 @@ export default function AdminDashboard() {
           })
         )}
       </CollapsibleSection>
-
-      {pendingVotes.length > 0 && (
-        <CollapsibleSection
-          id="pending"
-          title="Pending approval"
-          badge={pendingVotes.length}
-          open={openSections.has('pending')}
-          onToggle={toggleSection}
-        >
-          {sortedPending.map((vote) => {
-            const isProcessing = processingVotes.has(vote.id);
-            const participant = getParticipant(vote.outfitId);
-            const voteWeight = getVoteCount(vote);
-
-            return (
-              <div
-                key={vote.id}
-                className={`dash-row${isPaidVote(vote) ? ' is-paid' : ''}`}
-              >
-                <div className="dash-row-main">
-                  <div className="dash-row-title">
-                    @{vote.username} → {participant}
-                    {voteWeight > 1 && (
-                      <span className="dash-row-weight"> · {voteWeight} votes</span>
-                    )}
-                  </div>
-                  <div className="dash-row-sub">{formatVoteTime(vote.timestamp)}</div>
-                </div>
-                <div className="dash-actions-wrap">
-                  <VoteTypeBadge vote={vote} />
-                  <div className="dash-actions">
-                  <button
-                    type="button"
-                    className="dash-btn dash-btn-approve"
-                    onClick={() => handleVoteAction(vote.id, 'approve')}
-                    disabled={isProcessing}
-                  >
-                    {isProcessing ? '…' : 'Approve'}
-                  </button>
-                  <button
-                    type="button"
-                    className="dash-btn dash-btn-reject"
-                    onClick={() => handleVoteAction(vote.id, 'reject')}
-                    disabled={isProcessing}
-                  >
-                    Reject
-                  </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </CollapsibleSection>
-      )}
 
       <CollapsibleSection
         id="results"

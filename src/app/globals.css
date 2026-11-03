@@ -2506,6 +2506,16 @@ body.theme-main-page {
   margin-top: 2px;
 }
 
+.dash-summary-stat-subtle .dash-summary-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--dark-gray);
+}
+
+.dash-summary-stat-subtle .dash-summary-label {
+  color: #9a9a9a;
+}
+
 .dash-section {
   margin-bottom: 12px;
   border: 1px solid var(--light-gray);
