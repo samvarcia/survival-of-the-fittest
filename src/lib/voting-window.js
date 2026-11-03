@@ -1,9 +1,9 @@
 const VOTING_TIME_ZONE = 'America/Toronto';
-/** Local wall time in Toronto: Sunday Nov 9, 2026 at 12:00. */
+/** Local wall time in Toronto: Friday Nov 6, 2026 at 12:00. */
 const VOTING_END_LOCAL = {
   year: 2026,
   month: 11, // November
-  day: 9,
+  day: 6,
   hour: 12,
   minute: 0,
   second: 0,
