@@ -1426,58 +1426,141 @@ body.theme-main-page {
   backdrop-filter: blur(10px);
 }
 
+.theme-main.vote-portal {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  min-height: 0;
+  background: transparent;
+  background-image: none;
+  isolation: auto;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.theme-main.vote-portal::before,
+.theme-main.vote-portal::after {
+  display: none;
+}
+
+.theme-main.vote-portal > .vote-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  pointer-events: auto;
+  align-items: flex-end;
+  padding: 0;
+  overscroll-behavior: none;
+}
+
 .theme-main .vote-modal-content {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 480px;
+  max-height: min(92dvh, 920px);
   background: var(--party-surface);
   color: var(--party-text);
-  border-radius: 16px 16px 0 0;
-  max-height: 92vh;
-  overflow: auto;
-  border-top: 1px solid var(--party-border);
+  border-radius: 18px 18px 0 0;
+  border-top: 1px solid rgba(255, 42, 31, 0.28);
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45), 0 0 28px rgba(255, 42, 31, 0.12);
+  overflow: hidden;
+  animation: voteSheetIn 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.theme-main .vote-overlay.is-closing .vote-modal-content {
+  animation: voteSheetOut 0.28s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+.theme-main .vote-modal-content.vote-modal-success {
+  max-height: none;
+  overflow: visible;
+}
+
+.theme-main .vote-modal-chrome {
+  position: relative;
+  flex-shrink: 0;
+  padding: 10px 16px 0;
 }
 
 .theme-main .vote-modal-grabber {
-  width: 28px;
-  height: 2px;
-  margin: 14px auto 6px;
+  width: 36px;
+  height: 4px;
+  margin: 0 auto;
   padding: 0;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.22);
 }
 
 .theme-main .vote-modal-close {
   position: absolute;
-  top: 12px;
-  right: 16px;
+  top: 6px;
+  right: 12px;
   z-index: 2;
+  width: 36px;
+  height: 36px;
   padding: 0;
   border: none;
   background: none;
-  font-size: 22px;
+  font-size: 24px;
   line-height: 1;
   cursor: pointer;
   color: rgba(255, 255, 255, 0.45);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.theme-main .vote-modal-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding-bottom: max(20px, env(safe-area-inset-bottom));
 }
 
 .theme-main .vote-modal-content .modal-image-container {
-  margin: 6px 40px 0;
+  margin: 4px auto 0;
   width: auto;
+  padding: 0;
 }
 
 .theme-main .vote-modal-content .modal-outfit-image {
   width: 100%;
-  max-width: 180px;
+  max-width: 132px;
   margin: 0 auto;
   aspect-ratio: 3 / 4;
   object-fit: cover;
   border-radius: 8px;
-  corner-shape: squircle;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
 }
 
 .theme-main .vote-modal-content .modal-content-wrapper {
   background: transparent;
-  padding: 20px 28px 32px;
+  padding: 14px 22px 8px;
+}
+
+@keyframes voteSheetIn {
+  from {
+    transform: translate3d(0, 100%, 0);
+    opacity: 0.85;
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes voteSheetOut {
+  from {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+  to {
+    transform: translate3d(0, 100%, 0);
+    opacity: 0.85;
+  }
 }
 
 .theme-main .vote-modal-kicker {
@@ -1604,9 +1687,10 @@ body.theme-main-page {
   border: none;
   border-bottom: 1px solid var(--party-border);
   border-radius: 0;
-  padding: 10px 0;
+  padding: 12px 0;
   text-align: center;
   color: var(--party-text);
+  font-size: 16px; /* keep iOS from zooming on focus */
 }
 
 .theme-main .form-input:focus {
@@ -2217,7 +2301,8 @@ body.theme-main-page {
     transform: scale(0.97);
   }
 
-  .theme-main .modal-overlay {
+  .theme-main .modal-overlay,
+  .theme-main.vote-portal > .vote-overlay {
     align-items: center;
     padding: 24px;
   }
@@ -2230,15 +2315,21 @@ body.theme-main-page {
   .theme-main .vote-modal-content {
     border-radius: 16px;
     max-width: 420px;
+    max-height: min(84vh, 820px);
     animation: modalInDesktop 0.38s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
+  .theme-main .vote-modal-grabber {
+    display: none;
+  }
+
+  .theme-main .vote-overlay.is-closing .vote-modal-content,
   .theme-main .modal-overlay.is-closing .vote-modal-content {
     animation: modalOutDesktop 0.3s cubic-bezier(0.4, 0, 1, 1) both;
   }
 
   .theme-main .vote-modal-content .modal-outfit-image {
-    max-width: 200px;
+    max-width: 168px;
   }
 
   .theme-main .ranking-modal {
