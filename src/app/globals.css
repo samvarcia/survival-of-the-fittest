@@ -861,7 +861,20 @@ body.theme-main-page {
     padding: 20px 0 24px;
     position: relative;
     /* Padding keeps neon card glow inside the clip box */
-    overflow: hidden;
+    overflow: visible;
+  }
+
+  .theme-main .partner-credit {
+    top: 8px;
+    left: 6px;
+    bottom: auto;
+    width: min(38vw, 132px);
+  }
+
+  .theme-main .partner-credit-logo {
+    max-height: 104px;
+    width: 100%;
+    transform-origin: top left;
   }
 
   .theme-main .vote-stories-shell {
@@ -910,9 +923,9 @@ body.theme-main-page {
     align-items: center;
     width: 100%;
     max-width: 320px;
-    margin: 8px auto 0;
+    margin: 2px auto 0;
     text-align: center;
-    gap: 14px;
+    gap: 12px;
   }
 
   .theme-main .intro {
@@ -1064,6 +1077,28 @@ body.theme-main-page {
   line-height: 1.55;
 }
 
+.theme-main .partner-credit {
+  position: absolute;
+  top: 10px;
+  left: 8px;
+  bottom: auto;
+  z-index: 30;
+  width: min(36vw, 140px);
+  margin: 0;
+  pointer-events: none;
+}
+
+.theme-main .partner-credit-logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 112px;
+  object-fit: contain;
+  transform: rotate(-8deg);
+  transform-origin: top left;
+  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 16px rgba(255, 42, 31, 0.3));
+}
+
 .theme-main .price-tag {
   filter: drop-shadow(0 8px 14px rgba(188, 17, 13, 0.25));
 }
@@ -1159,7 +1194,13 @@ body.theme-main-page {
   text-shadow: 0 0 16px rgba(255, 42, 31, 0.35);
 }
 
+.main-page-carousel {
+  position: relative;
+}
+
 .theme-main .vote-stories-shell {
+  position: relative;
+  z-index: 1;
   width: 100%;
   margin-bottom: 36px;
 }
@@ -2139,6 +2180,7 @@ body.theme-main-page {
 
   .main-page-carousel {
     grid-area: carousel;
+    position: relative;
     min-height: 0;
     height: 100%;
     width: auto;
@@ -2150,7 +2192,7 @@ body.theme-main-page {
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .main-page-foot {
@@ -2286,6 +2328,18 @@ body.theme-main-page {
 
   .theme-main .intro p {
     margin: 0;
+  }
+
+  .theme-main .partner-credit {
+    top: 14px;
+    left: 14px;
+    bottom: auto;
+    width: min(16vw, 140px);
+  }
+
+  .theme-main .partner-credit-logo {
+    max-height: 110px;
+    transform-origin: top left;
   }
 
   .theme-main .ranking-button {

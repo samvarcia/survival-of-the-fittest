@@ -211,6 +211,14 @@ export default function HomePage() {
               votedFor={votedFor}
             />
           )}
+
+          <div className="partner-credit" aria-hidden="false">
+            <img
+              src="/housesofhorror-mark.png"
+              alt="Houses of Horror"
+              className="partner-credit-logo"
+            />
+          </div>
         </div>
       </main>
 
