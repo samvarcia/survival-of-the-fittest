@@ -82,7 +82,6 @@ export default function RankingModal({ stats, outfits, onClose }) {
                     />
                     <div className="ranking-podium-place">{rankLabel(index)}</div>
                     <div className="ranking-podium-handle">{getOutfitLabel(outfit)}</div>
-                    <div className="ranking-podium-votes">{outfit.votes}</div>
                   </div>
                 ))}
               </div>
@@ -99,7 +98,6 @@ export default function RankingModal({ stats, outfits, onClose }) {
                       className="ranking-row-image"
                     />
                     <div className="ranking-row-handle">{getOutfitLabel(outfit)}</div>
-                    <div className="ranking-row-votes">{outfit.votes}</div>
                   </div>
                 ))}
               </div>
