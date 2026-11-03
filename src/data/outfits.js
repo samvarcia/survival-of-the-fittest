@@ -188,5 +188,25 @@ export const outfits = [
     id: 38,
     participantInstagram: "38",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlOcvytzLZKfS9sadLroeTAbYCBIQyMj32150G"
+  },
+  {
+    id: 39,
+    participantInstagram: "39",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Gl4OKuEVo6uyXj8lxiK3fCRYGgNT2ZaMBbcqAm"
+  },
+  {
+    id: 40,
+    participantInstagram: "40",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Gla46zJimF32BujQ51hfqMWZPdE7cekAgVGbs9"
+  },
+  {
+    id: 41,
+    participantInstagram: "41",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlB4aSvPulKZsYF5HpfJj0v2uU9DmSyxkIGRn6"
+  },
+  {
+    id: 42,
+    participantInstagram: "42",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlD58QBiU48PSwRtzvbGndWMEThYI5FCofp31N"
   }
 ];
