@@ -302,6 +302,14 @@ export default function AdminDashboard() {
         : filteredVotes;
 
   const pendingPaidCount = sortedPending.filter((v) => isPaidVote(v)).length;
+  const paidRevenue = allVotes.reduce(
+    (sum, vote) => (isPaidVote(vote) ? sum + (Number(vote.amount) || 0) : sum),
+    0,
+  );
+  const revenueLabel = `CA$${paidRevenue.toLocaleString('en-CA', {
+    minimumFractionDigits: paidRevenue % 1 === 0 ? 0 : 2,
+    maximumFractionDigits: 2,
+  })}`;
 
   if (!isAuthenticated) {
     return (
@@ -355,6 +363,10 @@ export default function AdminDashboard() {
       <div className="logo">Admin Dashboard</div>
 
       <div className="dash-summary">
+        <div className="dash-summary-stat">
+          <div className="dash-summary-value">{revenueLabel}</div>
+          <div className="dash-summary-label">Paid revenue</div>
+        </div>
         <div className="dash-summary-stat">
           <div className="dash-summary-value">{totalVotes}</div>
           <div className="dash-summary-label">Approved</div>

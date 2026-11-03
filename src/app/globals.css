@@ -2487,6 +2487,7 @@ body.theme-main-page {
   justify-content: space-around;
   text-align: center;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .dash-summary-stat {
