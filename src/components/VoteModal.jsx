@@ -204,6 +204,18 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
             {getOutfitLabel(outfit)}
           </div>
 
+          <p className="vote-modal-must">
+            YOU MUST FOLLOW{' '}
+            <a
+              href={`https://www.instagram.com/${handleName}/`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              @{handleName.toUpperCase()}
+            </a>{' '}
+            FOR YOUR VOTE TO COUNT
+          </p>
+
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <input
@@ -294,18 +306,6 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
                   : 'Cast 1 free vote'}
             </button>
           </form>
-
-          <div className="disclaimer">
-            You must follow{' '}
-            <a
-              href={`https://www.instagram.com/${handleName}/`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              @{handleName}
-            </a>{' '}
-            for your vote to count
-          </div>
         </div>
       </div>
     </div>
