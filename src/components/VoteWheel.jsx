@@ -46,14 +46,12 @@ export default function VoteWheel({ outfits, onVote, votedFor, votingClosed = fa
 
   useEffect(() => {
     const urls = outfits.map((outfit) => outfit.image);
-    preloadImages(urls.slice(0, 6));
-
-    const rest = urls.slice(6);
-    const run = () => preloadImages(rest);
-    const idle = window.requestIdleCallback || ((cb) => setTimeout(cb, 250));
-    const cancel = window.cancelIdleCallback || clearTimeout;
-    const id = idle(run);
-    return () => cancel(id);
+    // Warm the whole deck ASAP so fast swipes never wait on network
+    preloadImages(urls.slice(0, 10), { priority: true, concurrency: 8 });
+    const timer = window.setTimeout(() => {
+      preloadImages(urls.slice(10), { concurrency: 6 });
+    }, 50);
+    return () => window.clearTimeout(timer);
   }, [outfits]);
 
   const canLoop = outfits.length > 3;
@@ -135,17 +133,13 @@ export default function VoteWheel({ outfits, onVote, votedFor, votingClosed = fa
           });
         }}
         onSlideChange={(swiper) => {
-          const indexes = [
-            swiper.realIndex,
-            swiper.realIndex + 1,
-            swiper.realIndex + 2,
-            swiper.realIndex - 1,
-          ];
-          preloadImages(
-            indexes
-              .map((i) => outfits[((i % outfits.length) + outfits.length) % outfits.length]?.image)
-              .filter(Boolean),
+          const around = [-2, -1, 0, 1, 2, 3, 4].map(
+            (offset) =>
+              outfits[
+                ((swiper.realIndex + offset) % outfits.length + outfits.length) % outfits.length
+              ]?.image,
           );
+          preloadImages(around, { priority: true, concurrency: 6 });
         }}
       >
         {outfits.map((outfit, index) => (
@@ -165,7 +159,9 @@ export default function VoteWheel({ outfits, onVote, votedFor, votingClosed = fa
                   src={outfit.image}
                   alt={`Outfit ${getOutfitLabel(outfit)}`}
                   className="vote-story-image"
-                  priority={index < 4}
+                  priority={index < 8}
+                  eager
+                  fade={false}
                 />
               </button>
               <button

@@ -1102,15 +1102,22 @@ body.theme-main-page {
 
 .theme-main .smooth-image {
   opacity: 0;
-  filter: blur(10px);
-  transition: opacity 0.45s ease, filter 0.5s ease;
+  filter: blur(8px);
+  transition: opacity 0.28s ease, filter 0.32s ease;
   background: rgba(255, 255, 255, 0.06);
-  will-change: opacity, filter;
 }
 
 .theme-main .smooth-image.is-loaded {
   opacity: 1;
   filter: blur(0);
+}
+
+.theme-main .smooth-image.no-fade,
+.theme-main .vote-story-image.smooth-image {
+  opacity: 1;
+  filter: none;
+  transition: none;
+  background: rgba(255, 255, 255, 0.04);
 }
 
 @media (prefers-reduced-motion: reduce) {
