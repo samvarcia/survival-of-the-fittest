@@ -208,5 +208,10 @@ export const outfits = [
     id: 42,
     participantInstagram: "42",
     image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5GlD58QBiU48PSwRtzvbGndWMEThYI5FCofp31N"
+  },
+  {
+    id: 43,
+    participantInstagram: "43",
+    image: "https://v87ndduxgx.ufs.sh/f/ICfxMhSFP5Glk8uKvb53vlYdoPNkK6gMi1eXqHJswzSQxj4B"
   }
 ];
