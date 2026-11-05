@@ -12,8 +12,6 @@ import { getVotingTimeLeft } from '@/lib/voting-window';
 export default function HomePage() {
   const [selectedOutfit, setSelectedOutfit] = useState(null);
   const [votedFor, setVotedFor] = useState(null);
-  const [stats, setStats] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [timeLeft, setTimeLeft] = useState('');
   const [votingClosed, setVotingClosed] = useState(false);
   const [showRanking, setShowRanking] = useState(false);
@@ -33,33 +31,6 @@ export default function HomePage() {
 
     return () => clearInterval(timer);
   }, []);
-
-  // Load initial stats
-  useEffect(() => {
-    loadStats();
-    
-    // Poll for updates every 5 seconds
-    const interval = setInterval(loadStats, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const loadStats = async () => {
-    try {
-      const response = await fetch('/api/stats', {
-        signal: AbortSignal.timeout(4000),
-      });
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setStats(data.stats);
-        }
-      }
-    } catch (error) {
-      console.error('Failed to load stats:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleVote = (outfit) => {
     if (votingClosed) return;
@@ -84,8 +55,6 @@ export default function HomePage() {
 
       if (data.success) {
         setVotedFor(outfitId);
-        // Reload stats immediately
-        loadStats();
         return { success: true };
       } else {
         return { success: false, error: data.error };
@@ -112,16 +81,6 @@ export default function HomePage() {
       if (previousTheme) themeMeta?.setAttribute('content', previousTheme);
     };
   }, []);
-
-  if (loading) {
-    return (
-      <div className="theme-main">
-        <main className="main-page-layout">
-          <div className="loading">Loading...</div>
-        </main>
-      </div>
-    );
-  }
 
   return (
     <div className="theme-main">
@@ -224,7 +183,6 @@ export default function HomePage() {
 
       {showRanking && (
         <RankingModal
-          stats={stats}
           outfits={outfits}
           onClose={() => setShowRanking(false)}
         />

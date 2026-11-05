@@ -134,7 +134,9 @@ export default function AdminDashboard() {
 
   const loadStats = useCallback(async () => {
     try {
-      const response = await fetch('/api/stats');
+      const response = await fetch('/api/stats', {
+        headers: { Authorization: `Bearer ${adminPassword}` },
+      });
       if (response.ok) {
         const data = await response.json();
         if (data.success) setStats(data.stats);
@@ -142,7 +144,7 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Failed to load stats:', error);
     }
-  }, []);
+  }, [adminPassword]);
 
   const loadVotes = useCallback(async () => {
     try {

@@ -3,6 +3,15 @@ import { getVoteStats, initializeVoteStats } from '@/lib/db-upstash';
 import { isRedisConfigured } from '@/lib/redis-config';
 import { outfits } from '@/data/outfits';
 
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'YVL';
+
+function isAuthorized(request) {
+  const authHeader = request.headers.get('authorization');
+  if (!authHeader) return false;
+  const token = authHeader.replace(/^Bearer\s+/i, '');
+  return token === ADMIN_PASSWORD;
+}
+
 function emptyStats() {
   return outfits.map((outfit) => ({
     outfitId: outfit.id,
@@ -11,61 +20,59 @@ function emptyStats() {
   }));
 }
 
-export async function GET() {
+export async function GET(request) {
   try {
+    if (!isAuthorized(request)) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 },
+      );
+    }
+
     if (!isRedisConfigured()) {
       return NextResponse.json({
         success: true,
         stats: emptyStats(),
         totalVotes: 0,
         lastUpdated: Date.now(),
-        warning: 'Redis not configured',
+        warning: 'Database not configured',
       });
     }
 
-    // Initialize stats if they don't exist
-    const outfitIds = outfits.map(outfit => outfit.id);
+    const outfitIds = outfits.map((outfit) => outfit.id);
     let stats = await getVoteStats();
-    
+
     if (!stats || stats.length === 0) {
       stats = await initializeVoteStats(outfitIds);
     }
 
-    // Ensure all outfits have stats
-    const existingIds = new Set(stats.map(stat => stat.outfitId));
-    const missingIds = outfitIds.filter(id => !existingIds.has(id));
-    
+    const existingIds = new Set(stats.map((stat) => stat.outfitId));
+    const missingIds = outfitIds.filter((id) => !existingIds.has(id));
+
     if (missingIds.length > 0) {
-      const missingStats = missingIds.map(id => ({ outfitId: id, votes: 0 }));
+      const missingStats = missingIds.map((id) => ({ outfitId: id, votes: 0 }));
       stats = [...stats, ...missingStats];
       await initializeVoteStats(outfitIds);
     }
 
-    // Calculate totals
     const totalVotes = stats.reduce((sum, stat) => sum + stat.votes, 0);
-    
-    // Add percentage to each stat
-    const enrichedStats = stats.map(stat => ({
+    const enrichedStats = stats.map((stat) => ({
       ...stat,
-      percentage: totalVotes > 0 ? Math.round((stat.votes / totalVotes) * 100) : 0
+      percentage: totalVotes > 0 ? Math.round((stat.votes / totalVotes) * 100) : 0,
     }));
 
     return NextResponse.json({
       success: true,
       stats: enrichedStats,
       totalVotes,
-      lastUpdated: Date.now()
+      lastUpdated: Date.now(),
     });
-
   } catch (error) {
     console.error('Stats API error:', error);
-    
-    return NextResponse.json({
-      success: true,
-      stats: emptyStats(),
-      totalVotes: 0,
-      lastUpdated: Date.now(),
-      warning: 'Failed to get statistics',
-    });
+
+    return NextResponse.json(
+      { success: false, error: 'Failed to get statistics' },
+      { status: 500 },
+    );
   }
 }

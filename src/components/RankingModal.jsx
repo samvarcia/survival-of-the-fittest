@@ -1,27 +1,55 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import SmoothImage from '@/components/SmoothImage';
 import useAnimatedClose from '@/hooks/useAnimatedClose';
 import { getOutfitLabel } from '@/lib/outfit-label';
 
-export default function RankingModal({ stats, outfits, onClose }) {
-  const ranked = outfits
-    .map((outfit) => {
-      const stat = stats.find((item) => item.outfitId === outfit.id);
-      return {
-        ...outfit,
-        votes: stat?.votes || 0,
-        percentage: stat?.percentage || 0,
-      };
-    })
-    .sort((a, b) => b.votes - a.votes);
-
-  const topTwenty = ranked.slice(0, 20);
-  const topThree = topTwenty.slice(0, 3);
-  const rest = topTwenty.slice(3);
+export default function RankingModal({ outfits, onClose }) {
+  const [ranked, setRanked] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { closing, requestClose } = useAnimatedClose(onClose, 280);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadRanking = async () => {
+      try {
+        const response = await fetch('/api/ranking', {
+          signal: AbortSignal.timeout(6000),
+        });
+        if (!response.ok) throw new Error('Failed to load ranking');
+        const data = await response.json();
+        if (cancelled || !data.success) return;
+
+        const byId = new Map(outfits.map((outfit) => [outfit.id, outfit]));
+        const next = (data.ranking || [])
+          .map((row) => {
+            const outfit = byId.get(row.outfitId);
+            if (!outfit) return null;
+            return {
+              ...outfit,
+              votes: Number(row.votes) || 0,
+              place: row.place,
+            };
+          })
+          .filter(Boolean);
+
+        setRanked(next);
+      } catch (error) {
+        console.error('Ranking load failed:', error);
+        if (!cancelled) setRanked([]);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    loadRanking();
+    return () => {
+      cancelled = true;
+    };
+  }, [outfits]);
 
   useEffect(() => {
     const onKey = (event) => {
@@ -43,12 +71,15 @@ export default function RankingModal({ stats, outfits, onClose }) {
     if (e.target === e.currentTarget) requestClose();
   };
 
-  const rankLabel = (index) => {
-    if (index === 0) return '1st';
-    if (index === 1) return '2nd';
-    if (index === 2) return '3rd';
-    return `#${index + 1}`;
+  const rankLabel = (place) => {
+    if (place === 1) return '1st';
+    if (place === 2) return '2nd';
+    if (place === 3) return '3rd';
+    return `#${place}`;
   };
+
+  const topThree = ranked.slice(0, 3);
+  const rest = ranked.slice(3);
 
   if (typeof document === 'undefined') return null;
 
@@ -71,40 +102,44 @@ export default function RankingModal({ stats, outfits, onClose }) {
           </div>
 
           <div className="ranking-modal-body">
-            {topThree.length > 0 && (
+            {loading && <div className="ranking-empty">Loading…</div>}
+
+            {!loading && topThree.length > 0 && (
               <div className="ranking-podium">
-                {topThree.map((outfit, index) => (
-                  <div key={outfit.id} className={`ranking-podium-item rank-${index + 1}`}>
+                {topThree.map((outfit) => (
+                  <div key={outfit.id} className={`ranking-podium-item rank-${outfit.place}`}>
                     <SmoothImage
                       src={outfit.image}
                       alt={getOutfitLabel(outfit)}
                       className="ranking-podium-image"
-                      priority={index === 0}
+                      priority={outfit.place === 1}
                     />
-                    <div className="ranking-podium-place">{rankLabel(index)}</div>
+                    <div className="ranking-podium-place">{rankLabel(outfit.place)}</div>
                     <div className="ranking-podium-handle">{getOutfitLabel(outfit)}</div>
+                    <div className="ranking-podium-votes">{outfit.votes}</div>
                   </div>
                 ))}
               </div>
             )}
 
-            {rest.length > 0 && (
+            {!loading && rest.length > 0 && (
               <div className="ranking-list">
-                {rest.map((outfit, index) => (
+                {rest.map((outfit) => (
                   <div key={outfit.id} className="ranking-row">
-                    <div className="ranking-row-place">{index + 4}</div>
+                    <div className="ranking-row-place">{outfit.place}</div>
                     <SmoothImage
                       src={outfit.image}
                       alt={getOutfitLabel(outfit)}
                       className="ranking-row-image"
                     />
                     <div className="ranking-row-handle">{getOutfitLabel(outfit)}</div>
+                    <div className="ranking-row-votes">{outfit.votes}</div>
                   </div>
                 ))}
               </div>
             )}
 
-            {ranked.length === 0 && (
+            {!loading && ranked.length === 0 && (
               <div className="ranking-empty">No votes yet</div>
             )}
           </div>
