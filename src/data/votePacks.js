@@ -14,4 +14,12 @@ export const VOTE_PACKS = [
     currency: 'CAD',
     stripeUrl: 'https://buy.stripe.com/dRm8wPdJcbDYayz5Qbew801',
   },
+  {
+    votes: 100,
+    price: 25,
+    name: 'HOPE',
+    label: 'CA$25',
+    currency: 'CAD',
+    stripeUrl: 'https://buy.stripe.com/cNieVd8oS7nI9uv2DZew802',
+  },
 ];

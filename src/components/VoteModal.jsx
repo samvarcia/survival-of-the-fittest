@@ -316,6 +316,9 @@ export default function VoteModal({ outfit, onClose, onSubmit, followHandle = '@
                       onClick={() => setSelectedPack(pack)}
                       disabled={isLoading}
                     >
+                      {pack.name ? (
+                        <span className="vote-pack-name">{pack.name}</span>
+                      ) : null}
                       <span className="vote-pack-count">{pack.votes}</span>
                       <span className="vote-pack-label">
                         {pack.votes === 1 ? 'vote' : 'votes'}

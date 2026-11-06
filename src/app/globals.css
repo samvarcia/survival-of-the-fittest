@@ -1667,7 +1667,7 @@ body.theme-main-page {
 
 .theme-main .vote-packs {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 8px;
   margin: 0 0 18px;
 }
@@ -1694,6 +1694,15 @@ body.theme-main-page {
   border-color: var(--party-neon);
   color: #fff;
   box-shadow: 0 0 16px rgba(255, 42, 31, 0.35);
+}
+
+.theme-main .vote-pack-name {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1;
+  margin-bottom: 4px;
 }
 
 .theme-main .vote-pack-count {
