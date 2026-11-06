@@ -30,7 +30,6 @@ export default function RankingModal({ outfits, onClose }) {
             if (!outfit) return null;
             return {
               ...outfit,
-              votes: Number(row.votes) || 0,
               place: row.place,
             };
           })
@@ -116,7 +115,6 @@ export default function RankingModal({ outfits, onClose }) {
                     />
                     <div className="ranking-podium-place">{rankLabel(outfit.place)}</div>
                     <div className="ranking-podium-handle">{getOutfitLabel(outfit)}</div>
-                    <div className="ranking-podium-votes">{outfit.votes}</div>
                   </div>
                 ))}
               </div>
@@ -133,7 +131,6 @@ export default function RankingModal({ outfits, onClose }) {
                       className="ranking-row-image"
                     />
                     <div className="ranking-row-handle">{getOutfitLabel(outfit)}</div>
-                    <div className="ranking-row-votes">{outfit.votes}</div>
                   </div>
                 ))}
               </div>

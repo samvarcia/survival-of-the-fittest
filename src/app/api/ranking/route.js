@@ -28,7 +28,6 @@ export async function GET() {
       .slice(0, TOP_N)
       .map((row, index) => ({
         outfitId: row.outfitId,
-        votes: row.votes,
         place: index + 1,
       }));
 
