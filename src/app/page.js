@@ -5,7 +5,6 @@ import Image from 'next/image';
 import VoteModal from '@/components/VoteModal';
 import Header from '@/components/Header';
 import VoteWheel from '@/components/VoteWheel';
-import RankingModal from '@/components/RankingModal';
 import { outfits } from '@/data/outfits';
 import { getVotingTimeLeft } from '@/lib/voting-window';
 
@@ -14,7 +13,6 @@ export default function HomePage() {
   const [votedFor, setVotedFor] = useState(null);
   const [timeLeft, setTimeLeft] = useState('');
   const [votingClosed, setVotingClosed] = useState(false);
-  const [showRanking, setShowRanking] = useState(false);
 
   useEffect(() => {
     const updateTimer = () => {
@@ -144,15 +142,9 @@ export default function HomePage() {
               </p>
             </div>
 
-            <button
-              type="button"
-              className="ranking-button"
-              onClick={() => setShowRanking(true)}
-              aria-haspopup="dialog"
-              aria-expanded={showRanking}
-            >
-              RANKING
-            </button>
+            <p className="winner-soon" role="status">
+              The winner will be announced soon
+            </p>
           </div>
         </div>
 
@@ -180,13 +172,6 @@ export default function HomePage() {
           </div>
         </div>
       </main>
-
-      {showRanking && (
-        <RankingModal
-          outfits={outfits}
-          onClose={() => setShowRanking(false)}
-        />
-      )}
 
       {selectedOutfit && (
         <VoteModal
